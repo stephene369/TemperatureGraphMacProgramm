@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Écouteur pour le bouton de thème
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    // document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
     
     // Écouteur pour le menu mobile
     document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
@@ -223,3 +223,7 @@ function showLoading(text = 'Chargement...') {
 function hideLoading() {
     document.getElementById('loading-overlay').classList.add('hidden');
 }
+
+
+
+

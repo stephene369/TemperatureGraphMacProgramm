@@ -41,11 +41,15 @@
                     <span class="icon">🕓</span> Historique
                 </a>
             </nav>
-            
             <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
-                <button id="theme-toggle" class="nav-item">
+                <!-- <button id="theme-toggle" class="nav-item">
                     <span class="icon">🌓</span> Changer de thème
-                </button>
+                </button> -->
+            </div>
+            <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+                <!-- <button id="theme-toggle" class="nav-item">
+                    <span class="icon">🌓</span> Changer de thème
+                </button> -->
             </div>
         </div>
         
@@ -165,5 +169,30 @@
     <script src="js/mapping.js"></script>
     <script src="js/graphs.js"></script>
     <script src="js/history.js"></script>
+
+    <!-- <script>
+        // Désactiver le clic droit
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Désactiver les raccourcis clavier pour les outils de développement
+        document.addEventListener('keydown', function(e) {
+            // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+            if (
+                e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))
+            ) {
+                e.preventDefault();
+            }
+        });
+        
+        // Masquer le fait que c'est une page web
+        window.addEventListener('load', function() {
+            // Supprimer tous les attributs qui pourraient révéler qu'il s'agit d'une page web
+            document.querySelectorAll('a').forEach(a => {
+                a.style.cursor = 'pointer';
+                a.removeAttribute('href');
+            });
+        });
+    </script> -->
 </body>
 </html>

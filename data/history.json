@@ -1,0 +1,101 @@
+[
+  {
+    "id": "895c618c-0d39-4ea3-8a1f-b598db4dc526",
+    "timestamp": "2025-04-03T13:57:26.188952",
+    "action": "Ajout de capteur",
+    "capteur_id": "37527790-1d04-4a13-a576-3f18142dad3d",
+    "capteur_nom": "Nord",
+    "details": null
+  },
+  {
+    "id": "9f59ea58-789e-491c-950e-005e63be1d53",
+    "timestamp": "2025-04-03T13:57:40.639417",
+    "action": "Association de fichier",
+    "capteur_id": "37527790-1d04-4a13-a576-3f18142dad3d",
+    "capteur_nom": "Nord",
+    "details": {
+      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)"
+      }
+    }
+  },
+  {
+    "id": "669779da-5c1c-40fb-8d06-41ed9e98b402",
+    "timestamp": "2025-04-03T13:58:05.256396",
+    "action": "Mappage des colonnes",
+    "capteur_id": "37527790-1d04-4a13-a576-3f18142dad3d",
+    "capteur_nom": "Nord",
+    "details": {
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)"
+      }
+    }
+  },
+  {
+    "id": "364de58f-2532-43c4-8914-85091a8873e3",
+    "timestamp": "2025-04-03T13:58:27.685703",
+    "action": "Génération de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "Température en fonction du temps",
+      "capteurs": [
+        "Sud"
+      ]
+    }
+  },
+  {
+    "id": "e617ad52-64ff-4ba7-98ea-6ecd1069b90f",
+    "timestamp": "2025-04-03T15:00:25.958452",
+    "action": "Génération de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "Température en fonction du temps",
+      "capteurs": [
+        "Sud"
+      ]
+    }
+  },
+  {
+    "id": "3da36ab3-0383-4426-8b75-ae183ef0a2a5",
+    "timestamp": "2025-04-03T15:00:32.561001",
+    "action": "Génération de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "Humidité en fonction du temps",
+      "capteurs": [
+        "Sud"
+      ]
+    }
+  },
+  {
+    "id": "7fab360a-4f44-49f9-98b6-f87ce7660786",
+    "timestamp": "2025-04-03T15:00:41.999905",
+    "action": "Génération de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "Humidité moyenne par mois",
+      "capteurs": [
+        "Sud"
+      ]
+    }
+  },
+  {
+    "id": "a70c9809-a152-4ac4-bd37-1e6d8fe923b1",
+    "timestamp": "2025-04-03T15:01:09.007451",
+    "action": "Suppression de capteur",
+    "capteur_id": "0a599108-4cc1-4756-ac19-00ea48bffcda",
+    "capteur_nom": null,
+    "details": {
+      "nom": "Sude"
+    }
+  }
+]
