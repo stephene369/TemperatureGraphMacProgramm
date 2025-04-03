@@ -9,6 +9,8 @@
     font-weight: bold;
     color: #2d5af6;
     margin-bottom: 15px;
+    background:red;
+    background-color:red;
 }
 
 #welcomeSubtitle {
