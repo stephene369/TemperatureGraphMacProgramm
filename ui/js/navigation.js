@@ -83,6 +83,12 @@ function loadPageContent(page) {
     }
 }
 
+
+
+
+
+
+
 function updateHeaderActions(page) {
     const headerActions = document.getElementById('header-actions');
     headerActions.innerHTML = '';

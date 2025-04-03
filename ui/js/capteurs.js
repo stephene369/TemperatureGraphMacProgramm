@@ -4,7 +4,6 @@ let capteurs = [];
 // Chargement de la page des capteurs
 function loadCapteursPage() {
     showLoading('Chargement des capteurs...');
-    
     pywebview.api.get_capteurs().then(response => {
         hideLoading();
         

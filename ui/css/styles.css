@@ -402,22 +402,51 @@ button:disabled {
 
 
 
-
 /* Styles pour les animations de transition */
 .page {
-    transition: all 0.3s ease;
-    position: absolute;
-    width: 100%;
-    opacity: 1;
-    transform: translateY(0);
+    display: none;
+    transition: all 3s ease;
+}
+
+.page.active {
+    display: block;
 }
 
 .page-enter {
-    opacity: 0;
-    transform: translateY(20px);
+    animation: fadeIn 3s ease forwards;
 }
 
 .page-exit {
-    opacity: 0;
-    transform: translateY(-20px);
+    animation: fadeOut 3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+.page {
+    will-change: opacity, transform;
+}
+
+
+.bx{
+    padding: 0 5px 0 0;
+    font-size: 1.5rem;
 }

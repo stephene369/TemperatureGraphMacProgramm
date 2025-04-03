@@ -225,5 +225,3 @@ function hideLoading() {
 }
 
 
-
-
