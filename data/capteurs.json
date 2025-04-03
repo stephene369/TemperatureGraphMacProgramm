@@ -1,0 +1,23 @@
+{
+  "capteurs": {
+    "Est": {
+      "file_path": "C:/Users/steph/Documents/Project/temperatureProgramm/ClimaGraph/documentation/21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
+      "imported_at": "2025-04-03 12:08:34",
+      "columns": {}
+    },
+    "Sud": {
+      "file_path": "C:/Users/steph/Documents/Project/temperatureProgramm/ClimaGraph/documentation/21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
+      "imported_at": "2025-04-03 12:08:49",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (\u00b0C )",
+        "humidity": "Ch: 3 - RH   (%)"
+      }
+    },
+    "Nord": {
+      "file_path": "C:/Users/steph/Documents/Project/temperatureProgramm/ClimaGraph/documentation/21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
+      "imported_at": "2025-04-03 12:18:52",
+      "columns": {}
+    }
+  }
+}

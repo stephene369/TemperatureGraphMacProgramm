@@ -1,0 +1,38 @@
+*Bonjour, Nous recoltons des données d'humidité et de temperature, nous avons besoin d'un 
+programme sous python qui puisse analyser les données et les retourner sous forme de graphique. 
+Le programme pourrais prendre différents fichiers, permettre de les nommées pour les retrouver 
+compiler dans des graphiques. Nous vous fournirons les graphiques attendu et des données. 
+Je souhaite que nous faision plusieurs échanges pour etre sur du rendu attendu.
+
+IL faut que le programme python puisse tourner sur Mac.
+POurriez vous réaliser se programme pour nous ?
+
+
+
+Dans le fichier PDF que je vous joins, il y a les différentes analyses et représentation dont on a besoin au 
+format pdf ou image, pour pouvoir les intégrés dans des rapports qui sont destinés à l'impression de rapport relié/Type magazine.
+
+il y a 10 graphiques attendus. Mais en fait la dernière série dépend du nombre de capteurs installés (cela peut varier 
+selon le chantier et selon si un capteur n'a pas fonctionné), il faut donc que cela reste souple dans l'application.
+
+Bien à vous
+
+Climat_Ste-Croix_SINOPIA.pdf
+
+21027238 Nord 2023-09-07 11_42_55 CET (Data CET).hobo
+
+21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx
+
+21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).hobo
+
+21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx
+
+21027241 Est 2023-09-27 10_58_05 CET (Data CET).hobo
+
+21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx
+
+peut etre que pour chaque graphique, il pourrait y avoir l'option de sélectionner les fichiers que l'on veut prendre en compte. On voit dans le dossier pdf joint, que les capteurs c3,c4,c6 sont analysé, mais dans le dernier il semble qu'il y en ai 1 enplus T-PR_Nord (a moins que ce ne soit qu'une donnée spécifique du capteur nord).
+
+Je vous laisse analyser les données. Et revenir vers moi, pour des proposition ou/et des questions
+
+la structure des données sont identiques entre tous les fichiers
