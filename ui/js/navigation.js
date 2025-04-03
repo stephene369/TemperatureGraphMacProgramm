@@ -11,6 +11,8 @@ function initNavigation() {
     });
 }
 
+
+
 function navigateTo(page) {
     // Mettre à jour les éléments de navigation
     const navItems = document.querySelectorAll('.nav-item');
@@ -42,21 +44,65 @@ function navigateTo(page) {
             break;
     }
     
-    // Afficher la page correspondante
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => {
-        p.classList.remove('active');
-    });
+    // Trouver la page actuellement active
+    const currentActivePage = document.querySelector('.page.active');
+    const newPage = document.getElementById(`${page}-page`);
     
-    const currentPage = document.getElementById(`${page}-page`);
-    currentPage.classList.add('active');
+    if (!newPage) {
+        console.error(`Page ${page}-page not found`);
+        return;
+    }
     
-    // Charger le contenu de la page si nécessaire
-    loadPageContent(page);
+    // Si c'est déjà la page active, ne rien faire
+    if (currentActivePage && currentActivePage.id === newPage.id) {
+        return;
+    }
     
-    // Mettre à jour les actions du header
-    updateHeaderActions(page);
+    // Ajouter des classes pour l'animation
+    if (currentActivePage) {
+        // Animer la sortie de la page actuelle
+        currentActivePage.classList.add('page-exit');
+        
+        // Attendre la fin de l'animation de sortie
+        setTimeout(() => {
+            // Retirer la classe active et la classe d'animation
+            currentActivePage.classList.remove('active');
+            currentActivePage.classList.remove('page-exit');
+            
+            // Préparer la nouvelle page pour l'animation d'entrée
+            newPage.classList.add('active');
+            newPage.classList.add('page-enter');
+            
+            // Charger le contenu de la page si nécessaire
+            loadPageContent(page);
+            
+            // Mettre à jour les actions du header
+            updateHeaderActions(page);
+            
+            // Retirer la classe d'animation après qu'elle soit terminée
+            setTimeout(() => {
+                newPage.classList.remove('page-enter');
+            }, 500);
+        }, 500); // Durée de l'animation de sortie
+    } else {
+        // Aucune page active, afficher directement la nouvelle page avec animation
+        newPage.classList.add('active');
+        newPage.classList.add('page-enter');
+        
+        // Charger le contenu de la page si nécessaire
+        loadPageContent(page);
+        
+        // Mettre à jour les actions du header
+        updateHeaderActions(page);
+        
+        // Retirer la classe d'animation après qu'elle soit terminée
+        setTimeout(() => {
+            newPage.classList.remove('page-enter');
+        }, 500);
+    }
 }
+
+
 
 function loadPageContent(page) {
     // Vérifier si le contenu est déjà chargé
