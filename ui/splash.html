@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimaGraph</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #2e3440;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .splash-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: white;
+        }
+        
+        .animation-container {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .app-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #88c0d0;
+        }
+        
+        .app-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #d8dee9;
+        }
+        
+        .loading-text {
+            font-size: 1rem;
+            color: #81a1c1;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="animation-container">
+            <lottie-player
+                src="https://lottie.host/feae722c-0a85-4fbb-acdb-debe06e26ef9/8vr4dMpNX1.lottie"
+                background="transparent"
+                speed="1"
+                loop
+                autoplay>
+            </lottie-player>
+        </div>
+        <div class="app-name">ClimaGraph</div>
+        <div class="app-subtitle">Analyse de données climatiques</div>
+        <div class="loading-text">Chargement en cours<span class="loading-dots"></span></div>
+    </div>
+
+    <script>
+        // Désactiver le clic droit
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Désactiver les raccourcis clavier pour les outils de développement
+        document.addEventListener('keydown', function(e) {
+            // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+            if (
+                e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))
+            ) {
+                e.preventDefault();
+            }
+        });
+        
+        // Masquer le fait que c'est une page web
+        window.addEventListener('load', function() {
+            // Supprimer tous les attributs qui pourraient révéler qu'il s'agit d'une page web
+            document.querySelectorAll('a').forEach(a => {
+                a.style.cursor = 'default';
+                a.removeAttribute('href');
+            });
+        });
+    </script>
+</body>
+</html>

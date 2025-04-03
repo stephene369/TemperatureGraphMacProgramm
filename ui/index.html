@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimaGraph</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Styles personnalisés -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Conteneur principal -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-md">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                <h1 class="text-xl font-bold">ClimaGraph</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Analyse de données climatiques</p>
+            </div>
+            
+            <nav class="p-4">
+                <a href="#" class="nav-item active" data-page="home">
+                    <span class="icon">🏠</span> Accueil
+                </a>
+                <a href="#" class="nav-item" data-page="capteurs">
+                    <span class="icon">📁</span> Capteurs & Fichiers
+                </a>
+                <a href="#" class="nav-item" data-page="mapping">
+                    <span class="icon">🧠</span> Mappage des Colonnes
+                </a>
+                <a href="#" class="nav-item" data-page="graphs">
+                    <span class="icon">📊</span> Graphiques
+                </a>
+                <a href="#" class="nav-item" data-page="history">
+                    <span class="icon">🕓</span> Historique
+                </a>
+            </nav>
+            
+            <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+                <button id="theme-toggle" class="nav-item">
+                    <span class="icon">🌓</span> Changer de thème
+                </button>
+            </div>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div id="main-content" class="flex-1 overflow-auto">
+            <!-- En-tête -->
+            <header id="header" class="bg-white dark:bg-gray-800 shadow-md p-4 flex items-center justify-between">
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <span class="icon">☰</span>
+                </button>
+                <h2 id="page-title" class="text-lg font-semibold">Accueil</h2>
+                <div></div> <!-- Espace vide pour centrer le titre -->
+            </header>
+            
+            <!-- Contenu de la page -->
+            <main class="p-6">
+                <!-- Page d'accueil -->
+                <div id="home-page" class="page active">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                        <h3 class="text-lg font-semibold mb-4">👋 Bienvenue sur ClimaGraph</h3>
+                        <p class="mb-6">ClimaGraph est une application d'analyse de données climatiques qui vous permet de visualiser et d'analyser les données de température et d'humidité provenant de différents capteurs.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">📁 Capteurs & Fichiers</h4>
+                                <p class="text-sm mb-4">Ajoutez vos capteurs et associez-leur des fichiers de données.</p>
+                                <button class="btn-primary" onclick="navigateTo('capteurs')">
+                                    Gérer les capteurs
+                                </button>
+                            </div>
+                            
+                            <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">🧠 Mappage des Colonnes</h4>
+                                <p class="text-sm mb-4">Définissez quelles colonnes correspondent à la date, la température et l'humidité.</p>
+                                <button class="btn-primary" onclick="navigateTo('mapping')">
+                                    Mapper les colonnes
+                                </button>
+                            </div>
+                            
+                            <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">📊 Graphiques</h4>
+                                <p class="text-sm mb-4">Générez des graphiques à partir de vos données climatiques.</p>
+                                <button class="btn-primary" onclick="navigateTo('graphs')">
+                                    Créer des graphiques
+                                </button>
+                            </div>
+                            
+                            <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">🕓 Historique</h4>
+                                <p class="text-sm mb-4">Consultez l'historique des opérations effectuées dans l'application.</p>
+                                <button class="btn-primary" onclick="navigateTo('history')">
+                                    Voir l'historique
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">💬 Remarques</h3>
+                        <ul class="list-disc list-inside space-y-2 ml-4 text-gray-700 dark:text-gray-300">
+                            <li>Commencez par ajouter vos capteurs et leur associer des fichiers de données.</li>
+                            <li>Les fichiers peuvent être au format Excel (.xlsx, .xls) ou HOBO (.hobo).</li>
+                            <li>L'application tentera de détecter automatiquement les colonnes de date, température et humidité.</li>
+                            <li>Si la détection automatique échoue, vous pourrez mapper manuellement les colonnes.</li>
+                            <li>Vous pourrez ensuite générer différents types de graphiques à partir de vos données.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Page Capteurs -->
+                <div id="capteurs-page" class="page">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                
+                <!-- Page Mappage -->
+                <div id="mapping-page" class="page">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                
+                <!-- Page Graphiques -->
+                <div id="graphs-page" class="page">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+                
+                <!-- Page Historique -->
+                <div id="history-page" class="page">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Notifications -->
+    <div id="notification-container"></div>
+    
+    <!-- Modal -->
+    <div id="modal-container" class="hidden">
+        <div id="modal-content" class="max-w-lg">
+            <div class="modal-header p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 id="modal-title" class="text-lg font-semibold">Titre du modal</h3>
+                <button class="modal-close" onclick="hideModal()">×</button>
+            </div>
+            <div id="modal-body" class="modal-body p-4"></div>
+            <div id="modal-footer" class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2"></div>
+        </div>
+    </div>
+    
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+        <div id="loading-text">Chargement...</div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/capteurs.js"></script>
+    <script src="js/mapping.js"></script>
+    <script src="js/graphs.js"></script>
+    <script src="js/history.js"></script>
+</body>
+</html>

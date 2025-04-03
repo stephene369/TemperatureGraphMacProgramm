@@ -1,0 +1,6 @@
+﻿Date,Action,Capteur,Détails
+2025-04-03T13:34:40.935822,Génération graphique,,"{""graph_type"": ""temp_hum_scatter"", ""capteurs"": [""Nord""]}"
+2025-04-03T13:34:18.459680,Mappage colonnes,Nord,"{""columns"": {""date"": ""Date-Time (CET)"", ""temperature"": ""Ch: 2 - Temperature   (°C )"", ""humidity"": ""Ch: 3 - RH   (%)""}}"
+2025-04-03T13:33:09.839632,Association fichier,Nord,"{""file_path"": ""C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx"", ""columns"": {""date"": ""Date-Time (CET)"", ""temperature"": ""Ch: 2 - Temperature   (°C )""}}"
+2025-04-03T13:33:04.531218,Modification capteur,Nord,"{""nom"": ""Nord""}"
+2025-04-03T13:32:53.339167,Ajout capteur,Nord,{}

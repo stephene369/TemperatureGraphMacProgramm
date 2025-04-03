@@ -1,142 +1,126 @@
-"""
-Module de stockage pour l'application ClimaGraph
-"""
-
-import os
 import json
-import sqlite3
-from datetime import datetime
+import os
+from typing import List, Dict, Any, Optional
+from pathlib import Path
+import datetime
+from services.logger import Logger
 
-class Storage:
-    """Classe de gestion du stockage des données"""
+logger = Logger.get_logger()
+
+class StorageManager:
+    """Classe pour gérer le stockage persistant des données"""
     
-    def __init__(self, storage_type="json"):
-        """Initialise le stockage"""
-        self.storage_type = storage_type
+    def __init__(self, storage_file: str = None):
+        # Définir le fichier de stockage
+        if storage_file:
+            self.storage_file = Path(storage_file)
+        else:
+            # Utiliser un emplacement par défaut dans le dossier de l'utilisateur
+            self.storage_file = Path.home() / '.climagraph' / 'storage.json'
         
-        # Créer le dossier de données s'il n'existe pas
-        os.makedirs("data", exist_ok=True)
+        # Créer le dossier parent s'il n'existe pas
+        self.storage_file.parent.mkdir(parents=True, exist_ok=True)
         
-        if storage_type == "sqlite":
-            # Initialiser la base de données SQLite
-            self.init_sqlite_db()
+        # Créer le fichier s'il n'existe pas
+        if not self.storage_file.exists():
+            self._initialize_storage()
+    
+    def _initialize_storage(self) -> None:
+        """Initialise le fichier de stockage avec une structure vide"""
+        initial_data = {
+            "capteurs": [],
+            "app_settings": {
+                "last_export_dir": "",
+                "theme": "light",
+                "language": "fr"
+            },
+            "version": "1.0.0",
+            "last_updated": datetime.datetime.now().isoformat()
+        }
+        
+        try:
+            with open(self.storage_file, 'w', encoding='utf-8') as f:
+                json.dump(initial_data, f, ensure_ascii=False, indent=2)
             
-    def init_sqlite_db(self):
-        """Initialise la base de données SQLite"""
-        conn = sqlite3.connect("data/climagraph.db")
-        cursor = conn.cursor()
-        
-        # Créer la table des capteurs
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS capteurs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT UNIQUE,
-            file_path TEXT,
-            imported_at TEXT
-        )
-        ''')
-        
-        # Créer la table des mappages de colonnes
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS column_mappings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            capteur_id INTEGER,
-            data_type TEXT,
-            column_name TEXT,
-            FOREIGN KEY (capteur_id) REFERENCES capteurs (id)
-        )
-        ''')
-        
-        conn.commit()
-        conn.close()
-        
-    def save_capteurs(self, capteurs):
-        """Sauvegarde les capteurs"""
-        if self.storage_type == "json":
-            self._save_capteurs_json(capteurs)
-        elif self.storage_type == "sqlite":
-            self._save_capteurs_sqlite(capteurs)
-            
-    def _save_capteurs_json(self, capteurs):
-        """Sauvegarde les capteurs dans un fichier JSON"""
-        with open("data/capteurs.json", "w") as f:
-            json.dump({"capteurs": capteurs}, f, indent=2)
-            
-    def _save_capteurs_sqlite(self, capteurs):
-        """Sauvegarde les capteurs dans la base de données SQLite"""
-        conn = sqlite3.connect("data/climagraph.db")
-        cursor = conn.cursor()
-        
-        # Vider les tables
-        cursor.execute("DELETE FROM column_mappings")
-        cursor.execute("DELETE FROM capteurs")
-        
-        # Insérer les capteurs
-        for name, data in capteurs.items():
-            cursor.execute(
-                "INSERT INTO capteurs (name, file_path, imported_at) VALUES (?, ?, ?)",
-                (name, data["file_path"], data.get("imported_at", datetime.now().isoformat()))
-            )
-            
-            capteur_id = cursor.lastrowid
-            
-            # Insérer les mappages de colonnes
-            for data_type, column_name in data.get("columns", {}).items():
-                cursor.execute(
-                    "INSERT INTO column_mappings (capteur_id, data_type, column_name) VALUES (?, ?, ?)",
-                    (capteur_id, data_type, column_name)
-                )
-                
-        conn.commit()
-        conn.close()
-        
-    def load_capteurs(self):
-        """Charge les capteurs"""
-        if self.storage_type == "json":
-            return self._load_capteurs_json()
-        elif self.storage_type == "sqlite":
-            return self._load_capteurs_sqlite()
-            
-    def _load_capteurs_json(self):
-        """Charge les capteurs depuis un fichier JSON"""
-        if os.path.exists("data/capteurs.json"):
-            with open("data/capteurs.json", "r") as f:
+            logger.info(f"Fichier de stockage initialisé: {self.storage_file}")
+        except Exception as e:
+            logger.error(f"Erreur lors de l'initialisation du stockage: {str(e)}")
+    
+    def _load_data(self) -> Dict[str, Any]:
+        """Charge les données depuis le fichier de stockage"""
+        try:
+            with open(self.storage_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                return data.get("capteurs", {})
-        return {}
-        
-    def _load_capteurs_sqlite(self):
-        """Charge les capteurs depuis la base de données SQLite"""
-        capteurs = {}
-        
-        conn = sqlite3.connect("data/climagraph.db")
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        
-        # Récupérer tous les capteurs
-        cursor.execute("SELECT * FROM capteurs")
-        capteur_rows = cursor.fetchall()
-        
-        for capteur_row in capteur_rows:
-            capteur_id = capteur_row["id"]
-            name = capteur_row["name"]
+            return data
+        except FileNotFoundError:
+            logger.warning(f"Fichier de stockage non trouvé: {self.storage_file}")
+            self._initialize_storage()
+            return self._load_data()
+        except json.JSONDecodeError:
+            logger.error(f"Erreur de décodage JSON: {self.storage_file}")
+            # Sauvegarder une copie du fichier corrompu
+            if self.storage_file.exists():
+                backup_file = self.storage_file.with_suffix('.json.bak')
+                self.storage_file.rename(backup_file)
+                logger.info(f"Fichier corrompu sauvegardé: {backup_file}")
             
-            # Récupérer les mappages de colonnes pour ce capteur
-            cursor.execute("SELECT * FROM column_mappings WHERE capteur_id = ?", (capteur_id,))
-            mapping_rows = cursor.fetchall()
-            
-            columns = {}
-            for mapping_row in mapping_rows:
-                data_type = mapping_row["data_type"]
-                column_name = mapping_row["column_name"]
-                columns[data_type] = column_name
-                
-            capteurs[name] = {
-                "file_path": capteur_row["file_path"],
-                "imported_at": capteur_row["imported_at"],
-                "columns": columns
+            self._initialize_storage()
+            return self._load_data()
+        except Exception as e:
+            logger.error(f"Erreur lors du chargement des données: {str(e)}")
+            return {
+                "capteurs": [],
+                "app_settings": {},
+                "version": "1.0.0",
+                "last_updated": datetime.datetime.now().isoformat()
             }
+    
+    def _save_data(self, data: Dict[str, Any]) -> bool:
+        """Sauvegarde les données dans le fichier de stockage"""
+        try:
+            # Mettre à jour la date de dernière modification
+            data["last_updated"] = datetime.datetime.now().isoformat()
             
-        conn.close()
+            # Sauvegarder les données
+            with open(self.storage_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            
+            return True
+        except Exception as e:
+            logger.error(f"Erreur lors de la sauvegarde des données: {str(e)}")
+            return False
+    
+    def load_capteurs(self) -> List[Dict[str, Any]]:
+        """Charge la liste des capteurs"""
+        data = self._load_data()
+        return data.get("capteurs", [])
+    
+    def save_capteurs(self, capteurs: List[Dict[str, Any]]) -> bool:
+        """Sauvegarde la liste des capteurs"""
+        data = self._load_data()
+        data["capteurs"] = capteurs
+        return self._save_data(data)
+    
+    def get_setting(self, key: str, default: Any = None) -> Any:
+        """Récupère un paramètre de l'application"""
+        data = self._load_data()
+        return data.get("app_settings", {}).get(key, default)
+    
+    def save_setting(self, key: str, value: Any) -> bool:
+        """Sauvegarde un paramètre de l'application"""
+        data = self._load_data()
         
-        return capteurs
+        if "app_settings" not in data:
+            data["app_settings"] = {}
+        
+        data["app_settings"][key] = value
+        return self._save_data(data)
+    
+    def clear_storage(self) -> bool:
+        """Réinitialise le stockage (pour les tests ou la réinitialisation)"""
+        try:
+            self._initialize_storage()
+            return True
+        except Exception as e:
+            logger.error(f"Erreur lors de la réinitialisation du stockage: {str(e)}")
+            return False
