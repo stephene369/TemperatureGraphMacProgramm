@@ -76,8 +76,8 @@ function navigateTo(page) {
             // Retirer la classe d'animation après qu'elle soit terminée
             setTimeout(() => {
                 newPage.classList.remove('page-enter');
-            }, 500);
-        }, 500); // Durée de l'animation de sortie
+            }, 50);
+        }, 50); // Durée de l'animation de sortie
     } else {
         // Aucune page active, afficher directement la nouvelle page avec animation
         newPage.classList.add('active');
@@ -92,7 +92,7 @@ function navigateTo(page) {
         // Retirer la classe d'animation après qu'elle soit terminée
         setTimeout(() => {
             newPage.classList.remove('page-enter');
-        }, 500);
+        }, 50);
     }
 }
 
@@ -217,7 +217,7 @@ function hideLoading() {
 // Fonction utilitaire pour garantir un temps de chargement minimum
 function hideLoadingWithDelay(callback = null) {
     const elapsedTime = Date.now() - loadingStartTime;
-    const minLoadingTime = 2000; // 2 secondes minimum
+    const minLoadingTime = 500; // 2 secondes minimum
     
     if (elapsedTime >= minLoadingTime) {
         // Si au moins 2 secondes se sont écoulées, exécuter immédiatement

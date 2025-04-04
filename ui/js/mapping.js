@@ -30,7 +30,8 @@ function updateMappingUI() {
     // Générer le contenu HTML
     let html = `
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <h3 class="text-lg font-semibold mb-4">🧠 Mappage des Colonnes</h3>
+            <h3 class="text-lg font-semibold mb-4"><i class='bx bx-brain' style="color: #4a6cf7;"></i>
+ Mappage des Colonnes</h3>
             <p class="mb-6">Définissez quelles colonnes correspondent à la date, la température et l'humidité.</p>
             
             <div class="mb-6">
@@ -214,6 +215,7 @@ function loadDataPreview() {
         }
     }).catch(error => {
         hideLoading();
+        updateDataPreview(response.preview);
         showNotification('Erreur de communication avec l\'API', 'error');
         console.error('API error:', error);
     });
@@ -255,7 +257,7 @@ function updateDataPreview(preview) {
             </table>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            Aperçu des 10 premières lignes du fichier.
+            Aperçu des ${preview.data.length} premières lignes du fichier.
         </p>
     `;
     

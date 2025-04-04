@@ -10,6 +10,25 @@ from core.data_loader import DataLoader
 from core.graph_generator import GraphGenerator
 from core.utils import add_history_entry
 import webview
+from print_color.print_color import print
+
+
+# Définir les chemins de base
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UI_DIR = os.path.join(BASE_DIR, 'ui')
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+OUTPUT_DIR = os.path.join(BASE_DIR, 'output', 'exports')
+
+# Créer les répertoires s'ils n'existent pas
+os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Chemin du fichier de stockage
+STORAGE_FILE = os.path.join(DATA_DIR, 'storage.json')
+HISTORY_FILE = os.path.join(DATA_DIR, 'history.json')
+
+
+
 
 class API:
     """
@@ -25,6 +44,8 @@ class API:
             data_dir (str): Chemin du répertoire de données
             output_dir (str): Chemin du répertoire d'exports
         """
+
+        
         self.base_dir = base_dir
         self.data_dir = data_dir
         self.output_dir = output_dir
@@ -32,9 +53,11 @@ class API:
         # Initialiser le stockage
         self.storage = Storage(data_dir)
         
-        # Charger les données
+        # # Charger les données
         self.capteurs = self.storage.load_capteurs()
         self.history = self.storage.load_history()
+
+    
         
         # Initialiser les autres composants
         self.data_loader = DataLoader()
@@ -55,14 +78,21 @@ class API:
         """Obtenir la liste des capteurs"""
         capteurs = []
         for capteur_id, capteur_data in self.capteurs.items():
-            capteur = {
+            if capteur_data.get('details'):
+                capteur = {
+                "id": capteur_id,
+                "nom": capteur_data["nom"],
+                "file_path": capteur_data['details'].get("file_path"),
+                "columns": capteur_data.get("columns")
+                }
+            else:
+                capteur = {
                 "id": capteur_id,
                 "nom": capteur_data["nom"],
                 "file_path": capteur_data.get("file_path"),
                 "columns": capteur_data.get("columns")
-            }
+                }
             capteurs.append(capteur)
-        
         return {
             "success": True,
             "capteurs": capteurs
@@ -321,6 +351,8 @@ class API:
         Returns:
             dict: Résultat contenant la liste des colonnes
         """
+
+
         try:
             # Vérifier si le capteur existe
             if capteur_id not in self.capteurs:
@@ -353,6 +385,14 @@ class API:
                 "message": f"Erreur lors de la récupération des colonnes: {e}"
             }
 
+
+
+
+
+
+
+
+
     def get_data_preview(self, capteur_id):
         """
         Obtenir un aperçu des données pour le mappage
@@ -364,6 +404,15 @@ class API:
             dict: Résultat contenant l'aperçu des données
         """
         try:
+            import logging
+            import os
+            import pandas as pd
+            import numpy as np
+            
+            logging.basicConfig(level=logging.INFO)
+            logger = logging.getLogger(__name__)
+            logger.info("Début de get_data_preview")
+            
             # Vérifier si le capteur existe
             if capteur_id not in self.capteurs:
                 return {
@@ -380,15 +429,56 @@ class API:
             
             # Charger le fichier
             file_path = self.capteurs[capteur_id]["file_path"]
-            df = self.data_loader.load_file(file_path)
+            normalized_path = os.path.normpath(file_path)
+            
+            try:
+                df = self.data_loader.load_file(normalized_path)
+            except Exception as e:
+                logger.error(f"Erreur lors du chargement avec data_loader: {e}")
+                
+                # Fallback: essayer de charger directement avec pandas
+                if normalized_path.lower().endswith(('.xlsx', '.xls')):
+                    df = pd.read_excel(normalized_path)
+                elif normalized_path.lower().endswith('.csv'):
+                    df = pd.read_csv(normalized_path)
+                elif normalized_path.lower().endswith('.hobo'):
+                    df = pd.read_csv(normalized_path, sep='\t')
+                else:
+                    raise ValueError(f"Format de fichier non pris en charge: {normalized_path}")
             
             # Limiter à 10 lignes pour l'aperçu
-            preview_df = df.head(10)
+            preview_df = df.head(6)
+            
+            # Convertir toutes les données en types sérialisables JSON
+            def convert_to_serializable(val):
+                if isinstance(val, (pd.Timestamp, np.datetime64)):
+                    return val.isoformat() if hasattr(val, 'isoformat') else str(val)
+                elif isinstance(val, (np.integer, np.int64)):
+                    return int(val)
+                elif isinstance(val, (np.floating, float)):
+                    return float(val)
+                elif isinstance(val, np.ndarray):
+                    return val.tolist()
+                elif pd.isna(val):
+                    return None
+                else:
+                    return str(val)
+            
+            # Convertir les colonnes et les données en format sérialisable
+            columns = preview_df.columns.tolist()
+            
+            # Convertir chaque valeur dans les données
+            data = []
+            for _, row in preview_df.iterrows():
+                serialized_row = [convert_to_serializable(val) for val in row]
+                data.append(serialized_row)
+            
+            logger.info("Aperçu généré avec succès")
             
             # Convertir en format JSON-compatible
             preview = {
-                "columns": preview_df.columns.tolist(),
-                "data": preview_df.values.tolist()
+                "columns": columns,
+                "data": data
             }
             
             return {
@@ -396,10 +486,17 @@ class API:
                 "preview": preview
             }
         except Exception as e:
+            import traceback
+            logging.error(f"Exception dans get_data_preview: {e}")
+            logging.error(traceback.format_exc())
             return {
                 "success": False,
                 "message": f"Erreur lors de la récupération de l'aperçu: {e}"
             }
+
+
+
+
 
     def save_column_mapping(self, capteur_id, mapping):
         """
@@ -498,7 +595,46 @@ class API:
                 "name": "Humidité en fonction du temps",
                 "description": "Graphique linéaire montrant l'évolution de l'humidité au fil du temps pour chaque capteur."
             },
-            # Ajouter les autres types de graphiques ici...
+            {
+                "id": "temperature_humidity",
+                "name": "Température vs Humidité",
+                "description": "Graphique de dispersion montrant la relation entre température et humidité pour chaque capteur."
+            },
+            {
+                "id": "temperature_monthly",
+                "name": "Moyenne mensuelle de température",
+                "description": "Histogramme montrant la température moyenne par mois pour chaque capteur."
+            },
+            {
+                "id": "humidity_monthly",
+                "name": "Moyenne mensuelle d'humidité",
+                "description": "Histogramme montrant l'humidité moyenne par mois pour chaque capteur."
+            },
+            {
+                "id": "temperature_daily",
+                "name": "Cycle journalier de température",
+                "description": "Graphique linéaire montrant la température moyenne par heure de la journée."
+            },
+            {
+                "id": "humidity_daily",
+                "name": "Cycle journalier d'humidité",
+                "description": "Graphique linéaire montrant l'humidité moyenne par heure de la journée."
+            },
+            {
+                "id": "temperature_distribution",
+                "name": "Distribution des températures",
+                "description": "Histogramme montrant la distribution des valeurs de température pour chaque capteur."
+            },
+            {
+                "id": "humidity_distribution",
+                "name": "Distribution des humidités",
+                "description": "Histogramme montrant la distribution des valeurs d'humidité pour chaque capteur."
+            },
+            {
+                "id": "temperature_comparison",
+                "name": "Comparaison des températures",
+                "description": "Boîte à moustaches comparant les distributions de température entre capteurs."
+            }
         ]
         
         return {
@@ -518,6 +654,10 @@ class API:
             dict: Résultat contenant les données du graphique
         """
         try:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Génération du graphique {graph_type} pour les capteurs {capteur_ids}")
+            
             # Vérifier que les capteurs existent
             capteurs_data = {}
             for capteur_id in capteur_ids:
@@ -544,6 +684,18 @@ class API:
                         "message": f"Le capteur {capteur_data['nom']} n'a pas de mappage complet"
                     }
                 
+                # Vérifier si le graphique nécessite des données d'humidité
+                humidity_required = graph_type in [
+                    "humidity_time", "temperature_humidity", "humidity_monthly", 
+                    "humidity_daily", "humidity_distribution"
+                ]
+                
+                if humidity_required and not capteur_data["columns"].get("humidity"):
+                    return {
+                        "success": False,
+                        "message": f"Le capteur {capteur_data['nom']} n'a pas de données d'humidité nécessaires pour ce graphique"
+                    }
+                
                 # Charger les données
                 try:
                     df = self.data_loader.load_capteur_data(capteur_data)
@@ -554,6 +706,7 @@ class API:
                         "data": df
                     }
                 except Exception as e:
+                    logger.error(f"Erreur lors du chargement des données: {e}")
                     return {
                         "success": False,
                         "message": f"Erreur lors du chargement des données pour {capteur_data['nom']}: {e}"
@@ -564,19 +717,35 @@ class API:
                 return self.graph_generator.generate_temperature_time_graph(capteurs_data)
             elif graph_type == "humidity_time":
                 return self.graph_generator.generate_humidity_time_graph(capteurs_data)
-            # Ajouter les autres types de graphiques ici...
+            elif graph_type == "temperature_humidity":
+                return self.graph_generator.generate_temperature_humidity_graph(capteurs_data)
+            elif graph_type == "temperature_monthly":
+                return self.graph_generator.generate_temperature_monthly_graph(capteurs_data)
+            elif graph_type == "humidity_monthly":
+                return self.graph_generator.generate_humidity_monthly_graph(capteurs_data)
+            elif graph_type == "temperature_daily":
+                return self.graph_generator.generate_temperature_daily_graph(capteurs_data)
+            elif graph_type == "humidity_daily":
+                return self.graph_generator.generate_humidity_daily_graph(capteurs_data)
+            elif graph_type == "temperature_distribution":
+                return self.graph_generator.generate_temperature_distribution_graph(capteurs_data)
+            elif graph_type == "humidity_distribution":
+                return self.graph_generator.generate_humidity_distribution_graph(capteurs_data)
+            elif graph_type == "temperature_comparison":
+                return self.graph_generator.generate_temperature_comparison_graph(capteurs_data)
             else:
                 return {
                     "success": False,
                     "message": f"Type de graphique non pris en charge: {graph_type}"
                 }
         except Exception as e:
+            import traceback
+            logging.error(f"Exception dans generate_graph: {e}")
+            logging.error(traceback.format_exc())
             return {
                 "success": False,
                 "message": f"Erreur lors de la génération du graphique: {e}"
             }
-
-
 
 
     def export_graph(self, graph_type, capteur_ids, format="png"):
@@ -699,3 +868,69 @@ class API:
                 "success": False,
                 "message": f"Erreur lors de l'export de l'historique: {e}"
             }
+
+
+
+
+
+    def _save_storage(self):
+        """Sauvegarder les données de stockage dans le fichier JSON"""
+        try:
+            # Fonction pour convertir les objets non-sérialisables
+            def json_serializable(obj):
+                import pandas as pd
+                import numpy as np
+                import datetime
+                
+                if isinstance(obj, (pd.Timestamp, datetime.datetime, datetime.date)):
+                    return obj.isoformat()
+                elif isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                elif isinstance(obj, pd.Series):
+                    return obj.tolist()
+                elif hasattr(pd, 'isna') and pd.isna(obj):
+                    return None
+                return obj
+                
+            with open(STORAGE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(self.storage, f, ensure_ascii=False, indent=2, default=json_serializable)
+            return True
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde du stockage: {e}")
+            return False
+
+
+
+    def _save_history(self):
+        """Sauvegarder l'historique dans le fichier JSON"""
+        try:
+            # Fonction pour convertir les objets non-sérialisables
+            def json_serializable(obj):
+                import pandas as pd
+                import numpy as np
+                import datetime
+                
+                if isinstance(obj, (pd.Timestamp, datetime.datetime, datetime.date)):
+                    return obj.isoformat()
+                elif isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                elif isinstance(obj, pd.Series):
+                    return obj.tolist()
+                elif hasattr(pd, 'isna') and pd.isna(obj):
+                    return None
+                return obj
+                
+            with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
+                json.dump(self.history, f, ensure_ascii=False, indent=2, default=json_serializable)
+            return True
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde de l'historique: {e}")
+            return False

@@ -51,7 +51,8 @@ ClimaGraph/
 - Associer **1 fichier de données** à chaque capteur
 - Sauvegarde de cette association dans l’**historique local**
 
-#### 🧠 2.2 - Détection automatique des colonnes
+#### <i class='bx bx-brain' style="color: #4a6cf7;"></i>
+ 2.2 - Détection automatique des colonnes
 - Lecture de la première ligne → Détection automatique des colonnes :
   - `Date`, `Température`, `Humidité`
 - Si non détecté → Interface de **mappage manuel par l’utilisateur**
@@ -110,13 +111,15 @@ Exemple d’entrée JSON :
 
 ---
 
-### 🧠 5. DESIGN UI (avec PyQt-FluentWidgets)
+### <i class='bx bx-brain' style="color: #4a6cf7;"></i>
+ 5. DESIGN UI (avec PyQt-FluentWidgets)
 
 #### 🧭 Navigation
 - **Sidebar** :
   - 🏠 Accueil
   - 📁 Capteurs & Fichiers
-  - 🧠 Mappage des Colonnes
+  - <i class='bx bx-brain' style="color: #4a6cf7;"></i>
+ Mappage des Colonnes
   - 📊 Graphique Simulé
   - 🕓 Historique
 
@@ -190,7 +193,8 @@ Chaque `Page` contiendra cette **structure visuelle de base** :
 🧾 Sous-titre (court résumé ou consigne)
 ```
 
-### 🧠 2. **Zone de contenu principal**
+### <i class='bx bx-brain' style="color: #4a6cf7;"></i>
+ 2. **Zone de contenu principal**
 Contient le formulaire, les boutons ou les vues interactives.
 
 ### 💬 3. **Zone de remarque ou instructions**

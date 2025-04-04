@@ -3,6 +3,9 @@ Module Storage - Gestion du stockage des données
 """
 import os
 import json
+import pandas as pd
+import numpy as np
+import datetime
 
 class Storage:
     """
@@ -36,10 +39,10 @@ class Storage:
                 return {}
         else:
             return {}
-    
+        
     def save_capteurs(self, capteurs):
         """
-        Sauvegarder les données des capteurs dans le fichier de stockage
+        Sauvegarder les données des capteurs
         
         Args:
             capteurs (dict): Données des capteurs à sauvegarder
@@ -48,32 +51,32 @@ class Storage:
             bool: True si la sauvegarde a réussi, False sinon
         """
         try:
-            from core.utils import json_serialize
-            
-            # Convertir les objets non sérialisables
-            def prepare_for_json(item):
-                if isinstance(item, dict):
-                    return {k: prepare_for_json(v) for k, v in item.items()}
-                elif isinstance(item, list):
-                    return [prepare_for_json(i) for i in item]
-                else:
-                    return json_serialize(item)
-            
-            # Préparer les capteurs pour la sérialisation
-            prepared_capteurs = prepare_for_json(capteurs)
-            
+            # Fonction pour convertir les objets non-sérialisables
+            def json_serializable(obj):
+                if isinstance(obj, (pd.Timestamp, datetime.datetime, datetime.date)):
+                    return obj.isoformat()
+                elif isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                elif isinstance(obj, pd.Series):
+                    return obj.tolist()
+                elif pd.isna(obj):
+                    return None
+                return obj
+                
             # Créer la structure complète
-            data = {"capteurs": prepared_capteurs}
+            data = {"capteurs": capteurs}
             
-            # Sauvegarder dans le fichier
+            # Sauvegarder dans le fichier avec l'encodeur personnalisé
             with open(self.storage_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
+                json.dump(data, f, ensure_ascii=False, indent=2, default=json_serializable)
             return True
         except Exception as e:
             print(f"Erreur lors de la sauvegarde du stockage: {e}")
             return False
-
-
     
     def load_history(self):
         """
@@ -103,7 +106,21 @@ class Storage:
             bool: True si la sauvegarde a réussi, False sinon
         """
         try:
-            from core.utils import json_serialize
+            # Fonction pour convertir les objets non-sérialisables
+            def json_serializable(obj):
+                if isinstance(obj, (pd.Timestamp, datetime.datetime, datetime.date)):
+                    return obj.isoformat()
+                elif isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                elif isinstance(obj, pd.Series):
+                    return obj.tolist()
+                elif pd.isna(obj):
+                    return None
+                return obj
             
             # Convertir les objets non sérialisables
             def prepare_for_json(item):
@@ -112,11 +129,12 @@ class Storage:
                 elif isinstance(item, list):
                     return [prepare_for_json(i) for i in item]
                 else:
-                    return json_serialize(item)
+                    return json_serializable(item)
             
             # Préparer l'historique pour la sérialisation
             prepared_history = prepare_for_json(history)
             
+            # Sauvegarder dans le fichier
             with open(self.history_file, 'w', encoding='utf-8') as f:
                 json.dump(prepared_history, f, ensure_ascii=False, indent=2)
             return True

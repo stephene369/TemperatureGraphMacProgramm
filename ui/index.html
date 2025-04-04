@@ -70,9 +70,9 @@
         <!-- Contenu principal -->
         <div id="main-content" class="flex-1 overflow-auto">
             <!-- En-tête -->
-            <header id="header" class="bg-white dark:bg-gray-800 shadow-md p-4 pt-0 flex items-center justify-between">
-                <button id="mobile-menu-btn" class="md:hidden">
-                    <span class="icon">☰</span>
+            <header id="header" class="bg-white dark:bg-gray-800 shadow-md p-4 pt-0 flex items-center">
+                <button id="mobile-menu-btn">
+                    <i class='bx bx-menu text-black text-2xl'></i>
                 </button>
                 <h2 id="page-title" class="text-lg font-semibold">Accueil</h2>
                 <div></div> <!-- Espace vide pour centrer le titre -->
@@ -99,7 +99,8 @@
                             </div>
 
                             <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
-                                <h4 class="font-semibold mb-2">🧠 Mappage des Colonnes</h4>
+                                <h4 class="font-semibold mb-2"><i class='bx bx-brain' style="color: #4a6cf7;"></i>
+ Mappage des Colonnes</h4>
                                 <p class="text-sm mb-4">Définissez quelles colonnes correspondent à la date, la
                                     température et l'humidité.</p>
                                 <button class="btn-primary" onclick="navigateTo('mapping')">

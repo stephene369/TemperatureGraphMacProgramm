@@ -130,3 +130,23 @@ def json_serialize(obj):
         return obj.to_dict(orient='records')
     else:
         return str(obj)
+
+
+
+def json_serializable(obj):
+    """Convertit les objets non-sérialisables en types sérialisables JSON"""
+    if isinstance(obj, (pd.Timestamp, datetime.datetime, datetime.date)):
+        return obj.isoformat()
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, pd.Series):
+        return obj.tolist()
+    elif pd.isna(obj):
+        return None
+    else:
+        raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+

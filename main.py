@@ -29,8 +29,8 @@ def main():
         title='ClimaGraph',
         url=os.path.join(UI_DIR, 'index.html'),
         js_api=api,
-        width=1200,
-        height=800,
+        width=1500,
+        height=900,
         resizable=True,
         min_size=(800, 600)
     )
