@@ -22,19 +22,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
     
     // Charger les informations de l'application
-    loadAppInfo();
+    // loadAppInfo();
 });
 
-// Charger les informations de l'application
-function loadAppInfo() {
-    pywebview.api.get_app_info().then(response => {
-        if (response.success) {
-            console.log('App info:', response);
-        }
-    }).catch(error => {
-        console.error('Error loading app info:', error);
-    });
-}
+// // Charger les informations de l'application
+// function loadAppInfo() {
+//     pywebview.api.get_app_info().then(response => {
+//         if (response.success) {
+//             console.log('App info:', response);
+//         }
+//     }).catch(error => {
+//         console.error('Error loading app info:', error);
+//     });
+// }
 
 // Navigation
 function navigateTo(page) {

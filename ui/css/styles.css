@@ -229,7 +229,7 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.815);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -285,8 +285,9 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    /* background-color: rgba(0, 0, 0, 0.5); */
-    /* background-color: transparent; */
+    background-color: rgba(109, 109, 109, 0.158);
+    /* background: #0000008e; */
+    background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -363,6 +364,30 @@ button:disabled {
 
 
 
+/* Splash Screen Styles */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease-out;
+}
+
+#splash-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#lottie-container {
+    width: 300px;
+    height: 300px;
+}
 
 
 
@@ -370,19 +395,27 @@ button:disabled {
 
 
 
+/* Styles pour les animations de transition entre pages */
+.page {
+    display: none;
+    opacity: 1;
+    transform: translateY(0);
+}
 
+.page.active {
+    display: block;
+}
 
+.page-enter {
+    animation: fadeIn 5s ease forwards;
+}
 
-
-
-
-
-
-
-
-
-
-
+.page-exit {
+    position: absolute;
+    width: 100%;
+    pointer-events: none;
+    animation: fadeOut 5s ease forwards;
+}
 
 
 /* Animations pour les transitions de pages */
@@ -408,27 +441,6 @@ button:disabled {
     }
 }
 
-/* Styles pour les animations de transition entre pages */
-.page {
-    display: none;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.page.active {
-    display: block;
-}
-
-.page-enter {
-    animation: fadeIn 5s ease forwards;
-}
-
-.page-exit {
-    position: absolute;
-    width: 100%;
-    pointer-events: none;
-    animation: fadeOut 5s ease forwards;
-}
 
 /* Assurez-vous que le conteneur des pages a une position relative */
 .content-container {
@@ -481,4 +493,30 @@ button:disabled {
 .bx{
     padding: 0 5px 0 0;
     font-size: 1.5rem;
+}
+
+
+
+
+
+
+
+
+
+
+horizontales */
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* Supprimer l'apparence des barres de défilement */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }

@@ -7,16 +7,25 @@
     <title>ClimaGraph</title>
 
     <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tailwind/3.4.16"></script>
 
     <!-- Chart.js pour les graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="cdn/@dotlottie/player-component/dist/dotlottie-player.js" type="module"></script>
+    <script src="cdn/aos/dist/aos.js"></script>
+    <link href="cdn/aos/dist/aos.css" rel="stylesheet">
+
     <!-- Styles personnalisés -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href='cdn/boxicons/css/boxicons.css' rel='stylesheet'>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/splash.css">
+
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div id="splash-screen">
+        <div id="lottie-container"></div>
+    </div>
     <!-- Conteneur principal -->
     <div class="flex h-screen">
         <!-- Sidebar -->
@@ -61,7 +70,7 @@
         <!-- Contenu principal -->
         <div id="main-content" class="flex-1 overflow-auto">
             <!-- En-tête -->
-            <header id="header" class="bg-white dark:bg-gray-800 shadow-md p-4 flex items-center justify-between">
+            <header id="header" class="bg-white dark:bg-gray-800 shadow-md p-4 pt-0 flex items-center justify-between">
                 <button id="mobile-menu-btn" class="md:hidden">
                     <span class="icon">☰</span>
                 </button>
@@ -178,6 +187,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/splash.js"></script>
     <script src="js/main.js"></script>
     <script src="js/capteurs.js"></script>
     <script src="js/mapping.js"></script>

@@ -1,294 +1,701 @@
+"""
+Module API - Fournit l'interface entre Python et JavaScript
+"""
 import os
 import json
-import pandas as pd
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
-import traceback
-from pathlib import Path
-
-from core.models import Capteur, Dataset, AppState, GraphConfig
-from core.file_loader import FileLoader
-from core.column_detector import ColumnDetector
+import uuid
+import datetime
+from core.storage import Storage
+from core.data_loader import DataLoader
 from core.graph_generator import GraphGenerator
-from services.storage import StorageManager
-from services.config import Config
-from services.logger import Logger
+from core.utils import add_history_entry
+import webview
 
-logger = Logger.get_logger()
-
-class ClimaGraphAPI:
-    """API pour la communication entre Python et JavaScript"""
-    
-    def __init__(self, app_state: AppState, storage: StorageManager, config: Config):
-        self.app_state = app_state
-        self.storage = storage
-        self.config = config
-        self.file_loader = FileLoader()
-        self.column_detector = ColumnDetector()
-        self.graph_generator = GraphGenerator()
+class API:
+    """
+    Classe API pour la communication entre Python et JavaScript
+    Expose les méthodes accessibles depuis l'interface web
+    """
+    def __init__(self, base_dir, data_dir, output_dir):
+        """
+        Initialise l'API avec les chemins de base et charge les données
         
-        # Charger les capteurs existants
-        self._load_capteurs()
+        Args:
+            base_dir (str): Chemin de base de l'application
+            data_dir (str): Chemin du répertoire de données
+            output_dir (str): Chemin du répertoire d'exports
+        """
+        self.base_dir = base_dir
+        self.data_dir = data_dir
+        self.output_dir = output_dir
+        
+        # Initialiser le stockage
+        self.storage = Storage(data_dir)
+        
+        # Charger les données
+        self.capteurs = self.storage.load_capteurs()
+        self.history = self.storage.load_history()
+        
+        # Initialiser les autres composants
+        self.data_loader = DataLoader()
+        self.graph_generator = GraphGenerator(output_dir)
     
-    def _load_capteurs(self) -> None:
-        """Charge les capteurs depuis le stockage"""
-        try:
-            capteurs_data = self.storage.load_capteurs()
-            for capteur_data in capteurs_data:
-                capteur = Capteur.from_dict(capteur_data)
-                self.app_state.add_capteur(capteur)
+    # Méthodes d'API exposées à JavaScript
+    def get_app_info(self):
+        """Obtenir des informations sur l'application"""
+        return {
+            "success": True,
+            "version": "1.0.0",
+            "name": "ClimaGraph",
+            "data_dir": self.data_dir,
+            "output_dir": self.output_dir
+        }
+    
+    def get_capteurs(self):
+        """Obtenir la liste des capteurs"""
+        capteurs = []
+        for capteur_id, capteur_data in self.capteurs.items():
+            capteur = {
+                "id": capteur_id,
+                "nom": capteur_data["nom"],
+                "file_path": capteur_data.get("file_path"),
+                "columns": capteur_data.get("columns")
+            }
+            capteurs.append(capteur)
+        
+        return {
+            "success": True,
+            "capteurs": capteurs
+        }
+    
+    def add_capteur(self, nom):
+        """
+        Ajouter un nouveau capteur
+        
+        Args:
+            nom (str): Nom du capteur à ajouter
             
-            logger.info(f"Chargement de {len(capteurs_data)} capteurs depuis le stockage")
-        except Exception as e:
-            logger.error(f"Erreur lors du chargement des capteurs: {str(e)}")
-    
-    def _save_capteurs(self) -> None:
-        """Sauvegarde les capteurs dans le stockage"""
-        try:
-            capteurs_data = [capteur.to_dict() for capteur in self.app_state.capteurs.values()]
-            self.storage.save_capteurs(capteurs_data)
-            logger.info(f"Sauvegarde de {len(capteurs_data)} capteurs dans le stockage")
-        except Exception as e:
-            logger.error(f"Erreur lors de la sauvegarde des capteurs: {str(e)}")
-    
-    def get_capteurs(self) -> Dict[str, Any]:
-        """Récupère la liste des capteurs"""
-        try:
-            capteurs = [capteur.to_dict() for capteur in self.app_state.capteurs.values()]
-            return {"success": True, "capteurs": capteurs}
-        except Exception as e:
-            logger.error(f"Erreur lors de la récupération des capteurs: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def add_capteur(self, nom: str) -> Dict[str, Any]:
-        """Ajoute un nouveau capteur"""
+        Returns:
+            dict: Résultat de l'opération
+        """
         try:
             # Vérifier si le nom existe déjà
-            for capteur in self.app_state.capteurs.values():
-                if capteur.nom.lower() == nom.lower():
-                    return {"success": False, "message": f"Un capteur avec le nom '{nom}' existe déjà"}
+            for capteur in self.capteurs.values():
+                if capteur["nom"] == nom:
+                    return {
+                        "success": False,
+                        "message": f"Un capteur avec le nom '{nom}' existe déjà"
+                    }
             
-            # Créer un nouveau capteur
-            capteur = Capteur(nom=nom)
-            self.app_state.add_capteur(capteur)
+            # Créer un nouvel ID unique
+            capteur_id = str(uuid.uuid4())
             
-            # Sauvegarder les capteurs
-            self._save_capteurs()
-            
-            return {"success": True, "capteur": capteur.to_dict()}
-        except Exception as e:
-            logger.error(f"Erreur lors de l'ajout du capteur: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def update_capteur(self, capteur_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Met à jour un capteur existant"""
-        try:
-            capteur = self.app_state.get_capteur(capteur_id)
-            if not capteur:
-                return {"success": False, "message": f"Capteur avec ID {capteur_id} non trouvé"}
-            
-            # Mettre à jour les champs
-            if "nom" in data:
-                capteur.nom = data["nom"]
-            if "file_path" in data:
-                capteur.file_path = data["file_path"]
-            if "columns" in data:
-                capteur.columns = data["columns"]
-            
-            # Mettre à jour la date d'importation si un fichier est associé
-            if "file_path" in data and data["file_path"]:
-                capteur.imported_at = datetime.now()
-            
-            # Sauvegarder les capteurs
-            self._save_capteurs()
-            
-            return {"success": True, "capteur": capteur.to_dict()}
-        except Exception as e:
-            logger.error(f"Erreur lors de la mise à jour du capteur: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def remove_capteur(self, capteur_id: str) -> Dict[str, Any]:
-        """Supprime un capteur"""
-        try:
-            if self.app_state.remove_capteur(capteur_id):
-                # Sauvegarder les capteurs
-                self._save_capteurs()
-                return {"success": True}
-            else:
-                return {"success": False, "message": f"Capteur avec ID {capteur_id} non trouvé"}
-        except Exception as e:
-            logger.error(f"Erreur lors de la suppression du capteur: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def select_file(self) -> Dict[str, Any]:
-        """Ouvre une boîte de dialogue pour sélectionner un fichier"""
-        try:
-            file_path = self.file_loader.select_file()
-            if file_path:
-                return {"success": True, "path": file_path}
-            else:
-                return {"success": False, "message": "Aucun fichier sélectionné"}
-        except Exception as e:
-            logger.error(f"Erreur lors de la sélection du fichier: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def load_file(self, capteur_id: str, file_path: str) -> Dict[str, Any]:
-        """Charge un fichier et détecte les colonnes"""
-        try:
-            # Vérifier si le capteur existe
-            capteur = self.app_state.get_capteur(capteur_id)
-            if not capteur:
-                return {"success": False, "message": f"Capteur avec ID {capteur_id} non trouvé"}
-            
-            # Charger le fichier
-            df, file_type = self.file_loader.load_file(file_path)
-            if df is None:
-                return {"success": False, "message": "Format de fichier non pris en charge"}
-            
-            # Créer un dataset
-            columns = df.columns.tolist()
-            preview_data = df.head(5).to_dict(orient='records')
-            
-            dataset = Dataset(
-                capteur_id=capteur_id,
-                columns=columns,
-                preview_data=preview_data,
-                file_type=file_type,
-                row_count=len(df)
-            )
-            
-            # Mettre à jour l'état de l'application
-            self.app_state.current_dataset = dataset
-            self.app_state.current_capteur_id = capteur_id
-            
-            # Détecter automatiquement les colonnes
-            detected_columns = self.column_detector.detect_columns(df)
-            
-            return {
-                "success": True, 
-                "columns": columns, 
-                "preview": preview_data,
-                "detected": detected_columns,
-                "file_type": file_type,
-                "row_count": len(df)
+            # Ajouter le capteur
+            self.capteurs[capteur_id] = {
+                "nom": nom,
+                "created_at": datetime.datetime.now().isoformat()
             }
-        except Exception as e:
-            logger.error(f"Erreur lors du chargement du fichier: {str(e)}")
-            traceback.print_exc()
-            return {"success": False, "message": str(e)}
-    
-    def save_column_mapping(self, capteur_id: str, mapping: Dict[str, str]) -> Dict[str, Any]:
-        """Sauvegarde le mappage des colonnes pour un capteur"""
-        try:
-            # Vérifier si le capteur existe
-            capteur = self.app_state.get_capteur(capteur_id)
-            if not capteur:
-                return {"success": False, "message": f"Capteur avec ID {capteur_id} non trouvé"}
             
-            # Vérifier si un dataset est chargé
-            if not self.app_state.current_dataset or self.app_state.current_capteur_id != capteur_id:
-                return {"success": False, "message": "Aucun fichier chargé pour ce capteur"}
+            # Sauvegarder les modifications
+            self.storage.save_capteurs(self.capteurs)
             
-            # Mettre à jour le mappage des colonnes
-            capteur.columns = mapping
+            # Ajouter à l'historique
+            add_history_entry(self.history, "Ajout de capteur", capteur_id, None, self.capteurs)
+            self.storage.save_history(self.history)
             
-            # Sauvegarder les capteurs
-            self._save_capteurs()
-            
-            return {"success": True, "capteur": capteur.to_dict()}
-        except Exception as e:
-            logger.error(f"Erreur lors de la sauvegarde du mappage des colonnes: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def generate_graph(self, graph_config: Dict[str, Any]) -> Dict[str, Any]:
-        """Génère un graphique basé sur la configuration fournie"""
-        try:
-            # Créer une configuration de graphique
-            config = GraphConfig(
-                type=graph_config.get("type", "line"),
-                title=graph_config.get("title", ""),
-                x_axis=graph_config.get("x_axis", ""),
-                y_axis=graph_config.get("y_axis", ""),
-                capteur_ids=graph_config.get("capteur_ids", []),
-                options=graph_config.get("options", {})
-            )
-            
-            # Charger les données pour chaque capteur
-            capteurs_data = []
-            for capteur_id in config.capteur_ids:
-                capteur = self.app_state.get_capteur(capteur_id)
-                if not capteur or not capteur.file_path:
-                    continue
-                
-                df, _ = self.file_loader.load_file(capteur.file_path)
-                if df is not None:
-                    capteurs_data.append((capteur, df))
-            
-            if not capteurs_data:
-                return {"success": False, "message": "Aucune donnée disponible pour générer le graphique"}
-            
-            # Générer le graphique
-            fig = self.graph_generator.generate_graph(config, capteurs_data)
-            
-            # Convertir le graphique en base64
-            buffer = BytesIO()
-            fig.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
-            buffer.seek(0)
-            image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-            plt.close(fig)
-            
-            return {
-                "success": True, 
-                "graphic": image_base64, 
-                "type": config.type,
-                "title": config.title
-            }
-        except Exception as e:
-            logger.error(f"Erreur lors de la génération du graphique: {str(e)}")
-            traceback.print_exc()
-            return {"success": False, "message": str(e)}
-    
-    def export_graph(self, image_base64: str, file_name: str = None) -> Dict[str, Any]:
-        """Exporte un graphique en fichier image"""
-        try:
-            # Créer le dossier d'exportation s'il n'existe pas
-            output_dir = Path(self.config.get("output_dir", "output/exports"))
-            output_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Générer un nom de fichier s'il n'est pas fourni
-            if not file_name:
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                file_name = f"graph_{timestamp}.png"
-            
-            # Ajouter l'extension .png si nécessaire
-            if not file_name.lower().endswith('.png'):
-                file_name += '.png'
-            
-            # Chemin complet du fichier
-            file_path = output_dir / file_name
-            
-            # Décoder l'image base64 et l'enregistrer
-            image_data = base64.b64decode(image_base64)
-            with open(file_path, 'wb') as f:
-                f.write(image_data)
-            
-            return {"success": True, "path": str(file_path)}
-        except Exception as e:
-            logger.error(f"Erreur lors de l'exportation du graphique: {str(e)}")
-            return {"success": False, "message": str(e)}
-    
-    def get_app_info(self) -> Dict[str, Any]:
-        """Récupère des informations sur l'application"""
-        try:
             return {
                 "success": True,
-                "version": self.config.get("version", "1.0.0"),
-                "app_name": self.config.get("app_name", "ClimaGraph"),
-                "output_dir": str(Path(self.config.get("output_dir", "output/exports")))
+                "capteur_id": capteur_id
             }
         except Exception as e:
-            logger.error(f"Erreur lors de la récupération des informations de l'application: {str(e)}")
-            return {"success": False, "message": str(e)}
+            return {
+                "success": False,
+                "message": f"Erreur lors de l'ajout du capteur: {e}"
+            }
+    
+    def update_capteur(self, capteur_id, nom):
+        """
+        Mettre à jour un capteur existant
+        
+        Args:
+            capteur_id (str): ID du capteur à mettre à jour
+            nom (str): Nouveau nom du capteur
+            
+        Returns:
+            dict: Résultat de l'opération
+        """
+        try:
+            # Vérifier si le capteur existe
+            if capteur_id not in self.capteurs:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Vérifier si le nom existe déjà pour un autre capteur
+            for cid, capteur in self.capteurs.items():
+                if capteur["nom"] == nom and cid != capteur_id:
+                    return {
+                        "success": False,
+                        "message": f"Un capteur avec le nom '{nom}' existe déjà"
+                    }
+            
+            # Mettre à jour le capteur
+            old_nom = self.capteurs[capteur_id]["nom"]
+            self.capteurs[capteur_id]["nom"] = nom
+            self.capteurs[capteur_id]["updated_at"] = datetime.datetime.now().isoformat()
+            
+            # Sauvegarder les modifications
+            self.storage.save_capteurs(self.capteurs)
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history, 
+                "Modification de capteur", 
+                capteur_id, 
+                {"old_nom": old_nom, "new_nom": nom},
+                self.capteurs
+            )
+            self.storage.save_history(self.history)
+            
+            return {
+                "success": True
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la mise à jour du capteur: {e}"
+            }
+    
+    def delete_capteur(self, capteur_id):
+        """
+        Supprimer un capteur
+        
+        Args:
+            capteur_id (str): ID du capteur à supprimer
+            
+        Returns:
+            dict: Résultat de l'opération
+        """
+        try:
+            # Vérifier si le capteur existe
+            if capteur_id not in self.capteurs:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Récupérer le nom pour l'historique
+            nom = self.capteurs[capteur_id]["nom"]
+            
+            # Supprimer le capteur
+            del self.capteurs[capteur_id]
+            
+            # Sauvegarder les modifications
+            self.storage.save_capteurs(self.capteurs)
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history, 
+                "Suppression de capteur", 
+                capteur_id, 
+                {"nom": nom},
+                self.capteurs
+            )
+            self.storage.save_history(self.history)
+            
+            return {
+                "success": True
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la suppression du capteur: {e}"
+            }
+    
+    def select_file(self, capteur_id):
+        """
+        Sélectionner un fichier pour un capteur
+        
+        Args:
+            capteur_id (str): ID du capteur
+            
+        Returns:
+            dict: Résultat de l'opération
+        """
+        try:
+            # Vérifier si le capteur existe
+            if capteur_id not in self.capteurs:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Ouvrir la boîte de dialogue de sélection de fichier
+            file_types = ('Fichiers Excel (*.xlsx;*.xls)', 'Fichiers HOBO (*.hobo)')
+            file_path = webview.windows[0].create_file_dialog(
+                webview.OPEN_DIALOG, 
+                allow_multiple=False,
+                file_types=file_types
+            )
+            
+            if not file_path:
+                return {
+                    "success": False,
+                    "message": "Aucun fichier sélectionné"
+                }
+            
+            file_path = file_path[0]  # create_file_dialog retourne une liste
+            
+            # Charger le fichier pour vérifier qu'il est valide
+            df = self.data_loader.load_file(file_path)
+            
+            # Détecter automatiquement les colonnes
+            columns = self.data_loader.detect_columns(df)
+            needs_mapping = not (columns.get('date') and columns.get('temperature'))
+            
+            # Mettre à jour le capteur
+            self.capteurs[capteur_id]["file_path"] = file_path
+            self.capteurs[capteur_id]["columns"] = columns
+            self.capteurs[capteur_id]["file_updated_at"] = datetime.datetime.now().isoformat()
+            
+            # Sauvegarder les modifications
+            self.storage.save_capteurs(self.capteurs)
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history, 
+                "Association de fichier", 
+                capteur_id, 
+                {"file_path": file_path, "columns": columns},
+                self.capteurs
+            )
+            self.storage.save_history(self.history)
+            
+            return {
+                "success": True,
+                "needs_mapping": needs_mapping
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la sélection du fichier: {e}"
+            }
+    
+    # Autres méthodes d'API...
+    # Note: Les autres méthodes seraient implémentées de manière similaire,
+    # en utilisant les classes utilitaires pour la logique métier.
+    
+
+        
+    def get_capteurs_for_mapping(self):
+        """
+        Obtenir la liste des capteurs qui ont un fichier associé
+        
+        Returns:
+            dict: Résultat contenant la liste des capteurs
+        """
+        capteurs = []
+        for capteur_id, capteur_data in self.capteurs.items():
+            if capteur_data.get("file_path"):
+                capteur = {
+                    "id": capteur_id,
+                    "nom": capteur_data["nom"],
+                    "file_path": capteur_data["file_path"],
+                    "columns": capteur_data.get("columns")
+                }
+                capteurs.append(capteur)
+        
+        return {
+            "success": True,
+            "capteurs": capteurs
+        }
+
+    def get_columns_for_mapping(self, capteur_id):
+        """
+        Obtenir les colonnes disponibles pour le mappage
+        
+        Args:
+            capteur_id (str): ID du capteur
+            
+        Returns:
+            dict: Résultat contenant la liste des colonnes
+        """
+        try:
+            # Vérifier si le capteur existe
+            if capteur_id not in self.capteurs:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Vérifier si le capteur a un fichier associé
+            if not self.capteurs[capteur_id].get("file_path"):
+                return {
+                    "success": False,
+                    "message": "Aucun fichier associé à ce capteur"
+                }
+            
+            # Charger le fichier
+            file_path = self.capteurs[capteur_id]["file_path"]
+            df = self.data_loader.load_file(file_path)
+            
+            # Récupérer les noms des colonnes
+            columns = df.columns.tolist()
+            
+            return {
+                "success": True,
+                "columns": columns
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la récupération des colonnes: {e}"
+            }
+
+    def get_data_preview(self, capteur_id):
+        """
+        Obtenir un aperçu des données pour le mappage
+        
+        Args:
+            capteur_id (str): ID du capteur
+            
+        Returns:
+            dict: Résultat contenant l'aperçu des données
+        """
+        try:
+            # Vérifier si le capteur existe
+            if capteur_id not in self.capteurs:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Vérifier si le capteur a un fichier associé
+            if not self.capteurs[capteur_id].get("file_path"):
+                return {
+                    "success": False,
+                    "message": "Aucun fichier associé à ce capteur"
+                }
+            
+            # Charger le fichier
+            file_path = self.capteurs[capteur_id]["file_path"]
+            df = self.data_loader.load_file(file_path)
+            
+            # Limiter à 10 lignes pour l'aperçu
+            preview_df = df.head(10)
+            
+            # Convertir en format JSON-compatible
+            preview = {
+                "columns": preview_df.columns.tolist(),
+                "data": preview_df.values.tolist()
+            }
+            
+            return {
+                "success": True,
+                "preview": preview
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la récupération de l'aperçu: {e}"
+            }
+
+    def save_column_mapping(self, capteur_id, mapping):
+        """
+        Enregistrer le mappage des colonnes pour un capteur
+        
+        Args:
+            capteur_id (str): ID du capteur
+            mapping (dict): Mappage des colonnes
+            
+        Returns:
+            dict: Résultat de l'opération
+        """
+        try:
+            # Vérifier si le capteur existe
+            if capteur_id not in self.capteurs:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Vérifier si le capteur a un fichier associé
+            if not self.capteurs[capteur_id].get("file_path"):
+                return {
+                    "success": False,
+                    "message": "Aucun fichier associé à ce capteur"
+                }
+            
+            # Mettre à jour le mappage des colonnes
+            self.capteurs[capteur_id]["columns"] = mapping
+            self.capteurs[capteur_id]["mapping_updated_at"] = datetime.datetime.now().isoformat()
+            
+            # Sauvegarder les modifications
+            self.storage.save_capteurs(self.capteurs)
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history, 
+                "Mappage des colonnes", 
+                capteur_id, 
+                {"columns": mapping},
+                self.capteurs
+            )
+            self.storage.save_history(self.history)
+            
+            return {
+                "success": True
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de l'enregistrement du mappage: {e}"
+            }
+
+    def get_capteurs_for_graphs(self):
+        """
+        Obtenir la liste des capteurs disponibles pour les graphiques
+        
+        Returns:
+            dict: Résultat contenant la liste des capteurs
+        """
+        capteurs = []
+        for capteur_id, capteur_data in self.capteurs.items():
+            # Vérifier si le capteur a un fichier et un mappage complet
+            if (capteur_data.get("file_path") and 
+                capteur_data.get("columns") and 
+                capteur_data["columns"].get("date") and 
+                capteur_data["columns"].get("temperature")):
+                
+                capteur = {
+                    "id": capteur_id,
+                    "nom": capteur_data["nom"],
+                    "has_humidity": bool(capteur_data["columns"].get("humidity"))
+                }
+                capteurs.append(capteur)
+        
+        return {
+            "success": True,
+            "capteurs": capteurs
+        }
+
+    def get_graph_types(self):
+        """
+        Obtenir la liste des types de graphiques disponibles
+        
+        Returns:
+            dict: Résultat contenant la liste des types de graphiques
+        """
+        graph_types = [
+            {
+                "id": "temperature_time",
+                "name": "Température en fonction du temps",
+                "description": "Graphique linéaire montrant l'évolution de la température au fil du temps pour chaque capteur."
+            },
+            {
+                "id": "humidity_time",
+                "name": "Humidité en fonction du temps",
+                "description": "Graphique linéaire montrant l'évolution de l'humidité au fil du temps pour chaque capteur."
+            },
+            # Ajouter les autres types de graphiques ici...
+        ]
+        
+        return {
+            "success": True,
+            "types": graph_types
+        }
+
+    def generate_graph(self, graph_type, capteur_ids):
+        """
+        Générer un graphique à partir des données des capteurs
+        
+        Args:
+            graph_type (str): Type de graphique à générer
+            capteur_ids (list): Liste des IDs des capteurs
+            
+        Returns:
+            dict: Résultat contenant les données du graphique
+        """
+        try:
+            # Vérifier que les capteurs existent
+            capteurs_data = {}
+            for capteur_id in capteur_ids:
+                if capteur_id not in self.capteurs:
+                    return {
+                        "success": False,
+                        "message": f"Capteur {capteur_id} non trouvé"
+                    }
+                
+                capteur_data = self.capteurs[capteur_id]
+                
+                # Vérifier que le capteur a un fichier et un mappage
+                if not capteur_data.get("file_path"):
+                    return {
+                        "success": False,
+                        "message": f"Le capteur {capteur_data['nom']} n'a pas de fichier associé"
+                    }
+                
+                if not (capteur_data.get("columns") and 
+                        capteur_data["columns"].get("date") and 
+                        capteur_data["columns"].get("temperature")):
+                    return {
+                        "success": False,
+                        "message": f"Le capteur {capteur_data['nom']} n'a pas de mappage complet"
+                    }
+                
+                # Charger les données
+                try:
+                    df = self.data_loader.load_capteur_data(capteur_data)
+                    
+                    # Stocker les données
+                    capteurs_data[capteur_id] = {
+                        "nom": capteur_data["nom"],
+                        "data": df
+                    }
+                except Exception as e:
+                    return {
+                        "success": False,
+                        "message": f"Erreur lors du chargement des données pour {capteur_data['nom']}: {e}"
+                    }
+            
+            # Générer le graphique en fonction du type
+            if graph_type == "temperature_time":
+                return self.graph_generator.generate_temperature_time_graph(capteurs_data)
+            elif graph_type == "humidity_time":
+                return self.graph_generator.generate_humidity_time_graph(capteurs_data)
+            # Ajouter les autres types de graphiques ici...
+            else:
+                return {
+                    "success": False,
+                    "message": f"Type de graphique non pris en charge: {graph_type}"
+                }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la génération du graphique: {e}"
+            }
+
+
+
+
+    def export_graph(self, graph_type, capteur_ids, format="png"):
+        """
+        Exporter un graphique en fichier image
+        
+        Args:
+            graph_type (str): Type de graphique à exporter
+            capteur_ids (list): Liste des IDs des capteurs
+            format (str): Format d'export (png, jpg, pdf)
+            
+        Returns:
+            dict: Résultat de l'opération
+        """
+        try:
+            # Générer le graphique
+            result = self.generate_graph(graph_type, capteur_ids)
+            
+            if not result["success"]:
+                return result
+            
+            # Créer un nom de fichier unique
+            capteur_names = []
+            for capteur_id in capteur_ids:
+                if capteur_id in self.capteurs:
+                    capteur_names.append(self.capteurs[capteur_id]["nom"])
+            
+            capteur_str = "_".join(capteur_names) if capteur_names else "all"
+            filename = f"{graph_type}_{capteur_str}"
+            
+            # Exporter le graphique
+            filepath = self.graph_generator.export_graph(result, filename, format)
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history, 
+                "Export de graphique", 
+                None, 
+                {
+                    "graph_type": graph_type,
+                    "capteurs": capteur_names,
+                    "format": format,
+                    "filepath": filepath
+                },
+                self.capteurs
+            )
+            self.storage.save_history(self.history)
+            
+            return {
+                "success": True,
+                "filepath": filepath
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de l'export du graphique: {e}"
+            }
+
+    def get_history(self):
+        """
+        Obtenir l'historique des actions
+        
+        Returns:
+            dict: Résultat contenant l'historique
+        """
+        return {
+            "success": True,
+            "history": self.history
+        }
+
+    def export_history(self):
+        """
+        Exporter l'historique en fichier CSV
+        
+        Returns:
+            dict: Résultat de l'opération
+        """
+        try:
+            # Créer un nom de fichier unique
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"historique_{timestamp}.csv"
+            filepath = os.path.join(self.output_dir, filename)
+            
+            # Créer le contenu CSV
+            csv_content = "Date,Action,Capteur,Détails\n"
+            
+            for entry in self.history:
+                # Formater la date
+                date_str = datetime.datetime.fromisoformat(entry["timestamp"]).strftime("%Y-%m-%d %H:%M:%S")
+                
+                # Formater le capteur
+                capteur_str = entry.get("capteur_nom", "")
+                
+                # Formater les détails
+                details_str = ""
+                if entry.get("details"):
+                    details = entry["details"]
+                    if isinstance(details, dict):
+                        details_str = "; ".join([f"{k}: {v}" for k, v in details.items()])
+                    else:
+                        details_str = str(details)
+                
+                # Échapper les virgules et les guillemets
+                capteur_str = f'"{capteur_str}"' if "," in capteur_str else capteur_str
+                details_str = f'"{details_str}"' if "," in details_str else details_str
+                
+                # Ajouter la ligne
+                csv_content += f"{date_str},{entry['action']},{capteur_str},{details_str}\n"
+            
+            # Enregistrer le fichier
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(csv_content)
+            
+            return {
+                "success": True,
+                "filepath": filepath
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de l'export de l'historique: {e}"
+            }

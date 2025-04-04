@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@dotlottie/player-component": "^2.7.12",
+    "aos": "^2.3.1",
+    "boxicons": "^2.1.4",
+    "chart": "^0.1.2",
+    "tailwindcss": "^4.1.2"
+  }
+}

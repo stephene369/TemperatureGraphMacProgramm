@@ -58,22 +58,16 @@ function navigateTo(page) {
         return;
     }
     
-    // Ajouter des classes pour l'animation
     if (currentActivePage) {
-        // Animer la sortie de la page actuelle
         currentActivePage.classList.add('page-exit');
         
-        // Attendre la fin de l'animation de sortie
         setTimeout(() => {
-            // Retirer la classe active et la classe d'animation
             currentActivePage.classList.remove('active');
             currentActivePage.classList.remove('page-exit');
             
-            // Préparer la nouvelle page pour l'animation d'entrée
             newPage.classList.add('active');
             newPage.classList.add('page-enter');
             
-            // Charger le contenu de la page si nécessaire
             loadPageContent(page);
             
             // Mettre à jour les actions du header
@@ -112,22 +106,50 @@ function loadPageContent(page) {
         showLoading(`Chargement de la page ${page}...`);
         
         // Charger le contenu en fonction de la page
+        let contentLoaded = false;
+        
         switch (page) {
             case 'capteurs':
-                loadCapteursPage();
+                loadCapteursPage(() => {
+                    contentLoaded = true;
+                    // Utiliser hideLoadingWithDelay au lieu de hideLoading
+                    hideLoadingWithDelay();
+                });
                 break;
             case 'mapping':
-                loadMappingPage();
+                loadMappingPage(() => {
+                    contentLoaded = true;
+                    hideLoadingWithDelay();
+                });
                 break;
             case 'graphs':
-                loadGraphsPage();
+                loadGraphsPage(() => {
+                    contentLoaded = true;
+                    hideLoadingWithDelay();
+                });
                 break;
             case 'history':
-                loadHistoryPage();
+                loadHistoryPage(() => {
+                    contentLoaded = true;
+                    hideLoadingWithDelay();
+                });
+                break;
+            default:
+                // Si aucune page spécifique n'est chargée, simplement attendre 2 secondes
+                hideLoadingWithDelay();
                 break;
         }
+        
+        // Sécurité : si après 5 secondes le contenu n'est toujours pas chargé, masquer le loading
+        setTimeout(() => {
+            if (!contentLoaded) {
+                hideLoading();
+                showNotification("Le chargement a pris plus de temps que prévu.", "warning");
+            }
+        }, 5000);
     }
 }
+
 
 
 
@@ -157,19 +179,60 @@ function updateHeaderActions(page) {
     }
 }
 
+// Variable pour suivre le moment où le loading a commencé
+let loadingStartTime = 0;
+
 // Fonctions utilitaires pour l'interface
 function showLoading(message = 'Chargement en cours...') {
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
     
+    // Enregistrer le moment où le loading a commencé
+    loadingStartTime = Date.now();
+    
+    // Afficher le message de chargement
     loadingText.textContent = message;
     loadingOverlay.classList.remove('hidden');
 }
 
 function hideLoading() {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    loadingOverlay.classList.add('hidden');
+    // Calculer combien de temps s'est écoulé depuis le début du chargement
+    const elapsedTime = Date.now() - loadingStartTime;
+    const minLoadingTime = 2000; // 2 secondes minimum
+    
+    if (elapsedTime >= minLoadingTime) {
+        // Si au moins 2 secondes se sont écoulées, masquer immédiatement
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.classList.add('hidden');
+    } else {
+        // Sinon, attendre que le temps minimum soit écoulé
+        const remainingTime = minLoadingTime - elapsedTime;
+        setTimeout(() => {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.classList.add('hidden');
+        }, remainingTime);
+    }
 }
+
+// Fonction utilitaire pour garantir un temps de chargement minimum
+function hideLoadingWithDelay(callback = null) {
+    const elapsedTime = Date.now() - loadingStartTime;
+    const minLoadingTime = 2000; // 2 secondes minimum
+    
+    if (elapsedTime >= minLoadingTime) {
+        // Si au moins 2 secondes se sont écoulées, exécuter immédiatement
+        hideLoading();
+        if (callback) callback();
+    } else {
+        // Sinon, attendre que le temps minimum soit écoulé
+        const remainingTime = minLoadingTime - elapsedTime;
+        setTimeout(() => {
+            hideLoading();
+            if (callback) callback();
+        }, remainingTime);
+    }
+}
+
 
 function showNotification(message, type = 'info', duration = 3000) {
     const container = document.getElementById('notification-container');
