@@ -61,8 +61,6 @@
     font-size: 1.25rem;
 }
 
-
-
 /* Forms */
 .form-input,
 .form-select,
@@ -382,18 +380,6 @@ button:disabled {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 /* Splash Screen Styles */
 #splash-screen {
     position: fixed;
@@ -418,12 +404,6 @@ button:disabled {
     width: 500px;
     height: 500px;
 }
-
-
-
-
-
-
 
 /* Styles pour les animations de transition entre pages */
 .page {
@@ -473,7 +453,6 @@ button:disabled {
     }
 }
 
-
 /* Assurez-vous que le conteneur des pages a une position relative */
 .content-container {
     position: relative;
@@ -481,27 +460,12 @@ button:disabled {
     /* Ajustez selon vos besoins */
 }
 
-
-
-
-
-
-
-
 /* Assurez-vous que le conteneur des pages a une position relative */
 .content-container {
     position: relative;
     min-height: 400px;
     /* Ajustez selon vos besoins */
 }
-
-
-
-
-
-
-
-
 
 /* Animation pour les blocs de contenu */
 .content-block {
@@ -521,16 +485,6 @@ button:disabled {
 }
 
 
-
-
-
-
-
-
-
-
-
-horizontales */ html,
 body {
     overflow-x: hidden;
     overflow-y: auto;
@@ -546,15 +500,6 @@ body {
 *::-webkit-scrollbar {
     display: none;
 }
-
-
-
-
-
-
-
-
-
 
 select {
     appearance: none;
@@ -599,11 +544,6 @@ select option {
     background-color: #fff;
     color: #4a5568;
 }
-
-
-
-
-
 
 /* Animation continue de goutte d'eau pour les boutons de téléchargement */
 .water-drop-btn {

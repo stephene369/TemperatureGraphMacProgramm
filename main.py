@@ -47,10 +47,15 @@ def main():
         height=900,
         resizable=True,
         min_size=(800, 600)
+        
     )
     
     # Démarrer l'application
-    webview.start(debug=False)
+    webview.start(debug=False,
+                  icon=os.path.join(UI_DIR, 'assets', 'logo.png'),
+                  frameless=False,
+                  
+                  )
 
 if __name__ == '__main__':
     main()
