@@ -104,5 +104,69 @@
       "format": "png",
       "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\temperature_monthly_Nord.png"
     }
+  },
+  {
+    "id": "03856700-d66c-4f26-8a1b-9792c1fccc2d",
+    "timestamp": "2025-04-05T10:30:29.292533",
+    "action": "Ajout de capteur",
+    "capteur_id": "097e09e3-9d82-4b60-992a-673fdd14a3bd",
+    "capteur_nom": "Est",
+    "details": null
+  },
+  {
+    "id": "811febc1-5e49-4c70-9c20-3bfd43247d3e",
+    "timestamp": "2025-04-05T10:31:56.269523",
+    "action": "Association de fichier",
+    "capteur_id": "097e09e3-9d82-4b60-992a-673fdd14a3bd",
+    "capteur_nom": "Est",
+    "details": {
+      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)"
+      }
+    }
+  },
+  {
+    "id": "3210dfaf-0124-4bc5-bf36-c2324ce28360",
+    "timestamp": "2025-04-05T10:32:02.319125",
+    "action": "Modification de capteur",
+    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
+    "capteur_nom": "Sud",
+    "details": {
+      "old_nom": "sud",
+      "new_nom": "Sud"
+    }
+  },
+  {
+    "id": "3ece4fa6-06d4-4e7c-a3aa-104b22a44f39",
+    "timestamp": "2025-04-05T10:32:08.935612",
+    "action": "Association de fichier",
+    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
+    "capteur_nom": "Sud",
+    "details": {
+      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)"
+      }
+    }
+  },
+  {
+    "id": "ebec830c-f884-4b8f-a025-e23df0a89eb1",
+    "timestamp": "2025-04-05T10:32:18.752144",
+    "action": "Association de fichier",
+    "capteur_id": "5a5f89ee-68b9-4675-9459-38d7c089fdfa",
+    "capteur_nom": "Nord",
+    "details": {
+      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)"
+      }
+    }
   }
 ]

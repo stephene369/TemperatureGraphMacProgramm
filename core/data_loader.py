@@ -121,6 +121,6 @@ class DataLoader:
         # Supprimer les lignes invalides
         mapped_df = mapped_df.dropna(subset=["date", "temperature"])
 
-        print(f"[✔] Données capteur chargées : {capteur_data['file_path']}")
+        # print(f"[✔] Données capteur chargées : {capteur_data['file_path']}")
         
         return mapped_df

@@ -6,7 +6,7 @@ let currentGraphData = null;
 
 // Chargement de la page des graphiques
 function loadGraphsPage() {
-  showLoading("Chargement des données...");
+  // showLoading("Chargement des données...");
 
   // Charger les capteurs disponibles pour les graphiques
   pywebview.api
@@ -461,9 +461,8 @@ function generateAllGraphTypes(capteurIds) {
               const singleDownloadBtn = document.createElement("button");
               singleDownloadBtn.className =
                 "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
-              singleDownloadBtn.innerHTML =
-                '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
-              singleDownloadBtn.title = "Télécharger cette image";
+              singleDownloadBtn.innerHTML =              '<i class="bx bx-download text-xl"></i>';
+                singleDownloadBtn.title = "Télécharger cette image";
               singleDownloadBtn.onclick = (e) => {
                 e.stopPropagation();
                 showLoading("Préparation du téléchargement...");

@@ -549,30 +549,35 @@ class API:
                 "description": "Graphique linéaire montrant les écarts journaliers d'humidité relative pour chaque capteur.",
             },
             {
-                "id": "humidity_distribution_c3",
-                "name": "Distribution de l’humidité relative (capteur C3)",
-                "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C3.",
+                "id": "humidity_profile_per_sensor",
+                "name": "Profil d'humidité par capteur",
+                "description": "Pour chaque capteur, ce graphique affiche la répartition des niveaux d’humidité relative (camembert) ainsi que la distribution de l’amplitude hydrique quotidienne (histogramme).",
             },
-            {
-                "id": "humidity_amplitude_distribution_c3",
-                "name": "Distribution des amplitudes hydriques (capteur C3)",
-                "description": "Histogramme représentant la fréquence des amplitudes hydriques mesurées par le capteur C3.",
-            },
-            {
-                "id": "humidity_distribution_c4",
-                "name": "Distribution de l’humidité relative (capteur C4)",
-                "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C4.",
-            },
-            {
-                "id": "humidity_distribution_c6",
-                "name": "Distribution de l’humidité relative (capteur C6)",
-                "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C6.",
-            },
-            {
-                "id": "humidity_amplitude_distribution_c6",
-                "name": "Distribution des amplitudes hydriques (capteur C6)",
-                "description": "Histogramme représentant la fréquence des amplitudes hydriques mesurées par le capteur C6.",
-            },
+            # {
+            #     "id": "humidity_distribution_c3",
+            #     "name": "Distribution de l’humidité relative (capteur C3)",
+            #     "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C3.",
+            # },
+            # {
+            #     "id": "humidity_amplitude_distribution_c3",
+            #     "name": "Distribution des amplitudes hydriques (capteur C3)",
+            #     "description": "Histogramme représentant la fréquence des amplitudes hydriques mesurées par le capteur C3.",
+            # },
+            # {
+            #     "id": "humidity_distribution_c4",
+            #     "name": "Distribution de l’humidité relative (capteur C4)",
+            #     "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C4.",
+            # },
+            # {
+            #     "id": "humidity_distribution_c6",
+            #     "name": "Distribution de l’humidité relative (capteur C6)",
+            #     "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C6.",
+            # },
+            # {
+            #     "id": "humidity_amplitude_distribution_c6",
+            #     "name": "Distribution des amplitudes hydriques (capteur C6)",
+            #     "description": "Histogramme représentant la fréquence des amplitudes hydriques mesurées par le capteur C6.",
+            # },
             # {
             #     "id": "dew_point_risk",
             #     "name": "Écart au point de rosée (risque de condensation)",
@@ -672,7 +677,10 @@ class API:
                 return self.graph_generator.generate_humidity_amplitude_graph(
                     capteurs_data
                 )
-
+            elif graph_type == "humidity_profile_per_sensor":
+                return self.graph_generator.generate_all_humidity_distribution_pair_graphs(
+                    capteurs_data
+                )
             # elif graph_type == "dew_point_risk":
             #     return self.graph_generator.generate_dew_point_risk_graph(
             #         capteurs_data
@@ -989,7 +997,7 @@ class API:
             for graph in graph_images:
                 try:
                     # Préparer le nom de fichier
-                    filename = f"{graph['name'].replace(' ', '_')}-id-{graph['id']}-{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"                    
+                    filename = f"{graph['name'].replace(' ', '_')}-id-{graph['id']}-{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
                     filepath = os.path.join(folder_path, filename)
 
                     # Décoder l'image base64

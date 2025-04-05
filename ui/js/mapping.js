@@ -5,7 +5,7 @@ let availableColumns = [];
 
 // Chargement de la page de mappage
 function loadMappingPage() {
-    showLoading('Chargement des capteurs...');
+    // showLoading('Chargement des capteurs...');
     
     pywebview.api.get_capteurs_for_mapping().then(response => {
         hideLoading();

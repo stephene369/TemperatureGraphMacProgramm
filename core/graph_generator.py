@@ -593,3 +593,109 @@ class GraphGenerator:
 
 
 
+
+
+
+
+    def generate_all_humidity_distribution_pair_graphs(self, capteurs_data, applito_pie=False, applito_hist=True):
+        """
+        Génère une image par capteur avec :
+        - À gauche : camembert des tranches d'humidité
+        - À droite : histogramme des amplitudes hydriques journalières
+
+        Args:
+            capteurs_data (dict): données capteurs
+            applito_pie (bool): appliquer une palette personnalisée au camembert
+            applito_hist (bool): appliquer une palette personnalisée à l'histogramme
+
+        Returns:
+            dict: contient une liste d’images base64 prêtes à l’affichage
+        """
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+        import pandas as pd
+
+        images_base64 = []
+
+        # Palette camembert (par défaut)
+        pie_colors = [
+            "#d0e1f2", "#a5cce1", "#7db8d1", "#529ec0",
+            "#3279a3", "#1e4f73", "#0a2a42"
+        ]
+
+        # Palette histogramme (par défaut une seule couleur)
+        hist_colors = [
+            "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        hist_color_cycle = iter(hist_colors)
+
+        bins = [0, 40, 50, 60, 70, 80, 90, 100]
+        labels = [
+            "HR < 40%", "40% ≤ HR < 50%", "50% ≤ HR < 60%", "60% ≤ HR < 70%",
+            "70% ≤ HR < 80%", "80% ≤ HR < 90%", "HR ≥ 90%"
+        ]
+
+        for capteur_id, capteur in capteurs_data.items():
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+
+            if not {"date", "humidity"}.issubset(df.columns):
+                print(f"[⚠️] Capteur ignoré (colonnes manquantes) : {nom}")
+                continue
+
+            try:
+                df["date"] = pd.to_datetime(df["date"])
+                fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+                # Camembert : répartition des valeurs par classe
+                cat = pd.cut(df["humidity"], bins=bins, labels=labels, include_lowest=True)
+                freqs = cat.value_counts().sort_index()
+
+                pie_col = pie_colors if applito_pie else None
+                ax1.pie(freqs, labels=None, colors=pie_col, startangle=90, autopct='%1.0f%%', wedgeprops={"linewidth": 0})
+                ax1.set_title(f"Capteur {nom}", fontsize=12)
+                ax1.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Légende")
+
+                # Histogramme : amplitude hydrique quotidienne
+                df["date_only"] = df["date"].dt.floor("D")
+                grouped = df.groupby("date_only")["humidity"]
+                amplitude = (grouped.max() - grouped.min()).dropna()
+
+                hist_color = next(hist_color_cycle) if applito_hist else "#1e4f73"
+                ax2.hist(amplitude, bins=20, color=hist_color, edgecolor='white', weights=np.ones_like(amplitude) / len(amplitude))
+                ax2.set_title(f"Capteur {nom}", fontsize=12)
+                ax2.set_xlabel("Amplitude hydrique quotidienne (RH %)")
+                ax2.set_ylabel("Fréquence (%)")
+                ax2.set_xlim(0, 25)
+                ax2.set_ylim(0, 0.14)
+                ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f'{int(y * 100)}%'))
+
+                plt.tight_layout()
+
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=200)
+                buf.seek(0)
+                images_base64.append(base64.b64encode(buf.read()).decode('utf-8'))
+                plt.close()
+
+            except Exception as e:
+                print(f"[❌] Erreur pour le capteur {nom} : {e}")
+                continue
+
+        return {
+            "success": True,
+            "data": {
+                "type": "combined",
+                "title": "Profil d'humidité par capteur",
+                "x_axis": "Catégories / Amplitude (RH %)",
+                "y_axis": "Fréquence (%)",
+                "description": "Pour chaque capteur, cette figure affiche un camembert des classes d'humidité relative et un histogramme des amplitudes hydriques quotidiennes.",
+            },
+            "image": images_base64
+        }

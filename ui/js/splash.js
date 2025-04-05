@@ -18,12 +18,11 @@ try {
       lottiePlayer.setAttribute('src', randomAnimation);
       lottiePlayer.setAttribute('background', 'transparent');
       lottiePlayer.setAttribute('speed', '1');
-      lottiePlayer.setAttribute('style', 'width: 300px; height: 300px');
+      lottiePlayer.setAttribute('style', 'width: 250px; height: 250px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);');
       lottiePlayer.setAttribute('loop', '');
       lottiePlayer.setAttribute('autoplay', '');
       
-      lottieContainer.appendChild(lottiePlayer);
-      
+      lottieContainer.appendChild(lottiePlayer);      
       setTimeout(function() {
         try {
           const splashScreen = document.getElementById('splash-screen');
@@ -32,7 +31,7 @@ try {
         } catch (error) {
           console.error("Erreur lors de la gestion du splash screen:", error);
         }
-      }, 3000);
+      }, 2500);
     } catch (error) {
       console.error("Erreur lors de l'initialisation de l'animation:", error);
     }

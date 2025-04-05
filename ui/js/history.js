@@ -3,7 +3,7 @@ let historyEntries = [];
 
 // Chargement de la page d'historique
 function loadHistoryPage() {
-    showLoading('Chargement de l\'historique...');
+    // showLoading('Chargement de l\'historique...');
     
     pywebview.api.get_history().then(response => {
         hideLoading();
