@@ -13,16 +13,30 @@ UI_DIR = os.path.join(BASE_DIR, 'ui')
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'output', 'exports')
 
-# Créer les répertoires s'ils n'existent pas
+# Get system pictures directory
+if sys.platform == 'darwin':
+    pictures_dir = os.path.join(os.path.expanduser('~'), 'Pictures')
+elif sys.platform == 'win32':
+    pictures_dir = os.path.join(os.path.expanduser('~'), 'Pictures')
+else:  # Linux
+    pictures_dir = os.path.join(os.path.expanduser('~'), 'Pictures')
+    if not os.path.exists(pictures_dir):
+        pictures_dir = os.path.join(os.path.expanduser('~'), 'Images')
+
+# Set ClimaGraph images directory
+IMAGE_OUTPUT_DIR = os.path.join(pictures_dir, 'ClimaGraph')
+
+# Create directories if they don't exist
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(IMAGE_OUTPUT_DIR, exist_ok=True)
 
 def main():
     """
     Fonction principale qui initialise et démarre l'application
     """
     # Créer l'instance de l'API
-    api = API(BASE_DIR, DATA_DIR, OUTPUT_DIR)
+    api = API(BASE_DIR, DATA_DIR, OUTPUT_DIR , IMAGE_OUTPUT_DIR )
     
     # Créer la fenêtre principale
     window = webview.create_window(
@@ -36,7 +50,7 @@ def main():
     )
     
     # Démarrer l'application
-    webview.start(debug=True)
+    webview.start(debug=False)
 
 if __name__ == '__main__':
     main()

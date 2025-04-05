@@ -98,13 +98,13 @@ function updateGraphsUI() {
     // Utiliser des boutons radio pour sélectionner un seul capteur à la fois
     capteursPourGraphs.forEach((capteur) => {
       html += `
-                          <div class="flex items-center mb-2">
-                              <input type="radio" name="capteur-selection" id="capteur-${capteur.id}" class="capteur-radio mr-2" value="${capteur.id}">
-                              <label for="capteur-${capteur.id}" class="text-gray-900 dark:text-gray-100">${capteur.nom}</label>
-                          </div>
-              `;
+        <div class="flex items-center mb-2">
+          <input type="checkbox" name="capteur-selection" id="capteur-${capteur.id}" class="capteur-checkbox mr-2" value="${capteur.id}">
+          <label for="capteur-${capteur.id}" class="text-gray-900 dark:text-gray-100">${capteur.nom}</label>
+        </div>
+      `;
     });
-
+    
     html += `
                       </div>
                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -206,7 +206,75 @@ function generateGraph() {
     .then((response) => {
       hideLoading();
       if (response.success) {
-        displayGraph(response.data, response.image);
+        // Afficher le graphique
+        const graphContainer = document.getElementById("graph-container");
+        graphContainer.innerHTML = "";
+        graphContainer.classList.remove("hidden");
+
+        // Créer un conteneur pour ce graphique
+        const singleGraphContainer = document.createElement("div");
+        singleGraphContainer.className =
+          "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6 relative";
+
+        // Ajouter le titre et un bouton de téléchargement à côté
+        const titleContainer = document.createElement("div");
+        titleContainer.className = "flex justify-between items-center mb-4";
+
+        const title = document.createElement("h4");
+        title.className = "text-lg font-semibold";
+        title.textContent = response.data.title;
+
+        const downloadBtn = document.createElement("button");
+        downloadBtn.className =
+          "text-blue-500 hover:text-blue-700 flex items-center";
+        downloadBtn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger';
+        downloadBtn.title = "Télécharger cette image";
+        downloadBtn.onclick = () => {
+          showLoading("Préparation du téléchargement...");
+
+          // Ouvrir une boîte de dialogue pour enregistrer l'image
+          window.pywebview.api
+            .save_image_with_dialog(response.image, response.data.title)
+            .then((saveResponse) => {
+              hideLoading();
+              if (saveResponse.success) {
+                showNotification(`Image enregistrée avec succès`, "success");
+              } else {
+                showNotification(saveResponse.message, "error");
+              }
+            })
+            .catch((error) => {
+              hideLoading();
+              showNotification(
+                "Erreur lors du téléchargement du graphique",
+                "error"
+              );
+              console.error(error);
+            });
+        };
+
+        titleContainer.appendChild(title);
+        titleContainer.appendChild(downloadBtn);
+        singleGraphContainer.appendChild(titleContainer);
+
+        // Ajouter l'image
+        const img = document.createElement("img");
+        img.src = `data:image/png;base64,${response.image}`;
+        img.className = "w-full";
+        img.alt = response.data.title;
+        singleGraphContainer.appendChild(img);
+
+        // Ajouter au conteneur principal
+        graphContainer.appendChild(singleGraphContainer);
+
+        // Faire défiler jusqu'au graphique
+        graphContainer.scrollIntoView({ behavior: "smooth" });
+
+        // Afficher également le graphique avec Chart.js si disponible
+        if (response.data && response.data.type) {
+          displayGraph(response.data, response.image);
+        }
       } else {
         showNotification(response.message, "error");
       }
@@ -214,6 +282,55 @@ function generateGraph() {
     .catch((error) => {
       hideLoading();
       showNotification("Erreur lors de la génération du graphique", "error");
+      console.error(error);
+    });
+}
+
+// Fonction pour télécharger un seul graphique via le backend Python
+function downloadSingleGraph(capteurId, graphType, imageBase64, graphName) {
+  showLoading("Préparation du téléchargement...");
+
+  // Utiliser l'image déjà générée plutôt que de la régénérer
+  window.pywebview.api
+    .save_image_with_dialog(imageBase64, graphName, capteurId)
+    .then((response) => {
+      hideLoading();
+      if (response.success) {
+        showNotification(`Image enregistrée avec succès`, "success");
+      } else {
+        showNotification(response.message, "error");
+      }
+    })
+    .catch((error) => {
+      hideLoading();
+      showNotification("Erreur lors du téléchargement du graphique", "error");
+      console.error(error);
+    });
+}
+
+// Fonction pour télécharger toutes les images via le backend Python
+function downloadAllGraphs(capteurId, graphImages) {
+  if (graphImages.length === 0) {
+    showNotification("Aucun graphique à télécharger", "warning");
+    return;
+  }
+
+  showLoading("Préparation du téléchargement de tous les graphiques...");
+
+  // Demander à l'utilisateur de choisir un dossier avant de télécharger
+  window.pywebview.api
+    .save_all_images_with_dialog(graphImages, capteurId)
+    .then((response) => {
+      hideLoading();
+      if (response.success) {
+        showNotification(`Graphiques enregistrés avec succès`, "success");
+      } else {
+        showNotification(response.message, "error");
+      }
+    })
+    .catch((error) => {
+      hideLoading();
+      showNotification("Erreur lors du téléchargement des graphiques", "error");
       console.error(error);
     });
 }
@@ -228,10 +345,28 @@ function generateAllGraphTypes(capteurId) {
     '<h3 class="text-xl font-bold mb-4 text-center">Tous les graphiques</h3>';
   graphContainer.classList.remove("hidden");
 
+  // Tableau pour stocker les données des graphiques générés
+  const generatedGraphs = [];
+
   // Générer chaque type de graphique séquentiellement
   const generateNextGraph = (index) => {
     if (index >= graphTypes.length) {
       hideLoading();
+
+      // Ajouter le bouton de téléchargement de toutes les images
+      const downloadAllContainer = document.createElement("div");
+      downloadAllContainer.className = "flex justify-center mt-4 mb-6";
+
+      const downloadAllBtn = document.createElement("button");
+      downloadAllBtn.className = "btn-primary flex items-center justify-center";
+      downloadAllBtn.innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger toutes les images';
+      downloadAllBtn.onclick = () =>
+        downloadAllGraphs(capteurId, generatedGraphs);
+
+      downloadAllContainer.appendChild(downloadAllBtn);
+      graphContainer.appendChild(downloadAllContainer);
+
       return;
     }
 
@@ -241,16 +376,43 @@ function generateAllGraphTypes(capteurId) {
       .generate_graph(graphType.id, [capteurId])
       .then((response) => {
         if (response.success) {
+          // Stocker les données du graphique
+          generatedGraphs.push({
+            id: graphType.id,
+            name: graphType.name,
+            image: response.image,
+          });
+
           // Créer un conteneur pour ce graphique
           const singleGraphContainer = document.createElement("div");
           singleGraphContainer.className =
-            "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6";
+            "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6 relative";
 
-          // Ajouter le titre
+          // Ajouter le titre et un bouton de téléchargement à côté
+          const titleContainer = document.createElement("div");
+          titleContainer.className = "flex justify-between items-center mb-4";
+
           const title = document.createElement("h4");
-          title.className = "text-lg font-semibold mb-4 text-center";
+          title.className = "text-lg font-semibold";
           title.textContent = graphType.name;
-          singleGraphContainer.appendChild(title);
+
+          const downloadBtn = document.createElement("button");
+          downloadBtn.className =
+            "text-blue-500 hover:text-blue-700 flex items-center";
+          downloadBtn.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger';
+          downloadBtn.title = "Télécharger cette image";
+          downloadBtn.onclick = () =>
+            downloadSingleGraph(
+              capteurId,
+              graphType.id,
+              response.image,
+              graphType.name
+            );
+
+          titleContainer.appendChild(title);
+          titleContainer.appendChild(downloadBtn);
+          singleGraphContainer.appendChild(titleContainer);
 
           // Ajouter l'image
           const img = document.createElement("img");
@@ -296,8 +458,6 @@ function updateGraphDescription() {
       "Sélectionnez un type de graphique pour voir sa description.";
   }
 }
-
-
 
 // Afficher un graphique
 function displayGraph(data) {

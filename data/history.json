@@ -44,5 +44,65 @@
         "humidity": "Ch: 3 - RH   (%)"
       }
     }
+  },
+  {
+    "id": "9e7c62f1-3764-497f-9f8c-ec720f90115a",
+    "timestamp": "2025-04-04T14:20:49.167267",
+    "action": "Export de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "temperature_time",
+      "capteurs": [
+        "Nord"
+      ],
+      "format": "png",
+      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\temperature_time_Nord.png"
+    }
+  },
+  {
+    "id": "42475c1d-70c1-432a-b764-b466b0d5ec83",
+    "timestamp": "2025-04-04T14:21:02.308761",
+    "action": "Export de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "humidity_time",
+      "capteurs": [
+        "Nord"
+      ],
+      "format": "png",
+      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\humidity_time_Nord.png"
+    }
+  },
+  {
+    "id": "9b9e80f8-51e1-4d89-84bd-596916fd19db",
+    "timestamp": "2025-04-04T14:21:16.609557",
+    "action": "Export de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "humidity_time",
+      "capteurs": [
+        "Nord"
+      ],
+      "format": "png",
+      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\humidity_time_Nord.png"
+    }
+  },
+  {
+    "id": "a9d62efb-ad4b-4fac-862f-0e308380f3d0",
+    "timestamp": "2025-04-04T14:21:24.755628",
+    "action": "Export de graphique",
+    "capteur_id": null,
+    "capteur_nom": null,
+    "details": {
+      "graph_type": "temperature_monthly",
+      "capteurs": [
+        "Nord"
+      ],
+      "format": "png",
+      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\temperature_monthly_Nord.png"
+    }
   }
 ]
