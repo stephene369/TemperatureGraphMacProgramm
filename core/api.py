@@ -35,7 +35,7 @@ class API:
     Expose les méthodes accessibles depuis l'interface web
     """
 
-    def __init__(self, base_dir, data_dir, output_dir,image_outputdir):
+    def __init__(self, base_dir, data_dir, output_dir, image_outputdir):
         """
         Initialise l'API avec les chemins de base et charge les données
 
@@ -530,54 +530,54 @@ class API:
         graph_types = [
             {
                 "id": "temperature_time",
-                "name": "Température en fonction du temps",
-                "description": "Graphique linéaire montrant l'évolution de la température au fil du temps pour chaque capteur.",
+                "name": "Températures quotidiennes (Température en fonction du temps)",
+                "description": "Graphique linéaire montrant l'évolution quotidienne de la température pour chaque capteur.",
+            },
+            {
+                "id": "temperature_amplitude",
+                "name": "Amplitude thermique quotidienne",
+                "description": "Graphique linéaire montrant les écarts journaliers de température (max - min) pour chaque capteur.",
             },
             {
                 "id": "humidity_time",
                 "name": "Humidité en fonction du temps",
-                "description": "Graphique linéaire montrant l'évolution de l'humidité au fil du temps pour chaque capteur.",
+                "description": "Graphique linéaire montrant l'évolution quotidienne de l'humidité relative pour chaque capteur.",
             },
             {
-                "id": "temperature_humidity",
-                "name": "Température vs Humidité",
-                "description": "Graphique de dispersion montrant la relation entre température et humidité pour chaque capteur.",
+                "id": "humidity_amplitude",
+                "name": "Amplitude hydrique quotidienne",
+                "description": "Graphique linéaire montrant les écarts journaliers d'humidité relative pour chaque capteur.",
             },
             {
-                "id": "temperature_monthly",
-                "name": "Moyenne mensuelle de température",
-                "description": "Histogramme montrant la température moyenne par mois pour chaque capteur.",
+                "id": "humidity_distribution_c3",
+                "name": "Distribution de l’humidité relative (capteur C3)",
+                "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C3.",
             },
             {
-                "id": "humidity_monthly",
-                "name": "Moyenne mensuelle d'humidité",
-                "description": "Histogramme montrant l'humidité moyenne par mois pour chaque capteur.",
+                "id": "humidity_amplitude_distribution_c3",
+                "name": "Distribution des amplitudes hydriques (capteur C3)",
+                "description": "Histogramme représentant la fréquence des amplitudes hydriques mesurées par le capteur C3.",
             },
             {
-                "id": "temperature_daily",
-                "name": "Cycle journalier de température",
-                "description": "Graphique linéaire montrant la température moyenne par heure de la journée.",
+                "id": "humidity_distribution_c4",
+                "name": "Distribution de l’humidité relative (capteur C4)",
+                "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C4.",
             },
             {
-                "id": "humidity_daily",
-                "name": "Cycle journalier d'humidité",
-                "description": "Graphique linéaire montrant l'humidité moyenne par heure de la journée.",
+                "id": "humidity_distribution_c6",
+                "name": "Distribution de l’humidité relative (capteur C6)",
+                "description": "Histogramme représentant la fréquence des valeurs d'humidité enregistrées par le capteur C6.",
             },
             {
-                "id": "temperature_distribution",
-                "name": "Distribution des températures",
-                "description": "Histogramme montrant la distribution des valeurs de température pour chaque capteur.",
+                "id": "humidity_amplitude_distribution_c6",
+                "name": "Distribution des amplitudes hydriques (capteur C6)",
+                "description": "Histogramme représentant la fréquence des amplitudes hydriques mesurées par le capteur C6.",
             },
-            {
-                "id": "humidity_distribution",
-                "name": "Distribution des humidités",
-                "description": "Histogramme montrant la distribution des valeurs d'humidité pour chaque capteur.",
-            },
-            {
-                "id": "temperature_comparison",
-                "name": "Comparaison des températures",
-                "description": "Boîte à moustaches comparant les distributions de température entre capteurs.",
-            },
+            # {
+            #     "id": "dew_point_risk",
+            #     "name": "Écart au point de rosée (risque de condensation)",
+            #     "description": "Graphique montrant l’écart entre la température et le point de rosée, avec identification des zones de condensation.",
+            # },
         ]
 
         return {"success": True, "types": graph_types}
@@ -664,36 +664,19 @@ class API:
                 )
             elif graph_type == "humidity_time":
                 return self.graph_generator.generate_humidity_time_graph(capteurs_data)
-            elif graph_type == "temperature_humidity":
-                return self.graph_generator.generate_temperature_humidity_graph(
+            elif graph_type == "temperature_amplitude":
+                return self.graph_generator.generate_temperature_amplitude_graph(
                     capteurs_data
                 )
-            elif graph_type == "temperature_monthly":
-                return self.graph_generator.generate_temperature_monthly_graph(
+            elif graph_type == "humidity_amplitude":
+                return self.graph_generator.generate_humidity_amplitude_graph(
                     capteurs_data
                 )
-            elif graph_type == "humidity_monthly":
-                return self.graph_generator.generate_humidity_monthly_graph(
-                    capteurs_data
-                )
-            elif graph_type == "temperature_daily":
-                return self.graph_generator.generate_temperature_daily_graph(
-                    capteurs_data
-                )
-            elif graph_type == "humidity_daily":
-                return self.graph_generator.generate_humidity_daily_graph(capteurs_data)
-            elif graph_type == "temperature_distribution":
-                return self.graph_generator.generate_temperature_distribution_graph(
-                    capteurs_data
-                )
-            elif graph_type == "humidity_distribution":
-                return self.graph_generator.generate_humidity_distribution_graph(
-                    capteurs_data
-                )
-            elif graph_type == "temperature_comparison":
-                return self.graph_generator.generate_temperature_comparison_graph(
-                    capteurs_data
-                )
+
+            # elif graph_type == "dew_point_risk":
+            #     return self.graph_generator.generate_dew_point_risk_graph(
+            #         capteurs_data
+            #     )
             else:
                 return {
                     "success": False,
@@ -708,8 +691,6 @@ class API:
                 "success": False,
                 "message": f"Erreur lors de la génération du graphique: {e}",
             }
-            
-            
 
     def export_graph(self, graph_type, capteur_ids, format="png"):
         """
@@ -901,7 +882,9 @@ class API:
             print(f"Erreur lors de la sauvegarde de l'historique: {e}")
             return False
 
-    def save_image_with_dialog(self, image_base64, default_name="graphique",capteurId=''):
+    def save_image_with_dialog(
+        self, image_base64, default_name="graphique", capteurId=""
+    ):
         """
         Ouvrir une boîte de dialogue pour enregistrer une image
 
@@ -917,15 +900,15 @@ class API:
             import os
 
             # Préparer le nom de fichier par défaut
-            capteur = ''
+            capteur = ""
             # print(self.capteurs, color='blue')
             if capteurId:
                 try:
-                    capteur = self.capteurs[capteurId]['nom']
-                except Exception as e :
+                    capteur = self.capteurs[capteurId]["nom"]
+                except Exception as e:
                     print(e)
-            
-            default_filename = f"{default_name.replace(' ', '_')}-Capteur-{capteur}.png"
+
+            default_filename = f"{default_name.replace(' ', '_')}-Capteur-{capteur}--{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
 
             # Ouvrir la boîte de dialogue de sauvegarde
             file_path = webview.windows[0].create_file_dialog(
@@ -963,7 +946,7 @@ class API:
                 "message": f"Erreur lors de l'enregistrement de l'image: {e}",
             }
 
-    def save_all_images_with_dialog(self, graph_images , capteurId=''):
+    def save_all_images_with_dialog(self, graph_images, capteurId=""):
         """
         Ouvrir une boîte de dialogue pour choisir un dossier et y enregistrer toutes les images
 
@@ -973,10 +956,9 @@ class API:
         Returns:
             dict: Résultat de l'opération
         """
-        
-        
+
         try:
-            
+
             import base64
             import os
 
@@ -993,11 +975,11 @@ class API:
                 }
 
             folder_path = folder_path[0]  # create_file_dialog retourne une liste
-            capteur = ''
+            capteur = ""
             if capteurId:
                 try:
-                    capteur = self.capteurs[capteurId]['nom']
-                except Exception as e :
+                    capteur = self.capteurs[capteurId]["nom"]
+                except Exception as e:
                     print(e)
             # Créer le dossier s'il n'existe pas
             os.makedirs(folder_path, exist_ok=True)
@@ -1007,7 +989,7 @@ class API:
             for graph in graph_images:
                 try:
                     # Préparer le nom de fichier
-                    filename = f"{graph['name'].replace(' ', '_')}-Capteur-{capteur}.png"
+                    filename = f"{graph['name'].replace(' ', '_')}-id-{graph['id']}-{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"                    
                     filepath = os.path.join(folder_path, filename)
 
                     # Décoder l'image base64
@@ -1032,6 +1014,3 @@ class API:
                 "success": False,
                 "message": f"Erreur lors de l'enregistrement des images: {e}",
             }
-
-
-    

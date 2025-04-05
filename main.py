@@ -50,7 +50,7 @@ def main():
     )
     
     # Démarrer l'application
-    webview.start(debug=False)
+    webview.start(debug=True)
 
 if __name__ == '__main__':
     main()

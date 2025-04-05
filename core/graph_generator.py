@@ -8,7 +8,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
+import matplotlib.dates as mdates
 
+
+# Dictionnaire de mois en français
+mois_fr = { 
+    'January': 'Janvier', 'February': 'Février', 'March': 'Mars',
+    'April': 'Avril', 'May': 'Mai', 'June': 'Juin',
+    'July': 'Juillet', 'August': 'Août', 'September': 'Septembre',
+    'October': 'Octobre', 'November': 'Novembre', 'December': 'Décembre'
+}
+
+# Format de date personnalisé
+class FrenchDateFormatter(mdates.DateFormatter):
+    def __call__(self, x, pos=0):
+        result = super().__call__(x, pos)
+        for en, fr in mois_fr.items():
+            result = result.replace(en, fr)
+        return result
+    
+            
 class GraphGenerator:
     """
     Classe pour générer des graphiques à partir des données
@@ -23,7 +42,10 @@ class GraphGenerator:
         """
         self.output_dir = output_dir
     
-    def generate_temperature_time_graph(self, capteurs_data):
+
+
+
+    def generate_temperature_time_graph(self, capteurs_data): 
         """
         Générer un graphique de température en fonction du temps
         
@@ -33,61 +55,105 @@ class GraphGenerator:
         Returns:
             dict: Résultat contenant les données pour Chart.js et l'image base64
         """
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+
+        # Dictionnaire de mois en français
+        mois_fr = { 
+            'January': 'Janvier', 'February': 'Février', 'March': 'Mars',
+            'April': 'Avril', 'May': 'Mai', 'June': 'Juin',
+            'July': 'Juillet', 'August': 'Août', 'September': 'Septembre',
+            'October': 'Octobre', 'November': 'Novembre', 'December': 'Décembre'
+        }
+
+        # Formatteur de date français
+        class FrenchDateFormatter(mdates.DateFormatter):
+            def __call__(self, x, pos=0):
+                result = super().__call__(x, pos)
+                for en, fr in mois_fr.items():
+                    result = result.replace(en, fr)
+                return result
+
         # Créer une figure matplotlib
-        plt.figure(figsize=(12, 6))
-        
+        fig, ax = plt.subplots(figsize=(18, 8))
+        # Palette cyclique
+        palette = [
+            "#1f77b4", "#2ca02c", "#ff7f0e", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        color_index = 0
+
         # Ajouter les données de chaque capteur
         for capteur_id, capteur in capteurs_data.items():
-            df = capteur["data"]
-            plt.plot(df["date"], df["temperature"], label=capteur["nom"])
-        
-        # Configurer le graphique
-        plt.title("Température en fonction du temps")
-        plt.xlabel("Date")
-        plt.ylabel("Température (°C)")
-        plt.grid(True, linestyle='--', alpha=0.7)
-        plt.legend()
-        
-        # Ajuster la mise en page
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+            dates = df["date"]
+            temp = df["temperature"]
+
+            color = palette[color_index % len(palette)]
+            linestyle = '-' if "Ext" not in nom else ':'
+            ax.plot(dates, temp, label=nom, color=color, linestyle=linestyle, linewidth=0.8)
+            color_index += 1
+
+
+
+        # Configuration du graphique
+        ax.set_title("Températures quotidiennes", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Température (°C)")
+        ax.set_ylim(-10, 40)
+
+        # Moins de dates : 1 tous les 2 mois
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+
+        # Quadrillage style papier millimétré
+        ax.set_axisbelow(True)
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))  # chaque lundi
+        ax.yaxis.set_major_locator(plt.MultipleLocator(5))  # grands carreaux
+        ax.yaxis.set_minor_locator(plt.MultipleLocator(1))  # petits carreaux
+        # Grille principale
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        # Grille secondaire
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+
+        ax.legend(loc='lower right', frameon=True)
         plt.tight_layout()
-        
+
         # Convertir la figure en image base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
+        plt.savefig(buf, format='png', dpi=200)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
-        
+
         # Préparer les données pour Chart.js
         datasets = []
         for capteur_id, capteur in capteurs_data.items():
             df = capteur["data"]
-            
-            # Générer des couleurs aléatoires
-            r = np.random.randint(0, 200)
-            g = np.random.randint(0, 200)
-            b = np.random.randint(0, 200)
-            color = f"rgba({r}, {g}, {b}, 1)"
-            
-            # Formater les dates et les valeurs
             dates = df["date"].dt.strftime('%Y-%m-%d %H:%M').tolist()
             temps = df["temperature"].tolist()
-            
+
+            r, g, b = np.random.randint(0, 200, 3)
             datasets.append({
                 "label": capteur["nom"],
                 "data": temps,
-                "borderColor": color,
-                "backgroundColor": f"rgba({r}, {g}, {b}, 0.2)",
+                "borderColor": f"rgba({r},{g},{b},1)",
+                "backgroundColor": f"rgba({r},{g},{b},0.2)",
                 "fill": False,
                 "tension": 0.1
             })
-        
-        # Obtenir toutes les dates uniques
+
         all_dates = []
         for capteur_id, capteur in capteurs_data.items():
             all_dates.extend(capteur["data"]["date"].dt.strftime('%Y-%m-%d %H:%M').tolist())
         all_dates = sorted(list(set(all_dates)))
-        
+
         return {
             "success": True,
             "data": {
@@ -98,12 +164,14 @@ class GraphGenerator:
                 "labels": all_dates,
                 "datasets": datasets
             },
-            "image": img_base64
+            "image": [img_base64]
         }
-    
+
+
+        
     def generate_humidity_time_graph(self, capteurs_data):
         """
-        Générer un graphique d'humidité en fonction du temps
+        Générer un graphique d'humidité en fonction du temps avec le style ClimaGraph.
         
         Args:
             capteurs_data (dict): Données des capteurs
@@ -111,69 +179,74 @@ class GraphGenerator:
         Returns:
             dict: Résultat contenant les données pour Chart.js et l'image base64
         """
-        # Vérifier que tous les capteurs ont des données d'humidité
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+
+
+        # Vérifier la présence des colonnes d'humidité
         for capteur_id, capteur in capteurs_data.items():
             if "humidity" not in capteur["data"].columns:
                 return {
                     "success": False,
                     "message": f"Le capteur {capteur['nom']} n'a pas de données d'humidité"
                 }
-        
-        # Créer une figure matplotlib
-        plt.figure(figsize=(12, 6))
-        
-        # Ajouter les données de chaque capteur
+
+        # Créer la figure
+        fig, ax = plt.subplots(figsize=(18, 8))
+
+        # Palette cyclique
+        palette = [
+            "#1f77b4", "#2ca02c", "#ff7f0e", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        color_index = 0
+
+        # Ajouter les courbes d'humidité
         for capteur_id, capteur in capteurs_data.items():
             df = capteur["data"]
-            plt.plot(df["date"], df["humidity"], label=capteur["nom"])
-        
-        # Configurer le graphique
-        plt.title("Humidité en fonction du temps")
-        plt.xlabel("Date")
-        plt.ylabel("Humidité (%)")
-        plt.grid(True, linestyle='--', alpha=0.7)
-        plt.legend()
-        
-        # Ajuster la mise en page
+            nom = capteur["nom"]
+            dates = df["date"]
+            humidity = df["humidity"]
+
+            color = palette[color_index % len(palette)]
+            linestyle = '-' if "Ext" not in nom else ':'
+            ax.plot(dates, humidity, label=nom, color=color, linestyle=linestyle, linewidth=0.8)
+            color_index += 1
+
+        # Configuration du graphique
+        ax.set_title("Humidité relative quotidienne", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Humidité (%)")
+        ax.set_ylim(0, 100)
+
+        # Axe X – style ClimaGraph
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+
+        # Grille style papier millimétré
+        ax.set_axisbelow(True)
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))  # chaque lundi
+        ax.yaxis.set_major_locator(plt.MultipleLocator(10))
+        ax.yaxis.set_minor_locator(plt.MultipleLocator(2))
+
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+
+        ax.legend(loc='lower right', frameon=True)
         plt.tight_layout()
-        
-        # Convertir la figure en image base64
+
+        # Convertir en image base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
+        plt.savefig(buf, format='png', dpi=200)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
-        
-        # Préparer les données pour Chart.js
-        datasets = []
-        for capteur_id, capteur in capteurs_data.items():
-            df = capteur["data"]
-            
-            # Générer des couleurs aléatoires
-            r = np.random.randint(0, 200)
-            g = np.random.randint(0, 200)
-            b = np.random.randint(0, 200)
-            color = f"rgba({r}, {g}, {b}, 1)"
-            
-            # Formater les dates et les valeurs
-            dates = df["date"].dt.strftime('%Y-%m-%d %H:%M').tolist()
-            humidity = df["humidity"].tolist()
-            
-            datasets.append({
-                "label": capteur["nom"],
-                "data": humidity,
-                "borderColor": color,
-                "backgroundColor": f"rgba({r}, {g}, {b}, 0.2)",
-                "fill": False,
-                "tension": 0.1
-            })
-        
-        # Obtenir toutes les dates uniques
-        all_dates = []
-        for capteur_id, capteur in capteurs_data.items():
-            all_dates.extend(capteur["data"]["date"].dt.strftime('%Y-%m-%d %H:%M').tolist())
-        all_dates = sorted(list(set(all_dates)))
-        
+
         return {
             "success": True,
             "data": {
@@ -181,234 +254,342 @@ class GraphGenerator:
                 "title": "Humidité en fonction du temps",
                 "x_axis": "Date",
                 "y_axis": "Humidité (%)",
+            },
+            "image": [img_base64]
+        }
+
+
+
+
+    def generate_temperature_amplitude_graph(self, capteurs_data):
+        """
+        Générer un graphique d'amplitudes thermiques quotidiennes (Tmax - Tmin) avec le style ClimaGraph.
+
+        Args:
+            capteurs_data (dict): Données des capteurs
+
+        Returns:
+            dict: Résultat contenant les données pour Chart.js et l'image base64
+        """
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+        import pandas as pd
+
+        # Créer la figure
+        fig, ax = plt.subplots(figsize=(18, 8))
+
+        # Palette cyclique
+        palette = [
+            "#1f77b4", "#2ca02c", "#ff7f0e", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        color_index = 0
+
+        # Tracer les amplitudes thermiques par jour
+        for capteur_id, capteur in capteurs_data.items():
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+
+            # Calculer les amplitudes journalières
+            df["date_only"] = df["date"].dt.floor("D")
+            grouped = df.groupby("date_only")["temperature"]
+            amplitude = (grouped.max() - grouped.min()).reset_index()
+            amplitude.columns = ["date", "amplitude"]
+
+            color = palette[color_index % len(palette)]
+            linestyle = '-' if "Ext" not in nom else ':'
+            ax.plot(amplitude["date"], amplitude["amplitude"], label=nom, color=color, linestyle=linestyle, linewidth=0.8)
+            color_index += 1
+
+        # Configuration du graphique
+        ax.set_title("Amplitudes thermiques quotidiennes", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Température (°C)")
+        ax.set_ylim(0, 10)
+
+        # Axe X : format français, espacé tous les 2 mois
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
+
+        # Grille millimétrée
+        ax.set_axisbelow(True)
+        ax.yaxis.set_major_locator(plt.MultipleLocator(1))
+        ax.yaxis.set_minor_locator(plt.MultipleLocator(0.2))
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+
+        ax.legend(loc='lower right', frameon=True)
+        plt.tight_layout()
+
+        # Convertir la figure en image base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=200)
+        buf.seek(0)
+        img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        plt.close()
+
+        # Chart.js : formatter les données (si jamais tu veux les afficher aussi en JS)
+        datasets = []
+        all_dates = []
+
+        for capteur_id, capteur in capteurs_data.items():
+            df = capteur["data"].copy()
+            df["date_only"] = df["date"].dt.floor("D")
+            grouped = df.groupby("date_only")["temperature"]
+            amplitude = (grouped.max() - grouped.min()).reset_index()
+            amplitude.columns = ["date", "amplitude"]
+
+            dates = amplitude["date"].dt.strftime('%Y-%m-%d').tolist()
+            values = amplitude["amplitude"].round(2).tolist()
+            all_dates.extend(dates)
+
+            r, g, b = np.random.randint(0, 200, 3)
+            datasets.append({
+                "label": capteur["nom"],
+                "data": values,
+                "borderColor": f"rgba({r},{g},{b},1)",
+                "backgroundColor": f"rgba({r},{g},{b},0.2)",
+                "fill": False,
+                "tension": 0.1
+            })
+
+        all_dates = sorted(list(set(all_dates)))
+
+        return {
+            "success": True,
+            "data": {
+                "type": "line",
+                "title": "Amplitude thermique quotidienne",
+                "x_axis": "Date",
+                "y_axis": "Amplitude (°C)",
                 "labels": all_dates,
                 "datasets": datasets
             },
-            "image": img_base64
+            "image": [img_base64]
         }
-    
-    # Autres méthodes de génération de graphiques...
-    # Note: Les autres méthodes de génération de graphiques seraient implémentées ici
-    # de manière similaire aux deux méthodes ci-dessus.
-    
-    def export_graph(self, graph_data, filename, format="png"):
+
+
+
+    def generate_humidity_amplitude_graph(self, capteurs_data):
         """
-        Exporter un graphique en fichier image
+        Générer un graphique d'amplitude hydrique quotidienne (HRmax - HRmin) pour chaque capteur.
         
-        Args:
-            graph_data (dict): Données du graphique (contenant l'image base64)
-            filename (str): Nom du fichier
-            format (str): Format d'export (png, jpg, pdf)
-            
-        Returns:
-            str: Chemin du fichier exporté
-        """
-        # Vérifier que les données contiennent une image
-        if "image" not in graph_data:
-            raise ValueError("Les données du graphique ne contiennent pas d'image")
-        
-        # Créer le chemin complet
-        filepath = os.path.join(self.output_dir, f"{filename}.{format}")
-        
-        # Décoder l'image base64
-        img_data = base64.b64decode(graph_data["image"])
-        
-        # Enregistrer l'image
-        with open(filepath, "wb") as f:
-            f.write(img_data)
-        
-        return filepath
-        
-        
-    def generate_temperature_humidity_graph(self, capteurs_data):
-        """
-        Générer un graphique de température vs humidité
-        
-        Args:
-            capteurs_data (dict): Données des capteurs
-            
         Returns:
             dict: Résultat contenant les données pour Chart.js et l'image base64
         """
-        # Vérifier que tous les capteurs ont des données d'humidité
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+        import pandas as pd
+
+        # Créer la figure
+        fig, ax = plt.subplots(figsize=(18, 8))
+
+        # Palette cyclique
+        palette = [
+            "#1f77b4", "#2ca02c", "#ff7f0e", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        color_index = 0
+
         for capteur_id, capteur in capteurs_data.items():
-            if "humidity" not in capteur["data"].columns:
-                return {
-                    "success": False,
-                    "message": f"Le capteur {capteur['nom']} n'a pas de données d'humidité"
-                }
-        
-        # Créer une figure matplotlib
-        plt.figure(figsize=(10, 8))
-        
-        # Ajouter les données de chaque capteur
-        for capteur_id, capteur in capteurs_data.items():
-            df = capteur["data"]
-            plt.scatter(df["temperature"], df["humidity"], label=capteur["nom"], alpha=0.7)
-        
-        # Configurer le graphique
-        plt.title("Température vs Humidité")
-        plt.xlabel("Température (°C)")
-        plt.ylabel("Humidité (%)")
-        plt.grid(True, linestyle='--', alpha=0.7)
-        plt.legend()
-        
-        # Ajuster la mise en page
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+
+            if "humidity" not in df.columns:
+                continue  # Sauter si le capteur n’a pas d’humidité
+
+            df["date_only"] = df["date"].dt.floor("D")
+            grouped = df.groupby("date_only")["humidity"]
+            amplitude = (grouped.max() - grouped.min()).reset_index()
+            amplitude.columns = ["date", "amplitude"]
+
+            color = palette[color_index % len(palette)]
+            linestyle = '-' if "Ext" not in nom else ':'
+            ax.plot(amplitude["date"], amplitude["amplitude"], label=nom, color=color, linestyle=linestyle, linewidth=0.8)
+            color_index += 1
+
+        # Configuration du graphique
+        ax.set_title("Amplitude hydrique quotidienne", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Humidité relative (%)")
+        ax.set_ylim(0, 40)
+
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
+
+        # Grille papier millimétré
+        ax.set_axisbelow(True)
+        ax.yaxis.set_major_locator(plt.MultipleLocator(5))
+        ax.yaxis.set_minor_locator(plt.MultipleLocator(1))
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+
+        ax.legend(loc='lower right', frameon=True)
         plt.tight_layout()
-        
-        # Convertir la figure en image base64
+
+        # Export en base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
+        plt.savefig(buf, format='png', dpi=200)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
-        
-        # Préparer les données pour Chart.js
+
+        # Préparer les données pour Chart.js (si affiché en JS)
         datasets = []
+        all_dates = []
+
         for capteur_id, capteur in capteurs_data.items():
-            df = capteur["data"]
-            
-            # Générer des couleurs aléatoires
-            r = np.random.randint(0, 200)
-            g = np.random.randint(0, 200)
-            b = np.random.randint(0, 200)
-            color = f"rgba({r}, {g}, {b}, 1)"
-            
-            # Préparer les données pour le graphique de dispersion
-            data = []
-            for i in range(len(df)):
-                data.append({
-                    "x": df["temperature"].iloc[i],
-                    "y": df["humidity"].iloc[i]
-                })
-            
+            df = capteur["data"].copy()
+            if "humidity" not in df.columns:
+                continue
+
+            df["date_only"] = df["date"].dt.floor("D")
+            grouped = df.groupby("date_only")["humidity"]
+            amplitude = (grouped.max() - grouped.min()).reset_index()
+            amplitude.columns = ["date", "amplitude"]
+
+            dates = amplitude["date"].dt.strftime('%Y-%m-%d').tolist()
+            values = amplitude["amplitude"].round(2).tolist()
+            all_dates.extend(dates)
+
+            r, g, b = np.random.randint(0, 200, 3)
             datasets.append({
                 "label": capteur["nom"],
-                "data": data,
-                "backgroundColor": color,
-                "pointRadius": 5,
-                "pointHoverRadius": 7
+                "data": values,
+                "borderColor": f"rgba({r},{g},{b},1)",
+                "backgroundColor": f"rgba({r},{g},{b},0.2)",
+                "fill": False,
+                "tension": 0.1
             })
-        
+
+        all_dates = sorted(list(set(all_dates)))
+
         return {
             "success": True,
             "data": {
-                "type": "scatter",
-                "title": "Température vs Humidité",
-                "x_axis": "Température (°C)",
-                "y_axis": "Humidité (%)",
+                "type": "line",
+                "title": "Amplitude hydrique quotidienne",
+                "x_axis": "Date",
+                "y_axis": "Amplitude HR (%)",
+                "labels": all_dates,
                 "datasets": datasets
             },
-            "image": img_base64
+            "image": [img_base64]
         }
 
 
 
-    def generate_temperature_monthly_graph(self, capteurs_data):
+
+
+    def generate_dew_point_risk_graph(self, capteurs_data):
         """
-        Générer un graphique de température moyenne par mois
-        
-        Args:
-            capteurs_data (dict): Données des capteurs
-            
+        Générer un graphique de l'écart au point de rosée (valeurs déjà mesurées).
+        Affiche une zone de condensation pour les valeurs < 2°C.
+
         Returns:
-            dict: Résultat contenant les données pour Chart.js et l'image base64
+            dict: Résultat contenant uniquement l'image base64
         """
-        # Créer une figure matplotlib
-        plt.figure(figsize=(12, 6))
-        
-        # Préparer les données pour chaque capteur
-        monthly_data = {}
-        all_months = set()
-        
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+        import pandas as pd
+
+        fig, ax = plt.subplots(figsize=(18, 8))
+
+        palette = [
+            "#1f77b4", "#2ca02c", "#ff7f0e", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        color_index = 0
+
         for capteur_id, capteur in capteurs_data.items():
-            df = capteur["data"]
-            
-            # Ajouter le mois comme colonne
-            df["month"] = df["date"].dt.strftime('%Y-%m')
-            
-            # Calculer la moyenne par mois
-            monthly_avg = df.groupby("month")["temperature"].mean()
-            
-            # Stocker les données
-            monthly_data[capteur_id] = {
-                "nom": capteur["nom"],
-                "months": monthly_avg.index.tolist(),
-                "temps": monthly_avg.values.tolist()
-            }
-            
-            # Collecter tous les mois
-            all_months.update(monthly_avg.index.tolist())
-        
-        # Trier les mois
-        all_months = sorted(list(all_months))
-        
-        # Créer des positions pour les barres
-        n_capteurs = len(capteurs_data)
-        bar_width = 0.8 / n_capteurs
-        
-        # Ajouter les barres pour chaque capteur
-        for i, (capteur_id, data) in enumerate(monthly_data.items()):
-            # Créer un dictionnaire pour faciliter l'accès aux valeurs
-            month_to_temp = dict(zip(data["months"], data["temps"]))
-            
-            # Préparer les valeurs pour tous les mois
-            temps = [month_to_temp.get(month, 0) for month in all_months]
-            
-            # Calculer les positions des barres
-            positions = np.arange(len(all_months)) + i * bar_width - (n_capteurs - 1) * bar_width / 2
-            
-            # Ajouter les barres
-            plt.bar(positions, temps, width=bar_width, label=data["nom"])
-        
-        # Configurer le graphique
-        plt.title("Température moyenne par mois")
-        plt.xlabel("Mois")
-        plt.ylabel("Température moyenne (°C)")
-        plt.xticks(np.arange(len(all_months)), all_months, rotation=45)
-        plt.grid(True, linestyle='--', alpha=0.7, axis='y')
-        plt.legend()
-        
-        # Ajuster la mise en page
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+
+            if "date" not in df.columns or "temperature" not in df.columns:
+                print(f"[⚠️] Capteur ignoré (colonnes manquantes) : {nom}")
+                continue
+
+            try:
+                df["date"] = pd.to_datetime(df["date"])
+                df["date_only"] = df["date"].dt.floor("D")
+                grouped = df.groupby("date_only")["temperature"].mean().reset_index()
+                grouped.columns = ["date", "ecart"]
+
+                color = palette[color_index % len(palette)]
+                linestyle = '-' if "Ext" not in nom else ':'
+
+                ax.plot(grouped["date"], grouped["ecart"], label=nom, color=color, linestyle=linestyle, linewidth=0.8)
+
+                # Remplir la zone de risque de condensation (écart < 2°C)
+                ax.fill_between(
+                    grouped["date"],
+                    0,
+                    2,
+                    where=grouped["ecart"] < 2,
+                    color='red',
+                    alpha=0.1
+                )
+
+                color_index += 1
+
+            except Exception as e:
+                print(f"[❌] Erreur avec le capteur {nom} : {e}")
+                continue
+
+        # Mise en forme du graphique
+        ax.set_title("Écart au point de rosée quotidien", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Température (°C)")
+        ax.set_ylim(0, 15)
+
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
+
+        ax.set_axisbelow(True)
+        ax.yaxis.set_major_locator(plt.MultipleLocator(1))
+        ax.yaxis.set_minor_locator(plt.MultipleLocator(0.2))
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+
+        ax.legend(loc='lower right', frameon=True)
         plt.tight_layout()
-        
-        # Convertir la figure en image base64
+
+        # Export de l'image
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
+        plt.savefig(buf, format='png', dpi=200)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
-        
-        # Préparer les données pour Chart.js
-        datasets = []
-        for capteur_id, data in monthly_data.items():
-            # Générer des couleurs aléatoires
-            r = np.random.randint(0, 200)
-            g = np.random.randint(0, 200)
-            b = np.random.randint(0, 200)
-            color = f"rgba({r}, {g}, {b}, 1)"
-            
-            # Préparer les valeurs pour tous les mois
-            month_to_temp = dict(zip(data["months"], data["temps"]))
-            temps = [month_to_temp.get(month, 0) for month in all_months]
-            
-            datasets.append({
-                "label": data["nom"],
-                "data": temps,
-                "backgroundColor": color,
-                "borderColor": f"rgba({r}, {g}, {b}, 1)",
-                "borderWidth": 1
-            })
-        
+
         return {
             "success": True,
             "data": {
-                "type": "bar",
-                "title": "Température moyenne par mois",
-                "x_axis": "Mois",
-                "y_axis": "Température moyenne (°C)",
-                "labels": all_months,
-                "datasets": datasets
+                "type": "line",
+                "title": "Écart au point de rosée quotidien",
+                "x_axis": "Date",
+                "y_axis": "Écart au point de rosée (°C)"
             },
-            "image": img_base64
+            "image": [img_base64]
         }
+
+
+
+

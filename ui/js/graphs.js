@@ -104,7 +104,7 @@ function updateGraphsUI() {
         </div>
       `;
     });
-    
+
     html += `
                       </div>
                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -172,17 +172,6 @@ function updateGraphsUI() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
 // Fonction pour générer le graphique
 function generateGraph() {
   const graphType = document.getElementById("graph-type").value;
@@ -196,7 +185,9 @@ function generateGraph() {
   }
 
   // Récupérer les IDs de tous les capteurs sélectionnés
-  const capteurIds = Array.from(selectedCapteurs).map(checkbox => checkbox.value);
+  const capteurIds = Array.from(selectedCapteurs).map(
+    (checkbox) => checkbox.value
+  );
 
   // Si "Tous les types de graphiques" est sélectionné
   if (graphType === "all") {
@@ -216,6 +207,7 @@ function generateGraph() {
   window.pywebview.api
     .generate_graph(graphType, capteurIds)
     .then((response) => {
+      console.log("Réponse reçue :", response);  
       hideLoading();
       if (response.success) {
         // Afficher le graphique
@@ -225,115 +217,132 @@ function generateGraph() {
 
         // Créer un conteneur pour ce graphique
         const singleGraphContainer = document.createElement("div");
-        singleGraphContainer.className = "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6 relative";
-        
+        singleGraphContainer.className =
+          "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6 relative";
+
         // Ajouter le titre et un bouton de téléchargement à côté
         const titleContainer = document.createElement("div");
         titleContainer.className = "flex justify-between items-center mb-4";
-        
+
         const title = document.createElement("h4");
         title.className = "text-lg font-semibold";
         title.textContent = response.data.title;
-        
-        const downloadBtn = document.createElement("button");
-        downloadBtn.className = "text-blue-500 hover:text-blue-700 flex items-center";
-        downloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger';
-        downloadBtn.title = "Télécharger cette image";
-        downloadBtn.onclick = () => {
-          showLoading("Préparation du téléchargement...");
-          
-          // Ouvrir une boîte de dialogue pour enregistrer les images
-          window.pywebview.api.save_all_images_with_dialog([{
-            id: graphType,
-            name: response.data.title,
-            images: Array.isArray(response.image) ? response.image : [response.image]
-          }])
-            .then(saveResponse => {
-              hideLoading();
-              if (saveResponse.success) {
-                showNotification(`Images enregistrées avec succès`, "success");
-              } else {
-                showNotification(saveResponse.message, "error");
-              }
-            })
-            .catch(error => {
-              hideLoading();
-              showNotification("Erreur lors du téléchargement des graphiques", "error");
-              console.error(error);
-            });
-        };
-        
+
         titleContainer.appendChild(title);
-        titleContainer.appendChild(downloadBtn);
         singleGraphContainer.appendChild(titleContainer);
-        
+
         // Conteneur pour les images
         const imagesContainer = document.createElement("div");
-        imagesContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
-        
+        imagesContainer.className = "";
+
         // Ajouter les images
         if (Array.isArray(response.image)) {
           // Si c'est un tableau d'images
           response.image.forEach((imageData, index) => {
             const imgContainer = document.createElement("div");
             imgContainer.className = "relative";
-            
+
             const img = document.createElement("img");
             img.src = `data:image/png;base64,${imageData}`;
-            img.className = "w-full border border-gray-200 dark:border-gray-700 rounded";
+            img.className =
+              "w-full border border-gray-200 dark:border-gray-700 rounded";
             img.alt = `${response.data.title} - Image ${index + 1}`;
-            
+
             // Bouton de téléchargement individuel pour chaque image
             const singleDownloadBtn = document.createElement("button");
-            singleDownloadBtn.className = "absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-full shadow-md";
-            singleDownloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+            singleDownloadBtn.className =
+              "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
+            singleDownloadBtn.innerHTML =              '<i class="bx bx-download text-xl"></i>';
             singleDownloadBtn.title = "Télécharger cette image";
             singleDownloadBtn.onclick = (e) => {
               e.stopPropagation();
               showLoading("Préparation du téléchargement...");
-              
+
               // Ouvrir une boîte de dialogue pour enregistrer l'image
-              window.pywebview.api.save_image_with_dialog(imageData, `${response.data.title}_${index + 1}`)
-                .then(saveResponse => {
+              window.pywebview.api
+                .save_image_with_dialog(
+                  imageData,
+                  `${response.data.title}_${index + 1}`
+                )
+                .then((saveResponse) => {
                   hideLoading();
                   if (saveResponse.success) {
-                    showNotification(`Image enregistrée avec succès`, "success");
+                    showNotification(
+                      `Image enregistrée avec succès`,
+                      "success"
+                    );
                   } else {
                     showNotification(saveResponse.message, "error");
                   }
                 })
-                .catch(error => {
+                .catch((error) => {
                   hideLoading();
-                  showNotification("Erreur lors du téléchargement de l'image", "error");
+                  showNotification(
+                    "Erreur lors du téléchargement de l'image",
+                    "error"
+                  );
                   console.error(error);
                 });
             };
-            
+
             imgContainer.appendChild(img);
             imgContainer.appendChild(singleDownloadBtn);
             imagesContainer.appendChild(imgContainer);
           });
         } else {
           // Si c'est une seule image
+          const imgContainer = document.createElement("div");
+          imgContainer.className = "relative";
+
           const img = document.createElement("img");
           img.src = `data:image/png;base64,${response.image}`;
-          img.className = "w-full";
+          img.className =
+            "w-full border border-gray-200 dark:border-gray-700 rounded";
           img.alt = response.data.title;
-          imagesContainer.appendChild(img);
+
+          // Bouton de téléchargement pour l'image unique
+          const singleDownloadBtn = document.createElement("button");
+          singleDownloadBtn.className =
+            "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
+          singleDownloadBtn.innerHTML =
+            '<i class="bx bx-download text-xl"></i>';
+          singleDownloadBtn.title = "Télécharger cette image";
+          singleDownloadBtn.onclick = (e) => {
+            e.stopPropagation();
+            showLoading("Préparation du téléchargement...");
+
+            // Ouvrir une boîte de dialogue pour enregistrer l'image
+            window.pywebview.api
+              .save_image_with_dialog(response.image, response.data.title)
+              .then((saveResponse) => {
+                hideLoading();
+                if (saveResponse.success) {
+                  showNotification(`Image enregistrée avec succès`, "success");
+                } else {
+                  showNotification(saveResponse.message, "error");
+                }
+              })
+              .catch((error) => {
+                hideLoading();
+                showNotification(
+                  "Erreur lors du téléchargement de l'image",
+                  "error"
+                );
+                console.error(error);
+              });
+          };
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(singleDownloadBtn);
+          imagesContainer.appendChild(imgContainer);
         }
-        
+
         singleGraphContainer.appendChild(imagesContainer);
-        
-        // Ajouter au conteneur principal
+
         graphContainer.appendChild(singleGraphContainer);
-        
-        // Faire défiler jusqu'au graphique
-        graphContainer.scrollIntoView({ behavior: 'smooth' });
-        
-        // Afficher également le graphique avec Chart.js si disponible
-        if (response.data && response.data.type) {
-          displayGraph(response.data, response.image);
-        }
+        graphContainer.scrollIntoView({ behavior: "smooth" });
+        showNotification(`${response.data.title}`,"success")
+
       } else {
         showNotification(response.message, "error");
       }
@@ -345,109 +354,39 @@ function generateGraph() {
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-// Fonction pour télécharger un seul graphique via le backend Python
-function downloadSingleGraph(capteurId, graphType, imageBase64, graphName) {
-  showLoading("Préparation du téléchargement...");
-
-  // Utiliser l'image déjà générée plutôt que de la régénérer
-  window.pywebview.api
-    .save_image_with_dialog(imageBase64, graphName, capteurId)
-    .then((response) => {
-      hideLoading();
-      if (response.success) {
-        showNotification(`Image enregistrée avec succès`, "success");
-      } else {
-        showNotification(response.message, "error");
-      }
-    })
-    .catch((error) => {
-      hideLoading();
-      showNotification("Erreur lors du téléchargement du graphique", "error");
-      console.error(error);
-    });
-}
-
-// Fonction pour télécharger toutes les images via le backend Python
-function downloadAllGraphs(capteurId, graphImages) {
-  if (graphImages.length === 0) {
-    showNotification("Aucun graphique à télécharger", "warning");
-    return;
-  }
-
-  showLoading("Préparation du téléchargement de tous les graphiques...");
-
-  // Demander à l'utilisateur de choisir un dossier avant de télécharger
-  window.pywebview.api
-    .save_all_images_with_dialog(graphImages, capteurId)
-    .then((response) => {
-      hideLoading();
-      if (response.success) {
-        showNotification(`Graphiques enregistrés avec succès`, "success");
-      } else {
-        showNotification(response.message, "error");
-      }
-    })
-    .catch((error) => {
-      hideLoading();
-      showNotification("Erreur lors du téléchargement des graphiques", "error");
-      console.error(error);
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Fonction pour générer tous les types de graphiques
 function generateAllGraphTypes(capteurIds) {
   showLoading("Génération de tous les graphiques en cours...");
-  
+
   // Créer un conteneur pour tous les graphiques
   const graphContainer = document.getElementById("graph-container");
-  graphContainer.innerHTML = '<h3 class="text-xl font-bold mb-4 text-center">Tous les graphiques</h3>';
+  graphContainer.innerHTML =
+    '<h3 class="text-xl font-bold mb-4 text-center">Tous les graphiques</h3>';
   graphContainer.classList.remove("hidden");
-  
+
   // Tableau pour stocker les données des graphiques générés
   const generatedGraphs = [];
-  
+
   // Générer chaque type de graphique séquentiellement
   const generateNextGraph = (index) => {
     if (index >= graphTypes.length) {
       hideLoading();
-      
+
       // Ajouter le bouton de téléchargement de toutes les images
       const downloadAllContainer = document.createElement("div");
       downloadAllContainer.className = "flex justify-center mt-4 mb-6";
-      
+
       const downloadAllBtn = document.createElement("button");
       downloadAllBtn.className = "btn-primary flex items-center justify-center";
-      downloadAllBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger toutes les images';
+      downloadAllBtn.innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger toutes les images';
       downloadAllBtn.onclick = () => {
         showLoading("Préparation du téléchargement...");
-        
+
         // Ouvrir une boîte de dialogue pour enregistrer les images
-        window.pywebview.api.save_all_images_with_dialog(generatedGraphs)
-          .then(saveResponse => {
+        window.pywebview.api
+          .save_all_images_with_dialog(generatedGraphs)
+          .then((saveResponse) => {
             hideLoading();
             if (saveResponse.success) {
               showNotification(`Images enregistrées avec succès`, "success");
@@ -455,21 +394,24 @@ function generateAllGraphTypes(capteurIds) {
               showNotification(saveResponse.message, "error");
             }
           })
-          .catch(error => {
+          .catch((error) => {
             hideLoading();
-            showNotification("Erreur lors du téléchargement des graphiques", "error");
+            showNotification(
+              "Erreur lors du téléchargement des graphiques",
+              "error"
+            );
             console.error(error);
           });
       };
-      
+
       downloadAllContainer.appendChild(downloadAllBtn);
       graphContainer.appendChild(downloadAllContainer);
-      
+
       return;
     }
-    
+
     const graphType = graphTypes[index];
-    
+
     window.pywebview.api
       .generate_graph(graphType.id, capteurIds)
       .then((response) => {
@@ -478,94 +420,81 @@ function generateAllGraphTypes(capteurIds) {
           generatedGraphs.push({
             id: graphType.id,
             name: graphType.name,
-            images: Array.isArray(response.image) ? response.image : [response.image]
+            image: Array.isArray(response.image)
+              ? response.image[0]
+              : response.image,
           });
-          
+
           // Créer un conteneur pour ce graphique
           const singleGraphContainer = document.createElement("div");
-          singleGraphContainer.className = "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6 relative";
-          
+          singleGraphContainer.className =
+            "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-6 relative";
+
           // Ajouter le titre et un bouton de téléchargement à côté
           const titleContainer = document.createElement("div");
           titleContainer.className = "flex justify-between items-center mb-4";
-          
+
           const title = document.createElement("h4");
           title.className = "text-lg font-semibold";
           title.textContent = graphType.name;
-          
-          const downloadBtn = document.createElement("button");
-          downloadBtn.className = "text-blue-500 hover:text-blue-700 flex items-center";
-          downloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg> Télécharger';
-          downloadBtn.title = "Télécharger cette image";
-          downloadBtn.onclick = () => {
-            showLoading("Préparation du téléchargement...");
-            
-            // Ouvrir une boîte de dialogue pour enregistrer les images
-            window.pywebview.api.save_all_images_with_dialog([{
-              id: graphType.id,
-              name: graphType.name,
-              images: Array.isArray(response.image) ? response.image : [response.image]
-            }])
-              .then(saveResponse => {
-                hideLoading();
-                if (saveResponse.success) {
-                  showNotification(`Images enregistrées avec succès`, "success");
-                } else {
-                  showNotification(saveResponse.message, "error");
-                }
-              })
-              .catch(error => {
-                hideLoading();
-                showNotification("Erreur lors du téléchargement des graphiques", "error");
-                console.error(error);
-              });
-          };
-          
+
           titleContainer.appendChild(title);
-          titleContainer.appendChild(downloadBtn);
           singleGraphContainer.appendChild(titleContainer);
-          
+
           // Conteneur pour les images
           const imagesContainer = document.createElement("div");
-          imagesContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
-          
+          imagesContainer.className = "grid grid-cols-1 gap-4";
+
           // Ajouter les images
           if (Array.isArray(response.image)) {
             // Si c'est un tableau d'images
             response.image.forEach((imageData, index) => {
               const imgContainer = document.createElement("div");
               imgContainer.className = "relative";
-              
+
               const img = document.createElement("img");
               img.src = `data:image/png;base64,${imageData}`;
-              img.className = "w-full border border-gray-200 dark:border-gray-700 rounded";
+              img.className =
+                "w-full border border-gray-200 dark:border-gray-700 rounded";
               img.alt = `${graphType.name} - Image ${index + 1}`;
               // Bouton de téléchargement individuel pour chaque image
               const singleDownloadBtn = document.createElement("button");
-              singleDownloadBtn.className = "absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-full shadow-md";
-              singleDownloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+              singleDownloadBtn.className =
+                "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
+              singleDownloadBtn.innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
               singleDownloadBtn.title = "Télécharger cette image";
               singleDownloadBtn.onclick = (e) => {
                 e.stopPropagation();
                 showLoading("Préparation du téléchargement...");
-                
+
                 // Ouvrir une boîte de dialogue pour enregistrer l'image
-                window.pywebview.api.save_image_with_dialog(imageData, `${graphType.name}_${index + 1}`)
-                  .then(saveResponse => {
+                window.pywebview.api
+                  .save_image_with_dialog(
+                    imageData,
+                    `${graphType.name}_${index + 1}`
+                  )
+                  .then((saveResponse) => {
                     hideLoading();
                     if (saveResponse.success) {
-                      showNotification(`Image enregistrée avec succès`, "success");
+                      showNotification(
+                        `Image enregistrée avec succès`,
+                        "success"
+                      );
                     } else {
                       showNotification(saveResponse.message, "error");
                     }
                   })
-                  .catch(error => {
+                  .catch((error) => {
                     hideLoading();
-                    showNotification("Erreur lors du téléchargement de l'image", "error");
+                    showNotification(
+                      "Erreur lors du téléchargement de l'image",
+                      "error"
+                    );
                     console.error(error);
                   });
               };
-              
+
               imgContainer.appendChild(img);
               imgContainer.appendChild(singleDownloadBtn);
               imagesContainer.appendChild(imgContainer);
@@ -574,50 +503,62 @@ function generateAllGraphTypes(capteurIds) {
             // Si c'est une seule image
             const imgContainer = document.createElement("div");
             imgContainer.className = "relative";
-            
+
             const img = document.createElement("img");
             img.src = `data:image/png;base64,${response.image}`;
-            img.className = "w-full border border-gray-200 dark:border-gray-700 rounded";
+            img.className =
+              "w-full border border-gray-200 dark:border-gray-700 rounded";
             img.alt = graphType.name;
-            
+
             // Bouton de téléchargement individuel
             const singleDownloadBtn = document.createElement("button");
-            singleDownloadBtn.className = "absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-full shadow-md";
-            singleDownloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+            singleDownloadBtn.className =
+              "absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-full shadow-md";
+            singleDownloadBtn.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
             singleDownloadBtn.title = "Télécharger cette image";
             singleDownloadBtn.onclick = (e) => {
               e.stopPropagation();
               showLoading("Préparation du téléchargement...");
-              
+
               // Ouvrir une boîte de dialogue pour enregistrer l'image
-              window.pywebview.api.save_image_with_dialog(response.image, graphType.name)
-                .then(saveResponse => {
+              window.pywebview.api
+                .save_image_with_dialog(response.image, graphType.name)
+                .then((saveResponse) => {
                   hideLoading();
                   if (saveResponse.success) {
-                    showNotification(`Image enregistrée avec succès`, "success");
+                    showNotification(
+                      `Image enregistrée avec succès`,
+                      "success"
+                    );
                   } else {
                     showNotification(saveResponse.message, "error");
                   }
                 })
-                .catch(error => {
+                .catch((error) => {
                   hideLoading();
-                  showNotification("Erreur lors du téléchargement de l'image", "error");
+                  showNotification(
+                    "Erreur lors du téléchargement de l'image",
+                    "error"
+                  );
                   console.error(error);
                 });
             };
-            
+
             imgContainer.appendChild(img);
             imgContainer.appendChild(singleDownloadBtn);
             imagesContainer.appendChild(imgContainer);
           }
-          
+
           singleGraphContainer.appendChild(imagesContainer);
-          
           // Ajouter au conteneur principal
           graphContainer.appendChild(singleGraphContainer);
+          singleGraphContainer.scrollIntoView({ behavior: "smooth" });
+          showNotification(`${response.data.title}`,"success")
         }
-        
+
         // Passer au graphique suivant
+
         generateNextGraph(index + 1);
       })
       .catch((error) => {
@@ -629,21 +570,10 @@ function generateAllGraphTypes(capteurIds) {
         generateNextGraph(index + 1);
       });
   };
-  
+
   // Commencer la génération séquentielle
   generateNextGraph(0);
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // Mise à jour de la description du graphique
 function updateGraphDescription() {
@@ -662,93 +592,16 @@ function updateGraphDescription() {
   }
 }
 
-// Afficher un graphique
-function displayGraph(data) {
-  // Afficher le conteneur du graphique
-  const graphContainer = document.getElementById("graph-container");
-  graphContainer.classList.remove("hidden");
 
-  // Mettre à jour le titre du graphique
-  document.getElementById("graph-title").textContent = data.title;
 
-  // Récupérer le canvas
-  const canvas = document.getElementById("graph-canvas");
-  const ctx = canvas.getContext("2d");
 
-  // Détruire le graphique existant s'il y en a un
-  if (currentChart) {
-    currentChart.destroy();
-  }
 
-  // Créer la configuration du graphique
-  let config = {
-    type: data.type,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "top",
-        },
-        tooltip: {
-          mode: "index",
-          intersect: false,
-        },
-      },
-      scales: {},
-    },
-  };
 
-  // Configurer les données en fonction du type de graphique
-  if (data.type === "scatter") {
-    config.data = {
-      datasets: data.datasets,
-    };
 
-    // Configurer les axes pour le graphique de dispersion
-    config.options.scales = {
-      x: {
-        title: {
-          display: true,
-          text: data.x_axis,
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: data.y_axis,
-        },
-      },
-    };
-  } else {
-    config.data = {
-      labels: data.labels,
-      datasets: data.datasets,
-    };
 
-    // Configurer les axes pour les autres types de graphiques
-    config.options.scales = {
-      x: {
-        title: {
-          display: true,
-          text: data.x_axis,
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: data.y_axis,
-        },
-      },
-    };
-  }
 
-  // Créer le graphique
-  currentChart = new Chart(ctx, config);
 
-  // Faire défiler jusqu'au graphique
-  graphContainer.scrollIntoView({ behavior: "smooth" });
-}
+
 
 // Exporter un graphique
 function exportGraph(format) {

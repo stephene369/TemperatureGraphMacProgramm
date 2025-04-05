@@ -2,7 +2,7 @@
 Module DataLoader - Chargement et traitement des données
 """
 import pandas as pd
-
+from print_color.print_color import print 
 class DataLoader:
     """
     Classe pour charger et traiter les données des fichiers
@@ -84,6 +84,8 @@ class DataLoader:
             ValueError: Si les données du capteur sont incomplètes
             Exception: Si une erreur se produit lors du chargement des données
         """
+        import pandas as pd
+
         if not capteur_data.get("file_path"):
             raise ValueError("Aucun fichier associé au capteur")
         
@@ -95,16 +97,30 @@ class DataLoader:
         # Charger le fichier
         df = self.load_file(capteur_data["file_path"])
         
-        # Appliquer le mappage
+        # Appliquer le mappage (copie explicite)
         columns = capteur_data["columns"]
-        mapped_df = df[[columns["date"], columns["temperature"]]]
-        mapped_df.columns = ["date", "temperature"]
-        
-        # Ajouter l'humidité si disponible
+        col_list = [columns["date"], columns["temperature"]]
+
         if columns.get("humidity"):
-            mapped_df["humidity"] = df[columns["humidity"]]
-        
-        # Convertir la colonne de date
-        mapped_df["date"] = pd.to_datetime(mapped_df["date"])
+            col_list.append(columns["humidity"])
+
+        mapped_df = df[col_list].copy()  # ← évite les SettingWithCopyWarning
+
+        # Renommer les colonnes
+        new_columns = ["date", "temperature"]
+        if columns.get("humidity"):
+            new_columns.append("humidity")
+        mapped_df.columns = new_columns
+
+        # Conversion des types avec sécurité
+        mapped_df.loc[:, "date"] = pd.to_datetime(mapped_df["date"], errors="coerce")
+        mapped_df.loc[:, "temperature"] = pd.to_numeric(mapped_df["temperature"], errors="coerce")
+        if "humidity" in mapped_df.columns:
+            mapped_df.loc[:, "humidity"] = pd.to_numeric(mapped_df["humidity"], errors="coerce")
+
+        # Supprimer les lignes invalides
+        mapped_df = mapped_df.dropna(subset=["date", "temperature"])
+
+        print(f"[✔] Données capteur chargées : {capteur_data['file_path']}")
         
         return mapped_df
