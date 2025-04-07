@@ -298,7 +298,7 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.512);
+    background-color: rgba(255, 255, 255, 0.541);
     /* background: #0000008e; */
     /* background-color: transparent; */
     display: flex;
@@ -383,7 +383,7 @@ button:disabled {
 /* Splash Screen Styles */
 #splash-screen {
     position: fixed;
-    top: 0;
+    top: 0%;
     left: 0;
     width: 100%;
     height: 100%;
@@ -401,9 +401,31 @@ button:disabled {
 }
 
 #lottie-container {
-    width: 500px;
-    height: 500px;
+    width: 300px;
+    height: 400px;
+    display: flex;
+    align-self: start;
+    align-items: center;
+    justify-content: center;
 }
+
+#splash-title {
+    font-family: 'Pacifico', cursive;
+    color: #000000;
+    font-size: 2.8rem;
+    opacity: 0;
+    display: block;
+    animation: fadeIn 10s ease forwards;
+    animation-delay: 0s;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.2; }
+}
+
+
 
 /* Styles pour les animations de transition entre pages */
 .page {
@@ -624,3 +646,6 @@ select option {
 .bx-download {
     font-size: 2rem;
 }
+
+
+

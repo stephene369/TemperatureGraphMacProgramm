@@ -224,4 +224,3 @@ function hideLoading() {
     document.getElementById('loading-overlay').classList.add('hidden');
 }
 
-

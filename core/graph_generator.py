@@ -597,7 +597,7 @@ class GraphGenerator:
 
 
 
-    def generate_all_humidity_distribution_pair_graphs(self, capteurs_data, applito_pie=False, applito_hist=True):
+    def generate_all_humidity_distribution_pair_graphs(self, capteurs_data, applito_pie=True, applito_hist=True):
         """
         Génère une image par capteur avec :
         - À gauche : camembert des tranches d'humidité

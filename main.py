@@ -32,7 +32,6 @@ os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(IMAGE_OUTPUT_DIR, exist_ok=True)
 
-
 def main():
     """
     Fonction principale qui initialise et démarre l'application
@@ -54,8 +53,7 @@ def main():
     # Démarrer l'application
     webview.start(
         debug=False,
-        icon=os.path.join(UI_DIR, "assets", "logo.png"),
-        frameless=False,
+        icon=os.path.join(UI_DIR, "assets","img", "logo.png"),
     )
 
 
