@@ -108,6 +108,9 @@ function loadPageContent(page) {
         case 'history':
             loadHistoryPage();
             break;
+        case 'documentation':
+            loadDocumentationPage();
+            break;
     }
 }
 

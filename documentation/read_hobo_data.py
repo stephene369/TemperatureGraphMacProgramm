@@ -54,15 +54,15 @@ if __name__ == "__main__":
         if data:
             # Calculate average temperature
             avg_temp = sum(record[1] for record in data) / len(data)
-            print(f"\nAverage temperature: {avg_temp:.1f} F")
+            # print(f"\nAverage temperature: {avg_temp:.1f} F")
             
             # Find min and max temperature
             min_temp = min(record[1] for record in data)
             max_temp = max(record[1] for record in data)
-            print(f"Temperature range: {min_temp:.1f} F to {max_temp:.1f} F")
+            # print(f"Temperature range: {min_temp:.1f} F to {max_temp:.1f} F")
             
             # Calculate average humidity
             avg_rh = sum(record[2] for record in data) / len(data)
-            print(f"Average relative humidity: {avg_rh:.1f} %")
+            # print(f"Average relative humidity: {avg_rh:.1f} %")
     except Exception as e:
         print(f"Error: {e}")

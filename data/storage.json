@@ -1,39 +1,40 @@
 {
   "capteurs": {
-    "4b54d0bf-d3c1-452e-a389-e5cbe49dd58b": {
-      "nom": "C3(Nord)",
-      "created_at": "2025-04-07T20:32:06.983067",
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
+    "f7710ab6-fa3b-4c19-8581-7f5e9df96714": {
+      "nom": "nord",
+      "created_at": "2025-04-15T13:48:36.272459",
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
       "columns": {
         "date": "Date-Time (CET)",
         "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
       },
-      "file_updated_at": "2025-04-07T20:32:34.415678",
-      "updated_at": "2025-04-07T20:33:29.871674"
+      "file_updated_at": "2025-04-15T13:48:41.911998"
     },
-    "5af2a549-2932-4ea3-80e2-a3e9fe64c38c": {
-      "nom": "C4(Est)",
-      "created_at": "2025-04-07T20:32:40.495608",
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx",
+    "69965cde-a78f-4fc8-982f-13f660e91263": {
+      "nom": "sud",
+      "created_at": "2025-04-15T13:48:46.172311",
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
       "columns": {
         "date": "Date-Time (CET)",
         "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
       },
-      "file_updated_at": "2025-04-07T20:32:54.213632",
-      "updated_at": "2025-04-07T20:33:46.953085"
+      "file_updated_at": "2025-04-15T13:48:51.366428"
     },
-    "6b151d12-7dfa-4cfd-b05e-539708294187": {
-      "nom": "C6(Sud Est)",
-      "created_at": "2025-04-07T20:33:10.410272",
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
+    "f5394d4b-b03b-404b-b989-decdff41c3a7": {
+      "nom": "Est",
+      "created_at": "2025-04-15T13:49:45.971179",
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx",
       "columns": {
         "date": "Date-Time (CET)",
         "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
       },
-      "file_updated_at": "2025-04-07T20:33:17.213757"
+      "file_updated_at": "2025-04-15T13:49:53.251923"
     }
   }
 }

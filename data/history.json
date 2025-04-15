@@ -1,421 +1,74 @@
 [
   {
-    "id": "b48ba911-f71d-463f-bba6-0a38804d9c2a",
-    "timestamp": "2025-04-04T11:04:24.066094",
+    "id": "a5ddd24a-bd15-43a3-ae27-563d7ea50fb1",
+    "timestamp": "2025-04-15T13:48:36.272459",
     "action": "Ajout de capteur",
-    "capteur_id": "5a5f89ee-68b9-4675-9459-38d7c089fdfa",
-    "capteur_nom": "Nord",
+    "capteur_id": "f7710ab6-fa3b-4c19-8581-7f5e9df96714",
+    "capteur_nom": "nord",
     "details": null
   },
   {
-    "id": "16a46548-868f-417c-b878-05e1e3bfbc50",
-    "timestamp": "2025-04-04T11:06:17.590197",
+    "id": "2a4851c6-6b6e-4c52-a81a-2695831d1c7a",
+    "timestamp": "2025-04-15T13:48:41.913054",
+    "action": "Association de fichier",
+    "capteur_id": "f7710ab6-fa3b-4c19-8581-7f5e9df96714",
+    "capteur_nom": "nord",
+    "details": {
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
+      }
+    }
+  },
+  {
+    "id": "7b73bea5-71c0-4aed-9ec6-5b2317c3a54a",
+    "timestamp": "2025-04-15T13:48:46.173382",
     "action": "Ajout de capteur",
-    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
+    "capteur_id": "69965cde-a78f-4fc8-982f-13f660e91263",
     "capteur_nom": "sud",
     "details": null
   },
   {
-    "id": "1f094beb-5bda-47f6-849c-625418420b04",
-    "timestamp": "2025-04-04T11:06:25.868802",
+    "id": "2cb31cd1-77c4-4fda-9845-71c92dadd6a3",
+    "timestamp": "2025-04-15T13:48:51.366428",
     "action": "Association de fichier",
-    "capteur_id": "5a5f89ee-68b9-4675-9459-38d7c089fdfa",
-    "capteur_nom": "Nord",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "989de84a-2e08-47df-81d4-ee6afe9fc2c7",
-    "timestamp": "2025-04-04T12:47:08.994722",
-    "action": "Association de fichier",
-    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
+    "capteur_id": "69965cde-a78f-4fc8-982f-13f660e91263",
     "capteur_nom": "sud",
     "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
       "columns": {
         "date": "Date-Time (CET)",
         "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
       }
     }
   },
   {
-    "id": "9e7c62f1-3764-497f-9f8c-ec720f90115a",
-    "timestamp": "2025-04-04T14:20:49.167267",
-    "action": "Export de graphique",
-    "capteur_id": null,
-    "capteur_nom": null,
-    "details": {
-      "graph_type": "temperature_time",
-      "capteurs": [
-        "Nord"
-      ],
-      "format": "png",
-      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\temperature_time_Nord.png"
-    }
-  },
-  {
-    "id": "42475c1d-70c1-432a-b764-b466b0d5ec83",
-    "timestamp": "2025-04-04T14:21:02.308761",
-    "action": "Export de graphique",
-    "capteur_id": null,
-    "capteur_nom": null,
-    "details": {
-      "graph_type": "humidity_time",
-      "capteurs": [
-        "Nord"
-      ],
-      "format": "png",
-      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\humidity_time_Nord.png"
-    }
-  },
-  {
-    "id": "9b9e80f8-51e1-4d89-84bd-596916fd19db",
-    "timestamp": "2025-04-04T14:21:16.609557",
-    "action": "Export de graphique",
-    "capteur_id": null,
-    "capteur_nom": null,
-    "details": {
-      "graph_type": "humidity_time",
-      "capteurs": [
-        "Nord"
-      ],
-      "format": "png",
-      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\humidity_time_Nord.png"
-    }
-  },
-  {
-    "id": "a9d62efb-ad4b-4fac-862f-0e308380f3d0",
-    "timestamp": "2025-04-04T14:21:24.755628",
-    "action": "Export de graphique",
-    "capteur_id": null,
-    "capteur_nom": null,
-    "details": {
-      "graph_type": "temperature_monthly",
-      "capteurs": [
-        "Nord"
-      ],
-      "format": "png",
-      "filepath": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\output\\exports\\temperature_monthly_Nord.png"
-    }
-  },
-  {
-    "id": "03856700-d66c-4f26-8a1b-9792c1fccc2d",
-    "timestamp": "2025-04-05T10:30:29.292533",
+    "id": "998f14bc-01aa-4f20-80be-00e7edeebb17",
+    "timestamp": "2025-04-15T13:49:45.972740",
     "action": "Ajout de capteur",
-    "capteur_id": "097e09e3-9d82-4b60-992a-673fdd14a3bd",
+    "capteur_id": "f5394d4b-b03b-404b-b989-decdff41c3a7",
     "capteur_nom": "Est",
     "details": null
   },
   {
-    "id": "811febc1-5e49-4c70-9c20-3bfd43247d3e",
-    "timestamp": "2025-04-05T10:31:56.269523",
+    "id": "f9061e1a-20e8-41b1-8472-a86fb2b3511e",
+    "timestamp": "2025-04-15T13:49:53.252926",
     "action": "Association de fichier",
-    "capteur_id": "097e09e3-9d82-4b60-992a-673fdd14a3bd",
+    "capteur_id": "f5394d4b-b03b-404b-b989-decdff41c3a7",
     "capteur_nom": "Est",
     "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx",
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx",
       "columns": {
         "date": "Date-Time (CET)",
         "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
       }
-    }
-  },
-  {
-    "id": "3210dfaf-0124-4bc5-bf36-c2324ce28360",
-    "timestamp": "2025-04-05T10:32:02.319125",
-    "action": "Modification de capteur",
-    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
-    "capteur_nom": "Sud",
-    "details": {
-      "old_nom": "sud",
-      "new_nom": "Sud"
-    }
-  },
-  {
-    "id": "3ece4fa6-06d4-4e7c-a3aa-104b22a44f39",
-    "timestamp": "2025-04-05T10:32:08.935612",
-    "action": "Association de fichier",
-    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
-    "capteur_nom": "Sud",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "ebec830c-f884-4b8f-a025-e23df0a89eb1",
-    "timestamp": "2025-04-05T10:32:18.752144",
-    "action": "Association de fichier",
-    "capteur_id": "5a5f89ee-68b9-4675-9459-38d7c089fdfa",
-    "capteur_nom": "Nord",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "0add1c06-a401-40e3-85d9-b8fd4d31573a",
-    "timestamp": "2025-04-07T10:46:14.991477",
-    "action": "Suppression de capteur",
-    "capteur_id": "5a5f89ee-68b9-4675-9459-38d7c089fdfa",
-    "capteur_nom": null,
-    "details": {
-      "nom": "Nord"
-    }
-  },
-  {
-    "id": "642e8209-62dd-47f4-8b6d-549347ef6362",
-    "timestamp": "2025-04-07T10:46:20.503741",
-    "action": "Ajout de capteur",
-    "capteur_id": "3315cfbc-b4fc-4d3e-be56-ff2fcb49154f",
-    "capteur_nom": "Nord",
-    "details": null
-  },
-  {
-    "id": "9a4f362e-558c-4592-906c-e0d658629263",
-    "timestamp": "2025-04-07T10:46:30.723090",
-    "action": "Association de fichier",
-    "capteur_id": "3315cfbc-b4fc-4d3e-be56-ff2fcb49154f",
-    "capteur_nom": "Nord",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "ad4cf3cb-45ea-4530-890a-c79d51e14759",
-    "timestamp": "2025-04-07T10:47:12.343487",
-    "action": "Mappage des colonnes",
-    "capteur_id": "3315cfbc-b4fc-4d3e-be56-ff2fcb49154f",
-    "capteur_nom": "Nord",
-    "details": {
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "ab56a538-0281-42ba-8f18-bdcfe6d64927",
-    "timestamp": "2025-04-07T20:21:03.035238",
-    "action": "Suppression de capteur",
-    "capteur_id": "3315cfbc-b4fc-4d3e-be56-ff2fcb49154f",
-    "capteur_nom": null,
-    "details": {
-      "nom": "Nord"
-    }
-  },
-  {
-    "id": "986cab3b-3217-4af6-9dbb-d6fa1eaf92f6",
-    "timestamp": "2025-04-07T20:21:08.594134",
-    "action": "Ajout de capteur",
-    "capteur_id": "9b0c295b-9af8-41bf-b739-0690d2135102",
-    "capteur_nom": "Nord",
-    "details": null
-  },
-  {
-    "id": "876cb2ba-0a29-4075-9cb5-fb140a1689f6",
-    "timestamp": "2025-04-07T20:21:21.349570",
-    "action": "Association de fichier",
-    "capteur_id": "9b0c295b-9af8-41bf-b739-0690d2135102",
-    "capteur_nom": "Nord",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\ClimaGraph\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "49bbb195-e036-496c-8f2f-a151a07329e3",
-    "timestamp": "2025-04-07T20:24:14.707129",
-    "action": "Modification de capteur",
-    "capteur_id": "9b0c295b-9af8-41bf-b739-0690d2135102",
-    "capteur_nom": "Nord-est",
-    "details": {
-      "old_nom": "Nord",
-      "new_nom": "Nord-est"
-    }
-  },
-  {
-    "id": "a4e0ce96-24a7-446f-a7e8-39191e2b36d8",
-    "timestamp": "2025-04-07T20:31:21.933779",
-    "action": "Modification de capteur",
-    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
-    "capteur_nom": "C3",
-    "details": {
-      "old_nom": "Sud",
-      "new_nom": "C3"
-    }
-  },
-  {
-    "id": "1589a1ec-9c81-49bb-8086-690126a9add3",
-    "timestamp": "2025-04-07T20:31:59.216710",
-    "action": "Suppression de capteur",
-    "capteur_id": "d644e26a-5177-4bc8-a980-f81c983d4c9d",
-    "capteur_nom": null,
-    "details": {
-      "nom": "C3"
-    }
-  },
-  {
-    "id": "f1b18c37-3267-4378-a013-bb530c783cdd",
-    "timestamp": "2025-04-07T20:32:01.420780",
-    "action": "Suppression de capteur",
-    "capteur_id": "097e09e3-9d82-4b60-992a-673fdd14a3bd",
-    "capteur_nom": null,
-    "details": {
-      "nom": "Est"
-    }
-  },
-  {
-    "id": "fba50b68-5567-4e7d-aff6-7dd2a43e6cad",
-    "timestamp": "2025-04-07T20:32:02.977796",
-    "action": "Suppression de capteur",
-    "capteur_id": "9b0c295b-9af8-41bf-b739-0690d2135102",
-    "capteur_nom": null,
-    "details": {
-      "nom": "Nord-est"
-    }
-  },
-  {
-    "id": "5f14feb7-1d5d-4f64-8b77-2752e7728968",
-    "timestamp": "2025-04-07T20:32:06.983067",
-    "action": "Ajout de capteur",
-    "capteur_id": "4b54d0bf-d3c1-452e-a389-e5cbe49dd58b",
-    "capteur_nom": "C3",
-    "details": null
-  },
-  {
-    "id": "8d30cfe1-adcc-4d48-a33b-78335377a0f0",
-    "timestamp": "2025-04-07T20:32:34.417191",
-    "action": "Association de fichier",
-    "capteur_id": "4b54d0bf-d3c1-452e-a389-e5cbe49dd58b",
-    "capteur_nom": "C3",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "267c2556-86f4-4873-a78a-1837d59aa213",
-    "timestamp": "2025-04-07T20:32:40.496446",
-    "action": "Ajout de capteur",
-    "capteur_id": "5af2a549-2932-4ea3-80e2-a3e9fe64c38c",
-    "capteur_nom": "C4",
-    "details": null
-  },
-  {
-    "id": "71d3040f-a5d5-4211-8af3-51ab3976dd47",
-    "timestamp": "2025-04-07T20:32:45.890145",
-    "action": "Association de fichier",
-    "capteur_id": "5af2a549-2932-4ea3-80e2-a3e9fe64c38c",
-    "capteur_nom": "C4",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "da9f61e0-da2f-4022-8ebe-218d504ab10a",
-    "timestamp": "2025-04-07T20:32:54.213632",
-    "action": "Association de fichier",
-    "capteur_id": "5af2a549-2932-4ea3-80e2-a3e9fe64c38c",
-    "capteur_nom": "C4",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027241 Est 2023-09-27 10_58_05 CET (Data CET).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "273afe35-407a-4cb2-ae59-d4441e05c72b",
-    "timestamp": "2025-04-07T20:33:10.411780",
-    "action": "Ajout de capteur",
-    "capteur_id": "6b151d12-7dfa-4cfd-b05e-539708294187",
-    "capteur_nom": "C6(Sud Est)",
-    "details": null
-  },
-  {
-    "id": "82cb1476-185b-4f5e-95db-1faf5a04372b",
-    "timestamp": "2025-04-07T20:33:17.214757",
-    "action": "Association de fichier",
-    "capteur_id": "6b151d12-7dfa-4cfd-b05e-539708294187",
-    "capteur_nom": "C6(Sud Est)",
-    "details": {
-      "file_path": "C:\\Users\\steph\\Documents\\Project\\temperatureProgramm\\21027239 Sud Est 2023-09-27 10_57_37 CET (Data CET).xlsx",
-      "columns": {
-        "date": "Date-Time (CET)",
-        "temperature": "Ch: 2 - Temperature   (°C )",
-        "humidity": "Ch: 3 - RH   (%)"
-      }
-    }
-  },
-  {
-    "id": "45abf5eb-54cd-4011-8375-4ec4cb5cc1dc",
-    "timestamp": "2025-04-07T20:33:29.872679",
-    "action": "Modification de capteur",
-    "capteur_id": "4b54d0bf-d3c1-452e-a389-e5cbe49dd58b",
-    "capteur_nom": "C3(Nord)",
-    "details": {
-      "old_nom": "C3",
-      "new_nom": "C3(Nord)"
-    }
-  },
-  {
-    "id": "5a69c652-26fe-44b2-b02a-fb7045d11c43",
-    "timestamp": "2025-04-07T20:33:37.601824",
-    "action": "Modification de capteur",
-    "capteur_id": "5af2a549-2932-4ea3-80e2-a3e9fe64c38c",
-    "capteur_nom": "C4(Sud)",
-    "details": {
-      "old_nom": "C4",
-      "new_nom": "C4(Sud)"
-    }
-  },
-  {
-    "id": "56a63a3d-8ba4-4c70-82bf-c2aefac8f619",
-    "timestamp": "2025-04-07T20:33:46.954085",
-    "action": "Modification de capteur",
-    "capteur_id": "5af2a549-2932-4ea3-80e2-a3e9fe64c38c",
-    "capteur_nom": "C4(Est)",
-    "details": {
-      "old_nom": "C4(Sud)",
-      "new_nom": "C4(Est)"
     }
   }
 ]

@@ -32,7 +32,7 @@ function updateMappingUI() {
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
             <h3 class="text-lg font-semibold mb-4"><i class='bx bx-brain' style="color: #4a6cf7;"></i>
  Mappage des Colonnes</h3>
-            <p class="mb-6">Définissez quelles colonnes correspondent à la date, la température et l'humidité.</p>
+            <p class="mb-6">Définissez quelles colonnes correspondent à la date, la température, l'humidité et le point de rosée.</p>
             
             <div class="mb-6">
                 <label for="capteur-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -101,6 +101,18 @@ function updateMappingUI() {
                             Colonne contenant les valeurs d'humidité (si disponible).
                         </p>
                     </div>
+                    
+                    <div class="mb-4">
+                        <label for="dew-point-column" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Colonne de point de rosée (optionnelle)
+                        </label>
+                        <select id="dew-point-column" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                            <option value="">-- Sélectionnez une colonne --</option>
+                        </select>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Colonne contenant les valeurs de point de rosée (si disponible).
+                        </p>
+                    </div>
                 </div>
                 
                 <div class="mb-6">
@@ -125,7 +137,7 @@ function updateMappingUI() {
             <ul class="list-disc list-inside space-y-2 ml-4 text-gray-700 dark:text-gray-300">
                 <li>L'application tente de détecter automatiquement les colonnes, mais vous pouvez les modifier ici.</li>
                 <li>Les colonnes de date et de température sont obligatoires.</li>
-                <li>La colonne d'humidité est optionnelle, mais recommandée pour certains graphiques.</li>
+                <li>Les colonnes d'humidité et de point de rosée sont optionnelles, mais recommandées pour certains graphiques.</li>
                 <li>Une fois le mappage enregistré, vous pourrez générer des graphiques à partir de ces données.</li>
             </ul>
         </div>
@@ -172,17 +184,20 @@ function updateColumnSelects() {
     const dateSelect = document.getElementById('date-column');
     const temperatureSelect = document.getElementById('temperature-column');
     const humiditySelect = document.getElementById('humidity-column');
+    const dewPointSelect = document.getElementById('dew-point-column');
     
     // Vider les sélecteurs
     dateSelect.innerHTML = '<option value="">-- Sélectionnez une colonne --</option>';
     temperatureSelect.innerHTML = '<option value="">-- Sélectionnez une colonne --</option>';
     humiditySelect.innerHTML = '<option value="">-- Sélectionnez une colonne --</option>';
+    dewPointSelect.innerHTML = '<option value="">-- Sélectionnez une colonne --</option>';
     
     // Ajouter les colonnes disponibles
     availableColumns.forEach(column => {
         dateSelect.innerHTML += `<option value="${column}">${column}</option>`;
         temperatureSelect.innerHTML += `<option value="${column}">${column}</option>`;
         humiditySelect.innerHTML += `<option value="${column}">${column}</option>`;
+        dewPointSelect.innerHTML += `<option value="${column}">${column}</option>`;
     });
     
     // Sélectionner les valeurs actuelles si disponibles
@@ -196,6 +211,9 @@ function updateColumnSelects() {
         }
         if (capteur.columns.humidity) {
             humiditySelect.value = capteur.columns.humidity;
+        }
+        if (capteur.columns.dew_point) {
+            dewPointSelect.value = capteur.columns.dew_point;
         }
     }
     
@@ -215,7 +233,6 @@ function loadDataPreview() {
         }
     }).catch(error => {
         hideLoading();
-        updateDataPreview(response.preview);
         showNotification('Erreur de communication avec l\'API', 'error');
         console.error('API error:', error);
     });
@@ -269,6 +286,7 @@ function saveMapping() {
     const dateColumn = document.getElementById('date-column').value;
     const temperatureColumn = document.getElementById('temperature-column').value;
     const humidityColumn = document.getElementById('humidity-column').value;
+    const dewPointColumn = document.getElementById('dew-point-column').value;
     
     // Vérifier que les colonnes obligatoires sont sélectionnées
     if (!dateColumn) {
@@ -289,6 +307,10 @@ function saveMapping() {
     
     if (humidityColumn) {
         mapping.humidity = humidityColumn;
+    }
+    
+    if (dewPointColumn) {
+        mapping.dew_point = dewPointColumn;
     }
     
     // Désactiver le bouton pendant le traitement

@@ -46,17 +46,20 @@ function loadGraphsPage() {
     });
 }
 
+
+
 // Mise à jour de l'interface des graphiques
 function updateGraphsUI() {
   const graphsPage = document.getElementById("graphs-page");
 
   // Générer le contenu HTML
   let html = `
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 grid grid-row-1 md:grid-row-2">
               <h3 class="text-lg font-semibold mb-4">📊 Graphiques</h3>
               <p class="mb-6">Générez des graphiques à partir de vos données climatiques.</p>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            
+              <div class="bg-white grid grid-cols-1 md:grid-cols-2">
+              <div class="grid grid-row-1 md:grid-row-2 gap-2 mb-2 mx-4">
                   <div class="mb-4">
                       <label for="graph-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Type de graphique
@@ -113,11 +116,35 @@ function updateGraphsUI() {
                   </div>
               </div>
               
+              <!-- Ajout des sélecteurs de date -->
+              <div class="grid grid-row-1 md:grid-row-2 gap-2 mb-2 mx-4">
+                  <div class="mb-4">
+                      <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Date de début (optionnelle)
+                      </label>
+                      <input type="date" id="start-date" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          Laissez vide pour utiliser toutes les données disponibles.
+                      </p>
+                  </div>
+                  
+                  <div class="mb-4">
+                      <label for="end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Date de fin (optionnelle)
+                      </label>
+                      <input type="date" id="end-date" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          Laissez vide pour utiliser toutes les données disponibles.
+                      </p>
+                  </div>
+              </div>
+              
               <div class="flex justify-end mb-6">
                   <button id="generate-graph-btn" class="btn-primary" onclick="generateGraph()">
                       Générer le graphique
                   </button>
               </div>
+            </div>
               
               <div id="graph-container" class="hidden">
                   <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner mb-4">
@@ -145,6 +172,7 @@ function updateGraphsUI() {
                   <li>Certains types de graphiques nécessitent des données spécifiques (température, humidité, etc.).</li>
                   <li>Vous pouvez exporter les graphiques en PNG ou PDF pour les inclure dans vos rapports.</li>
                   <li>L'option "Tous les types de graphiques" générera automatiquement tous les graphiques disponibles pour le capteur sélectionné.</li>
+                  <li>Utilisez les sélecteurs de date pour limiter la période affichée sur les graphiques.</li>
               </ul>
           </div>
       `;
@@ -172,12 +200,22 @@ function updateGraphsUI() {
   }
 }
 
+
+
+
+
+
+
+
+
 // Fonction pour générer le graphique
 function generateGraph() {
   const graphType = document.getElementById("graph-type").value;
   const selectedCapteurs = document.querySelectorAll(
     'input[name="capteur-selection"]:checked'
   );
+  const startDate = document.getElementById("start-date").value;
+  const endDate = document.getElementById("end-date").value;
 
   if (selectedCapteurs.length === 0) {
     showNotification("Veuillez sélectionner au moins un capteur", "error");
@@ -191,7 +229,7 @@ function generateGraph() {
 
   // Si "Tous les types de graphiques" est sélectionné
   if (graphType === "all") {
-    generateAllGraphTypes(capteurIds);
+    generateAllGraphTypes(capteurIds, startDate, endDate);
     return;
   }
 
@@ -200,12 +238,23 @@ function generateGraph() {
     return;
   }
 
+  // Vérifier la cohérence des dates si les deux sont spécifiées
+  if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+    showNotification("La date de début doit être antérieure à la date de fin", "error");
+    return;
+  }
+
   // Générer le graphique spécifique
   showLoading("Génération du graphique en cours...");
 
+  // Préparer les options avec les dates si elles sont spécifiées
+  const options = {};
+  if (startDate) options.start_date = startDate;
+  if (endDate) options.end_date = endDate;
+
   // Appel à l'API pour générer le graphique
   window.pywebview.api
-    .generate_graph(graphType, capteurIds)
+    .generate_graph(graphType, capteurIds, options)
     .then((response) => {
       console.log("Réponse reçue :", response);  
       hideLoading();
@@ -252,7 +301,7 @@ function generateGraph() {
             const singleDownloadBtn = document.createElement("button");
             singleDownloadBtn.className =
               "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
-            singleDownloadBtn.innerHTML =              '<i class="bx bx-download text-xl"></i>';
+            singleDownloadBtn.innerHTML = '<i class="bx bx-download text-xl"></i>';
             singleDownloadBtn.title = "Télécharger cette image";
             singleDownloadBtn.onclick = (e) => {
               e.stopPropagation();
@@ -300,6 +349,7 @@ function generateGraph() {
             "w-full border border-gray-200 dark:border-gray-700 rounded";
           img.alt = response.data.title;
 
+          // Bouton de téléchargement pour l
           // Bouton de téléchargement pour l'image unique
           const singleDownloadBtn = document.createElement("button");
           singleDownloadBtn.className =
@@ -341,8 +391,7 @@ function generateGraph() {
 
         graphContainer.appendChild(singleGraphContainer);
         graphContainer.scrollIntoView({ behavior: "smooth" });
-        showNotification(`${response.data.title}`,"success")
-
+        showNotification(`${response.data.title}`, "success");
       } else {
         showNotification(response.message, "error");
       }
@@ -354,8 +403,42 @@ function generateGraph() {
     });
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Fonction pour générer tous les types de graphiques
-function generateAllGraphTypes(capteurIds) {
+function generateAllGraphTypes(capteurIds, startDate, endDate) {
+  // Vérifier la cohérence des dates si les deux sont spécifiées
+  if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+    showNotification("La date de début doit être antérieure à la date de fin", "error");
+    return;
+  }
+
   showLoading("Génération de tous les graphiques en cours...");
 
   // Créer un conteneur pour tous les graphiques
@@ -366,6 +449,11 @@ function generateAllGraphTypes(capteurIds) {
 
   // Tableau pour stocker les données des graphiques générés
   const generatedGraphs = [];
+
+  // Préparer les options avec les dates si elles sont spécifiées
+  const options = {};
+  if (startDate) options.start_date = startDate;
+  if (endDate) options.end_date = endDate;
 
   // Générer chaque type de graphique séquentiellement
   const generateNextGraph = (index) => {
@@ -413,7 +501,7 @@ function generateAllGraphTypes(capteurIds) {
     const graphType = graphTypes[index];
 
     window.pywebview.api
-      .generate_graph(graphType.id, capteurIds)
+      .generate_graph(graphType.id, capteurIds, options)
       .then((response) => {
         if (response.success) {
           // Stocker les données du graphique
@@ -461,8 +549,8 @@ function generateAllGraphTypes(capteurIds) {
               const singleDownloadBtn = document.createElement("button");
               singleDownloadBtn.className =
                 "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
-              singleDownloadBtn.innerHTML =              '<i class="bx bx-download text-xl"></i>';
-                singleDownloadBtn.title = "Télécharger cette image";
+              singleDownloadBtn.innerHTML = '<i class="bx bx-download text-xl"></i>';
+              singleDownloadBtn.title = "Télécharger cette image";
               singleDownloadBtn.onclick = (e) => {
                 e.stopPropagation();
                 showLoading("Préparation du téléchargement...");
@@ -512,9 +600,9 @@ function generateAllGraphTypes(capteurIds) {
             // Bouton de téléchargement individuel
             const singleDownloadBtn = document.createElement("button");
             singleDownloadBtn.className =
-              "absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-full shadow-md";
+              "water-drop-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-[50%] shadow-md";
             singleDownloadBtn.innerHTML =
-              '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+              '<i class="bx bx-download text-xl"></i>';
             singleDownloadBtn.title = "Télécharger cette image";
             singleDownloadBtn.onclick = (e) => {
               e.stopPropagation();
@@ -553,11 +641,10 @@ function generateAllGraphTypes(capteurIds) {
           // Ajouter au conteneur principal
           graphContainer.appendChild(singleGraphContainer);
           singleGraphContainer.scrollIntoView({ behavior: "smooth" });
-          showNotification(`${response.data.title}`,"success")
+          showNotification(`${response.data.title}`, "success");
         }
 
         // Passer au graphique suivant
-
         generateNextGraph(index + 1);
       })
       .catch((error) => {
@@ -573,6 +660,15 @@ function generateAllGraphTypes(capteurIds) {
   // Commencer la génération séquentielle
   generateNextGraph(0);
 }
+
+
+
+
+
+
+
+
+
 
 // Mise à jour de la description du graphique
 function updateGraphDescription() {

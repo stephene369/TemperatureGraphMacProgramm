@@ -1,202 +1,262 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClimaGraph</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ClimaGraph</title>
 
-    <!-- Tailwind CSS via CDN -->
-    <script src="tailwind/3.4.16"></script>
+        <!-- Tailwind CSS via CDN -->
+        <script src="tailwind/3.4.16"></script>
 
-    <!-- Chart.js pour les graphiques -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="cdn/@dotlottie/player-component/dist/dotlottie-player.js" type="module"></script>
-    <script src="cdn/aos/dist/aos.js"></script>
-    <script src="cdn/jszip.min.js"></script>
-    <link href="cdn/aos/dist/aos.css" rel="stylesheet">
+        <!-- Chart.js pour les graphiques -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="cdn/@dotlottie/player-component/dist/dotlottie-player.js"
+            type="module"></script>
+        <script src="cdn/aos/dist/aos.js"></script>
+        <script src="cdn/jszip.min.js"></script>
+        <link href="cdn/aos/dist/aos.css" rel="stylesheet">
 
-    <!-- Styles personnalisés -->
-    <link href='cdn/boxicons/css/boxicons.css' rel='stylesheet'>
-    <link rel="stylesheet" href="css/styles.css">
+        <!-- Styles personnalisés -->
+        <link href='cdn/boxicons/css/boxicons.css' rel='stylesheet'>
+        <link rel="stylesheet" href="css/styles.css">
 
-</head>
+    </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 ">
-    <div id="splash-screen" class="flex flex-col items-center justify-center">
-        <div id="lottie-container"></div>
-        <h1 id="splash-title" class="text-4xl font-bold">Clima Graph</h1>
-    </div>
-    <!-- Conteneur principal -->
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-md">
-            <div class="p-4 pt-0 border-b border-gray-200 dark:border-gray-700">
-                <h1 class="text-xl font-bold">ClimaGraph</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Analyse de données climatiques</p>
-            </div>
-
-            <nav class="p-4">
-                <a href="#" class="nav-item active" data-page="home">
-                    <i class='bx bxs-home nav-item-icon'></i> Accueil
-                </a>
-                <a href="#" class="nav-item" data-page="capteurs">
-                    <i class='bx bxs-folder nav-item-icon'></i> Capteurs & Fichiers
-                </a>
-                <a href="#" class="nav-item" data-page="mapping">
-                    <i class='bx bxs-brain nav-item-icon'></i> Mappage des Colonnes
-                </a>
-                <a href="#" class="nav-item" data-page="graphs">
-                    <i class='bx bxs-pie-chart-alt-2 nav-item-icon'></i> Graphiques
-                </a>
-                <a href="#" class="nav-item" data-page="history">
-                    <i class='bx bx-history nav-item-icon'></i> Historique
-                </a>
-            </nav>
-
-
-            
-            <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
-                <!-- <button id="theme-toggle" class="nav-item">
-                    <span class="icon">🌓</span> Changer de thème
-                </button> -->
-            </div>
-            <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
-                <!-- <button id="theme-toggle" class="nav-item">
-                    <span class="icon">🌓</span> Changer de thème
-                </button> -->
-            </div>
+    <body
+        class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 ">
+        <div id="splash-screen"
+            class="flex flex-col items-center justify-center">
+            <div id="lottie-container"></div>
+            <h1 id="splash-title" class="text-4xl font-bold">Clima Graph</h1>
         </div>
+        <!-- Conteneur principal -->
+        <div class="flex h-screen">
+            <!-- Sidebar -->
+            <div id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-md">
+                <div
+                    class="p-4 pt-0 border-b border-gray-200 dark:border-gray-700">
+                    <h1 class="text-xl font-bold">ClimaGraph</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Analyse
+                        de données climatiques</p>
+                </div>
 
-        <!-- Contenu principal -->
-        <div id="main-content" class="flex-1 overflow-auto">
-            <!-- En-tête -->
-            <header id="header" class="bg-white dark:bg-gray-800 shadow-md p-4 pt-0 flex items-center">
-                <button id="mobile-menu-btn">
-                    <i class='bx bx-menu text-black text-2xl'></i>
-                </button>
-                <h2 id="page-title" class="text-lg font-semibold">Accueil</h2>
-                <div></div> <!-- Espace vide pour centrer le titre -->
-            </header>
+                <nav class="p-4">
+                    <a href="#" class="nav-item active" data-page="home">
+                        <i class='bx bxs-home nav-item-icon'></i> Accueil
+                    </a>
+                    <a href="#" class="nav-item" data-page="capteurs">
+                        <i class='bx bxs-folder nav-item-icon'></i> Capteurs &
+                        Fichiers
+                    </a>
+                    <a href="#" class="nav-item" data-page="mapping">
+                        <i class='bx bxs-brain nav-item-icon'></i> Mappage des
+                        Colonnes
+                    </a>
+                    <a href="#" class="nav-item" data-page="graphs">
+                        <i class='bx bxs-pie-chart-alt-2 nav-item-icon'></i>
+                        Graphiques
+                    </a>
+                    <a href="#" class="nav-item" data-page="history">
+                        <i class='bx bx-history nav-item-icon'></i> Historique
+                    </a>
 
-            <!-- Contenu de la page -->
-            <main class="p-6">
-                <!-- Page d'accueil -->
-                <div id="home-page" class="page active">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-                        <h3 class="text-lg font-semibold mb-4">👋 Bienvenue sur ClimaGraph</h3>
-                        <p class="mb-6">ClimaGraph est une application d'analyse de données climatiques qui vous permet
-                            de visualiser et d'analyser les données de température et d'humidité provenant de différents
-                            capteurs.</p>
+                    <!-- Ajouter ceci dans la section <nav> du sidebar -->
+                    <a href="#" class="nav-item" data-page="documentation">
+                        <i class='bx bxs-book-alt nav-item-icon'></i>
+                        Documentation
+                    </a>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                                <h4 class="font-semibold mb-2">📁 Capteurs & Fichiers</h4>
-                                <p class="text-sm mb-4">Ajoutez vos capteurs et associez-leur des fichiers de données.
-                                </p>
-                                <button class="btn-primary" onclick="navigateTo('capteurs')">
-                                    Gérer les capteurs
-                                </button>
+                </nav>
+
+                <div
+                    class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+                    <!-- <button id="theme-toggle" class="nav-item">
+                    <span class="icon">🌓</span> Changer de thème
+                </button> -->
+                </div>
+                <div
+                    class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+                    <!-- <button id="theme-toggle" class="nav-item">
+                    <span class="icon">🌓</span> Changer de thème
+                </button> -->
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div id="main-content" class="flex-1 overflow-auto">
+                <!-- En-tête -->
+                <header id="header"
+                    class="bg-white dark:bg-gray-800 shadow-md p-4 pt-0 flex items-center">
+                    <button id="mobile-menu-btn">
+                        <i class='bx bx-menu text-black text-2xl'></i>
+                    </button>
+                    <h2 id="page-title"
+                        class="text-lg font-semibold">Accueil</h2>
+                    <div></div> <!-- Espace vide pour centrer le titre -->
+                </header>
+
+                <!-- Contenu de la page -->
+                <main class="p-6">
+                    <!-- Page d'accueil -->
+                    <div id="home-page" class="page active">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                            <h3 class="text-lg font-semibold mb-4">👋 Bienvenue
+                                sur ClimaGraph</h3>
+                            <p class="mb-6">ClimaGraph est une application
+                                d'analyse de données climatiques qui vous permet
+                                de visualiser et d'analyser les données de
+                                température et d'humidité provenant de
+                                différents
+                                capteurs.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div
+                                    class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                                    <h4 class="font-semibold mb-2">📁 Capteurs &
+                                        Fichiers</h4>
+                                    <p class="text-sm mb-4">Ajoutez vos capteurs
+                                        et associez-leur des fichiers de
+                                        données.
+                                    </p>
+                                    <button class="btn-primary"
+                                        onclick="navigateTo('capteurs')">
+                                        Gérer les capteurs
+                                    </button>
+                                </div>
+
+                                <div
+                                    class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+                                    <h4 class="font-semibold mb-2"><i
+                                            class='bx bx-brain'
+                                            style="color: #4a6cf7;"></i>
+                                        Mappage des Colonnes</h4>
+                                    <p class="text-sm mb-4">Définissez quelles
+                                        colonnes correspondent à la date, la
+                                        température et l'humidité.</p>
+                                    <button class="btn-primary"
+                                        onclick="navigateTo('mapping')">
+                                        Mapper les colonnes
+                                    </button>
+                                </div>
+
+                                <div
+                                    class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
+                                    <h4 class="font-semibold mb-2">📊
+                                        Graphiques</h4>
+                                    <p class="text-sm mb-4">Générez des
+                                        graphiques à partir de vos données
+                                        climatiques.</p>
+                                    <button class="btn-primary"
+                                        onclick="navigateTo('graphs')">
+                                        Créer des graphiques
+                                    </button>
+                                </div>
+
+                                <div
+                                    class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                                    <h4 class="font-semibold mb-2">🕓
+                                        Historique</h4>
+                                    <p class="text-sm mb-4">Consultez
+                                        l'historique des opérations effectuées
+                                        dans
+                                        l'application.</p>
+                                    <button class="btn-primary"
+                                        onclick="navigateTo('history')">
+                                        Voir l'historique
+                                    </button>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
-                                <h4 class="font-semibold mb-2"><i class='bx bx-brain' style="color: #4a6cf7;"></i>
- Mappage des Colonnes</h4>
-                                <p class="text-sm mb-4">Définissez quelles colonnes correspondent à la date, la
-                                    température et l'humidité.</p>
-                                <button class="btn-primary" onclick="navigateTo('mapping')">
-                                    Mapper les colonnes
-                                </button>
-                            </div>
-
-                            <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
-                                <h4 class="font-semibold mb-2">📊 Graphiques</h4>
-                                <p class="text-sm mb-4">Générez des graphiques à partir de vos données climatiques.</p>
-                                <button class="btn-primary" onclick="navigateTo('graphs')">
-                                    Créer des graphiques
-                                </button>
-                            </div>
-
-                            <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
-                                <h4 class="font-semibold mb-2">🕓 Historique</h4>
-                                <p class="text-sm mb-4">Consultez l'historique des opérations effectuées dans
-                                    l'application.</p>
-                                <button class="btn-primary" onclick="navigateTo('history')">
-                                    Voir l'historique
-                                </button>
-                            </div>
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                            <h3 class="text-lg font-semibold mb-4">💬
+                                Remarques</h3>
+                            <ul
+                                class="list-disc list-inside space-y-2 ml-4 text-gray-700 dark:text-gray-300">
+                                <li>Commencez par ajouter vos capteurs et leur
+                                    associer des fichiers de données.</li>
+                                <li>Les fichiers peuvent être au format Excel
+                                    (.xlsx, .xls) ou HOBO (.hobo).</li>
+                                <li>L'application tentera de détecter
+                                    automatiquement les colonnes de date,
+                                    température et
+                                    humidité.</li>
+                                <li>Si la détection automatique échoue, vous
+                                    pourrez mapper manuellement les
+                                    colonnes.</li>
+                                <li>Vous pourrez ensuite générer différents
+                                    types de graphiques à partir de vos données.
+                                </li>
+                            </ul>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                        <h3 class="text-lg font-semibold mb-4">💬 Remarques</h3>
-                        <ul class="list-disc list-inside space-y-2 ml-4 text-gray-700 dark:text-gray-300">
-                            <li>Commencez par ajouter vos capteurs et leur associer des fichiers de données.</li>
-                            <li>Les fichiers peuvent être au format Excel (.xlsx, .xls) ou HOBO (.hobo).</li>
-                            <li>L'application tentera de détecter automatiquement les colonnes de date, température et
-                                humidité.</li>
-                            <li>Si la détection automatique échoue, vous pourrez mapper manuellement les colonnes.</li>
-                            <li>Vous pourrez ensuite générer différents types de graphiques à partir de vos données.
-                            </li>
-                        </ul>
+                    <!-- Page Capteurs -->
+                    <div id="capteurs-page" class="page">
+                        <!-- Contenu chargé dynamiquement -->
                     </div>
-                </div>
 
-                <!-- Page Capteurs -->
-                <div id="capteurs-page" class="page">
-                    <!-- Contenu chargé dynamiquement -->
-                </div>
+                    <!-- Page Mappage -->
+                    <div id="mapping-page" class="page">
+                        <!-- Contenu chargé dynamiquement -->
+                    </div>
 
-                <!-- Page Mappage -->
-                <div id="mapping-page" class="page">
-                    <!-- Contenu chargé dynamiquement -->
-                </div>
+                    <!-- Page Graphiques -->
+                    <div id="graphs-page" class="page">
+                        <!-- Contenu chargé dynamiquement -->
+                    </div>
 
-                <!-- Page Graphiques -->
-                <div id="graphs-page" class="page">
-                    <!-- Contenu chargé dynamiquement -->
-                </div>
+                    <!-- Page Historique -->
+                    <div id="history-page" class="page">
+                        <!-- Contenu chargé dynamiquement -->
+                    </div>
 
-                <!-- Page Historique -->
-                <div id="history-page" class="page">
-                    <!-- Contenu chargé dynamiquement -->
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Notifications -->
-    <div id="notification-container"></div>
-
-    <!-- Modal -->
-    <div id="modal-container" class="hidden">
-        <div id="modal-content" class="max-w-lg">
-            <div
-                class="modal-header p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h3 id="modal-title" class="text-lg font-semibold">Titre du modal</h3>
-                <button class="modal-close" onclick="hideModal()">×</button>
-            </div>
-            <div id="modal-body" class="modal-body p-4"></div>
-            <div id="modal-footer" class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
+                    <!-- Ajouter ceci dans la section <main> après les autres pages -->
+<div id="documentation-page" class="page">
+    <!-- Contenu chargé dynamiquement -->
+</div>
+                </main>
             </div>
         </div>
-    </div>
 
-    <!-- Loading overlay -->
-    <div id="loading-overlay" class="hidden">
-        <div class="spinner"></div>
-        <div id="loading-text">Chargement...</div>
-    </div>
+        <!-- Notifications -->
+        <div id="notification-container"></div>
 
-    <!-- Scripts -->
-    <script src="js/splash.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/capteurs.js"></script>
-    <script src="js/mapping.js"></script>
-    <script src="js/graphs.js"></script>
-    <script src="js/history.js"></script>
+        <!-- Modal -->
+        <div id="modal-container" class="hidden">
+            <div id="modal-content" class="max-w-lg">
+                <div
+                    class="modal-header p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h3 id="modal-title" class="text-lg font-semibold">Titre du
+                        modal</h3>
+                    <button class="modal-close" onclick="hideModal()">×</button>
+                </div>
+                <div id="modal-body" class="modal-body p-4"></div>
+                <div id="modal-footer"
+                    class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
+                </div>
+            </div>
+        </div>
 
-    <!-- <script>
+        <!-- Loading overlay -->
+        <div id="loading-overlay" class="hidden">
+            <div class="spinner"></div>
+            <div id="loading-text">Chargement...</div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="js/splash.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/capteurs.js"></script>
+        <script src="js/mapping.js"></script>
+        <script src="js/graphs.js"></script>
+        <script src="js/history.js"></script>
+        <script src="js/documentation.js"></script>
+
+        <!-- <script>
         // Désactiver le clic droit
         document.addEventListener('contextmenu', event => event.preventDefault());
         
@@ -220,6 +280,6 @@
             });
         });
     </script> -->
-</body>
+    </body>
 
 </html>

@@ -13,12 +13,11 @@ import matplotlib.dates as mdates
 
 # Dictionnaire de mois en français
 mois_fr = { 
-    'January': 'Janvier', 'February': 'Février', 'March': 'Mars',
-    'April': 'Avril', 'May': 'Mai', 'June': 'Juin',
-    'July': 'Juillet', 'August': 'Août', 'September': 'Septembre',
-    'October': 'Octobre', 'November': 'Novembre', 'December': 'Décembre'
+    'January': 'Janv.', 'February': 'Févr.', 'March': 'Mars',
+    'April': 'Avr.', 'May': 'Mai', 'June': 'Juin',
+    'July': 'Juil.', 'August': 'Août', 'September': 'Sept.',
+    'October': 'Oct.', 'November': 'Nov.', 'December': 'Déc.'
 }
-
 # Format de date personnalisé
 class FrenchDateFormatter(mdates.DateFormatter):
     def __call__(self, x, pos=0):
@@ -63,13 +62,6 @@ class GraphGenerator:
         import base64
         import io
 
-        # Dictionnaire de mois en français
-        mois_fr = { 
-            'January': 'Janvier', 'February': 'Février', 'March': 'Mars',
-            'April': 'Avril', 'May': 'Mai', 'June': 'Juin',
-            'July': 'Juillet', 'August': 'Août', 'September': 'Septembre',
-            'October': 'Octobre', 'November': 'Novembre', 'December': 'Décembre'
-        }
 
         # Formatteur de date français
         class FrenchDateFormatter(mdates.DateFormatter):
@@ -109,7 +101,7 @@ class GraphGenerator:
         ax.set_ylim(-10, 40)
 
         # Moins de dates : 1 tous les 2 mois
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
 
         # Quadrillage style papier millimétré
@@ -225,7 +217,7 @@ class GraphGenerator:
         ax.set_ylim(0, 100)
 
         # Axe X – style ClimaGraph
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
 
         # Grille style papier millimétré
@@ -313,7 +305,7 @@ class GraphGenerator:
         ax.set_ylim(0, 10)
 
         # Axe X : format français, espacé tous les 2 mois
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
         ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
 
@@ -425,7 +417,7 @@ class GraphGenerator:
         ax.set_ylabel("Humidité relative (%)")
         ax.set_ylim(0, 40)
 
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
         ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
 
@@ -559,7 +551,7 @@ class GraphGenerator:
         ax.set_ylabel("Température (°C)")
         ax.set_ylim(0, 15)
 
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
         ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
 
@@ -698,4 +690,211 @@ class GraphGenerator:
                 "description": "Pour chaque capteur, cette figure affiche un camembert des classes d'humidité relative et un histogramme des amplitudes hydriques quotidiennes.",
             },
             "image": images_base64
+        }
+
+
+
+
+
+    def generate_dew_point_risk_graph_(self, capteurs_data):
+        """
+        Générer un graphique des écarts au point de rosée à partir des colonnes 'temperature' et 'dew_point'.
+        Trace une zone rouge lorsque l'écart < 3°C (risque de condensation).
+
+        Returns:
+            dict: Résultat contenant l'image base64.
+        """
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import numpy as np
+        import base64
+        import io
+        import pandas as pd
+
+        fig, ax = plt.subplots(figsize=(18, 8))
+
+        palette = [
+            "#1f77b4", "#2ca02c", "#ff7f0e", "#d62728",
+            "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+        ]
+        color_index = 0
+
+        for capteur_id, capteur in capteurs_data.items():
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+
+            if not {"date", "temperature", "dew_point"}.issubset(df.columns):
+                print(f"[⚠️] Capteur ignoré (colonnes manquantes) : {nom}")
+                print(df.columns)
+                continue
+
+            try:
+                df["date"] = pd.to_datetime(df["date"])
+                df["date_only"] = df["date"].dt.floor("D")
+                df["ecart"] = df["temperature"] - df["dew_point"]
+
+                grouped = df.groupby("date_only")["ecart"].mean().reset_index()
+                grouped.columns = ["date", "ecart"]
+
+                color = palette[color_index % len(palette)]
+                linestyle = '-' if "Ext" not in nom else ':'
+
+                ax.plot(grouped["date"], grouped["ecart"], label=nom, color=color, linestyle=linestyle, linewidth=0.8)
+
+                # Zone rouge : risque de condensation (< 3°C)
+                ax.fill_between(
+                    grouped["date"],
+                    0,
+                    3,
+                    where=grouped["ecart"] < 3,
+                    color='red',
+                    alpha=0.2
+                )
+
+                color_index += 1
+
+            except Exception as e:
+                print(f"[❌] Erreur avec le capteur {nom} : {e}")
+                continue
+
+        # Mise en forme
+        ax.set_title("Écart au point de rosée quotidien", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Température (°C)")
+        ax.set_ylim(0, 15)
+
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
+
+        ax.yaxis.set_major_locator(plt.MultipleLocator(1))
+        ax.yaxis.set_minor_locator(plt.MultipleLocator(0.2))
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+        ax.set_axisbelow(True)
+
+        ax.legend(loc='lower right', frameon=True)
+        plt.tight_layout()
+
+        # Export base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=200)
+        buf.seek(0)
+        img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        plt.close()
+
+        return {
+            "success": True,
+            "data": {
+                "type": "line",
+                "title": "Écart au point de rosée quotidien",
+                "x_axis": "Date",
+                "y_axis": "Température (°C)"
+            },
+            "image": [img_base64]
+        }
+
+
+
+
+    def generate_dew_point_risk_graph_pr1(self, capteurs_data):
+        """
+        Génère le graphique PR1 : Écarts quotidiens au point de rosée.
+        T - PR pour chaque capteur, avec zone rouge si écart < 3°C.
+
+        Returns:
+            dict: Contient l’image base64 et les métadonnées du graphique.
+        """
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+        import matplotlib.ticker as ticker
+        import numpy as np
+        import pandas as pd
+        import io
+        import base64
+
+        fig, ax = plt.subplots(figsize=(18, 8))
+
+        palette = ["#1f77b4", "#2ca02c", "#ff7f0e"]
+        legend_names = ["T-PR_Nord", "C4 (Est)", "C6 (Sud Est)"]
+        color_index = 0
+
+        for capteur_id, capteur in capteurs_data.items():
+            df = capteur["data"].copy()
+            nom = capteur["nom"]
+
+            if not {"date", "temperature", "dew_point"}.issubset(df.columns):
+                print(f"[⚠️] Capteur ignoré : {nom}")
+                continue
+
+            df["date"] = pd.to_datetime(df["date"])
+            df["date_only"] = df["date"].dt.floor("D")
+            df["ecart"] = df["temperature"] - df["dew_point"]
+
+            grouped = df.groupby("date_only")["ecart"].mean().reset_index()
+            grouped.columns = ["date", "ecart"]
+
+            color = palette[color_index % len(palette)]
+            label = legend_names[color_index] if color_index < len(legend_names) else nom
+            ax.plot(grouped["date"], grouped["ecart"], label=label, color=color, linewidth=0.9)
+
+            # Remplir la zone rouge si écart < 3°C
+            ax.fill_between(
+                grouped["date"],
+                0,
+                3,
+                where=grouped["ecart"] < 3,
+                color='red',
+                alpha=0.15
+            )
+
+            color_index += 1
+
+        # Mise en forme
+        ax.set_title("Écart au point de rosée quotidien", fontsize=14)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Température (°C)")
+        ax.set_ylim(0, 15)
+
+
+        class FrenchDateFormatter(mdates.DateFormatter):
+            def __call__(self, x, pos=0):
+                result = super().__call__(x, pos)
+                for en, fr in mois_fr.items():
+                    result = result.replace(en, fr)
+                return result
+
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+        ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
+        ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))
+
+        ax.set_axisbelow(True)
+        ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
+        ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+        ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
+        ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
+
+        ax.legend(loc='upper right', frameon=True)
+        plt.tight_layout()
+
+        # Export base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=200)
+        buf.seek(0)
+        img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        plt.close()
+
+        return {
+            "success": True,
+            "data": {
+                "type": "line",
+                "title": "Écart au point de rosée quotidien",
+                "x_axis": "Date",
+                "y_axis": "Température (°C)"
+            },
+            "image": [img_base64]
         }

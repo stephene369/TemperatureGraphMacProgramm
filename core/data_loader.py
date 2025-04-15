@@ -67,19 +67,29 @@ class DataLoader:
             if any(keyword in col.lower() for keyword in humidity_keywords):
                 mapping['humidity'] = col
                 break
+
+        
+        # Recherche de colonnes de point de rosée
+        dew_point_keywords = ['dew', 'point', 'rosée', 'point de rosée', 'dew point', "dew_point","Dew Point   (°C)"]
+        for col in columns:
+            if any(keyword in col.lower() for keyword in dew_point_keywords):
+                mapping['dew_point'] = col
+                break
         
         return mapping
+    
+    
     
     def load_capteur_data(self, capteur_data):
         """
         Charger et préparer les données d'un capteur
-        
+
         Args:
             capteur_data (dict): Données du capteur (chemin du fichier et mappage des colonnes)
-            
+
         Returns:
             pandas.DataFrame: Données préparées
-            
+
         Raises:
             ValueError: Si les données du capteur sont incomplètes
             Exception: Si une erreur se produit lors du chargement des données
@@ -88,39 +98,49 @@ class DataLoader:
 
         if not capteur_data.get("file_path"):
             raise ValueError("Aucun fichier associé au capteur")
-        
+
         if not (capteur_data.get("columns") and 
                 capteur_data["columns"].get("date") and 
                 capteur_data["columns"].get("temperature")):
             raise ValueError("Mappage des colonnes incomplet")
-        
+
         # Charger le fichier
         df = self.load_file(capteur_data["file_path"])
-        
-        # Appliquer le mappage (copie explicite)
+
+        # Appliquer le mappage
         columns = capteur_data["columns"]
         col_list = [columns["date"], columns["temperature"]]
 
         if columns.get("humidity"):
             col_list.append(columns["humidity"])
+        if columns.get("dew_point"):
+            col_list.append(columns["dew_point"])
 
-        mapped_df = df[col_list].copy()  # ← évite les SettingWithCopyWarning
+        mapped_df = df[col_list].copy()
 
         # Renommer les colonnes
         new_columns = ["date", "temperature"]
         if columns.get("humidity"):
             new_columns.append("humidity")
+        if columns.get("dew_point"):
+            new_columns.append("dew_point")
+
         mapped_df.columns = new_columns
 
-        # Conversion des types avec sécurité
-        mapped_df.loc[:, "date"] = pd.to_datetime(mapped_df["date"], errors="coerce")
-        mapped_df.loc[:, "temperature"] = pd.to_numeric(mapped_df["temperature"], errors="coerce")
+        # Convertir les types de manière sécurisée
+        mapped_df["date"] = pd.to_datetime(mapped_df["date"], errors="coerce")
+        mapped_df["temperature"] = pd.to_numeric(mapped_df["temperature"], errors="coerce")
         if "humidity" in mapped_df.columns:
-            mapped_df.loc[:, "humidity"] = pd.to_numeric(mapped_df["humidity"], errors="coerce")
+            mapped_df["humidity"] = pd.to_numeric(mapped_df["humidity"], errors="coerce")
+        if "dew_point" in mapped_df.columns:
+            mapped_df["dew_point"] = pd.to_numeric(mapped_df["dew_point"], errors="coerce")
 
         # Supprimer les lignes invalides
-        mapped_df = mapped_df.dropna(subset=["date", "temperature"])
+        required_cols = ["date", "temperature"]
+        if "dew_point" in mapped_df.columns:
+            required_cols.append("dew_point")
+        mapped_df = mapped_df.dropna(subset=required_cols)
 
         # print(f"[✔] Données capteur chargées : {capteur_data['file_path']}")
-        
+
         return mapped_df
