@@ -6,17 +6,15 @@ import io
 import base64
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg
 import matplotlib.dates as mdates
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import numpy as np
 import base64
 import io
 import pandas as pd
+from numpy import inf , random , arange,ones_like
 
 
 # Dictionnaire de mois en français
@@ -224,7 +222,7 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='lower right', frameon=True)
+        ax.legend(loc='upper right', frameon=True)
         plt.tight_layout()
 
         buf = io.BytesIO()
@@ -302,7 +300,7 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='lower right', frameon=True)
+        ax.legend(loc='upper right', frameon=True)
         plt.tight_layout()
 
         # Convertir la figure en image base64
@@ -327,7 +325,7 @@ class GraphGenerator:
             values = amplitude["amplitude"].round(2).tolist()
             all_dates.extend(dates)
 
-            r, g, b = np.random.randint(0, 200, 3)
+            r, g, b = random.randint(0, 200, 3)
             datasets.append({
                 "label": capteur["nom"],
                 "data": values,
@@ -407,7 +405,7 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='lower right', frameon=True)
+        ax.legend(loc='upper right', frameon=True)
         plt.tight_layout()
 
         # Export en base64
@@ -435,7 +433,7 @@ class GraphGenerator:
             values = amplitude["amplitude"].round(2).tolist()
             all_dates.extend(dates)
 
-            r, g, b = np.random.randint(0, 200, 3)
+            r, g, b = random.randint(0, 200, 3)
             datasets.append({
                 "label": capteur["nom"],
                 "data": values,
@@ -573,7 +571,7 @@ class GraphGenerator:
         hist_color_cycle = iter(hist_colors)
 
         # ✅ Bins et labels pour humidité relative
-        humidity_bins = [-np.inf, 65, 70, 75, 80, 85, 90, 95, np.inf]
+        humidity_bins = [-inf, 65, 70, 75, 80, 85, 90, 95, inf]
         humidity_labels = [
             "HR < 65%",
             "65% ≤ HR < 70%",
@@ -585,7 +583,7 @@ class GraphGenerator:
             "HR ≥ 95%"
         ]
         
-        humidity_bins = [-np.inf, 40, 50, 60, 70, 80, 90, np.inf]
+        humidity_bins = [-inf, 40, 50, 60, 70, 80, 90, inf]
         humidity_labels = [
             "HR < 40%", 
             "40% ≤ HR < 50%", 
@@ -598,7 +596,7 @@ class GraphGenerator:
 
 
         # ✅ Bins pour amplitude
-        amplitude_bins = np.arange(0, 26, 1)  # 0 à 25
+        amplitude_bins = arange(0, 26, 1)  # 0 à 25
         amplitude_labels = [f"{i}-{i+1} % " for i in range(25)]
 
         for capteur_id, capteur in capteurs_data.items():
@@ -658,7 +656,7 @@ class GraphGenerator:
                                                 bins=amplitude_bins, 
                                                 color=hist_color, 
                                                 edgecolor='white', 
-                                                weights=np.ones_like(amplitude) / len(amplitude),
+                                                weights=ones_like(amplitude) / len(amplitude),
                                                 rwidth=.4)
 
                 # # Texte au-dessus des barres
@@ -743,7 +741,7 @@ class GraphGenerator:
         ]
         hist_color_cycle = iter(hist_colors)
 
-        bins = bins = [-np.inf, 40, 50, 60, 70, 80, 90, np.inf]
+        bins = bins = [-inf, 40, 50, 60, 70, 80, 90, inf]
         labels = [
             "HR < 40%", 
             "40% ≤ HR < 50%", 
@@ -791,10 +789,10 @@ class GraphGenerator:
 
                 hist_color = next(hist_color_cycle) if applito_hist else "#1e4f73"
                 ax2.hist(amplitude, 
-                        bins=np.arange(0, 26, 1), 
+                        bins=arange(0, 26, 1), 
                         color=hist_color, 
                         edgecolor='white', 
-                        weights=(np.ones_like(amplitude) / len(amplitude)),
+                        weights=(ones_like(amplitude) / len(amplitude)),
                         rwidth=.4)
 
                 ax2.set_title(f"Capteur {nom}", fontsize=12)
@@ -883,7 +881,8 @@ class GraphGenerator:
                     3,
                     where=grouped["ecart"] < 3,
                     color='red',
-                    alpha=0.2
+                    alpha=0.2,
+                    label="Zone à risque (< 3°C)" 
                 )
 
                 color_index += 1
@@ -908,7 +907,7 @@ class GraphGenerator:
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
         ax.set_axisbelow(True)
 
-        ax.legend(loc='lower right', frameon=True)
+        ax.legend(loc='upper right', frameon=True)
         plt.tight_layout()
 
         # Export base64

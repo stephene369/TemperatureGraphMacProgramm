@@ -4,11 +4,11 @@
 # *.pyo
 # *.pyd
 # .Python
-# env/
-# build/
+env/
+build/
 # develop-eggs/
-# dist/
-# downloads/
+dist/
+output/
 # eggs/
 # .eggs/
 # lib/
