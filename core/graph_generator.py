@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import base64
 import io
 import pandas as pd
 from numpy import inf , random , arange,ones_like
+from matplotlib.patches import Patch
+
 
 
 # Dictionnaire de mois en français
@@ -124,12 +124,12 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='lower right', frameon=True)
+        ax.legend(loc='lower right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         # Convertir en image base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
@@ -222,11 +222,11 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='upper right', frameon=True)
+        ax.legend(loc='upper right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
@@ -300,12 +300,12 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='upper right', frameon=True)
+        ax.legend(loc='upper right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         # Convertir la figure en image base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
@@ -405,12 +405,12 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='upper right', frameon=True)
+        ax.legend(loc='upper right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         # Export en base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
@@ -531,12 +531,12 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='lower right', frameon=True)
+        ax.legend(loc='lower right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         # Export de l'image
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
@@ -642,6 +642,7 @@ class GraphGenerator:
                            loc="center left", 
                            bbox_to_anchor=(1, 0.5), 
                            #title="Légende"
+                           prop={'size': 12}
                            )
                 
 
@@ -688,7 +689,7 @@ class GraphGenerator:
                 plt.tight_layout()
 
                 buf = io.BytesIO()
-                plt.savefig(buf, format='png', dpi=200)
+                plt.savefig(buf, format='png', dpi=150)
                 buf.seek(0)
                 images_base64.append(base64.b64encode(buf.read()).decode('utf-8'))
                 plt.close()
@@ -781,7 +782,7 @@ class GraphGenerator:
                         startangle=90, counterclock=False,
                         autopct='%1.0f%%', wedgeprops={"linewidth": 0})
                 ax1.set_title(f"Capteur {nom}", fontsize=12)
-                ax1.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Légende")
+                ax1.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5), title="Légende",prop={'size': 12})
 
                 # 🔵 HISTOGRAMME
                 grouped = df.groupby("jour")["humidity"]
@@ -804,7 +805,7 @@ class GraphGenerator:
                 plt.tight_layout()
 
                 buf = io.BytesIO()
-                plt.savefig(buf, format='png', dpi=200)
+                plt.savefig(buf, format='png', dpi=150)
                 buf.seek(0)
                 images_base64.append(base64.b64encode(buf.read()).decode('utf-8'))
                 plt.close()
@@ -882,7 +883,7 @@ class GraphGenerator:
                     where=grouped["ecart"] < 3,
                     color='red',
                     alpha=0.2,
-                    label="Zone à risque (< 3°C)" 
+                    
                 )
 
                 color_index += 1
@@ -906,13 +907,19 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
         ax.set_axisbelow(True)
+        
+        handles, labels = ax.get_legend_handles_labels()
+        # Ajouter un patch personnalisé pour la zone rouge
+        red_patch = Patch(color='red', alpha=0.2, label="Zone à risque (< 3°C)")
+        handles.append(red_patch)
+        labels.append("Zone à risque (< 3°C)")
 
-        ax.legend(loc='upper right', frameon=True)
+        ax.legend(handles=handles, labels=labels, loc='upper right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         # Export base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()
@@ -1010,12 +1017,12 @@ class GraphGenerator:
         ax.grid(which='major', linestyle='-', linewidth=0.6, color='black', alpha=0.5)
         ax.grid(which='minor', linestyle='-', linewidth=0.3, color='grey', alpha=0.3)
 
-        ax.legend(loc='upper right', frameon=True)
+        ax.legend(loc='upper right', frameon=True,prop={'size': 12})
         plt.tight_layout()
 
         # Export base64
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=200)
+        plt.savefig(buf, format='png', dpi=150)
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close()

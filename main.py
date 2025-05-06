@@ -40,7 +40,7 @@ def main():
     api = API(BASE_DIR, DATA_DIR, OUTPUT_DIR, IMAGE_OUTPUT_DIR)
 
     # Créer la fenêtre principale
-    window = webview.create_window(
+    webview.create_window(
         title="ClimaGraph",
         url=os.path.join(UI_DIR, "index.html"),
         js_api=api,
