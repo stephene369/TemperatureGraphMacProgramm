@@ -36,3 +36,138 @@ peut etre que pour chaque graphique, il pourrait y avoir l'option de sélectionn
 Je vous laisse analyser les données. Et revenir vers moi, pour des proposition ou/et des questions
 
 la structure des données sont identiques entre tous les fichiers
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bonjour voici quelques précisions concernants les 
+graphiques sur lesquels nous avions des questions : 
+Les 2 graphiques montrent les distributions des valeurs 
+d'humidité relative et d'amplitudes hydriques quotidiennes
+calculées à partir de l'ensemble des données du capteur C3
+sur 1 année complète (25 septembre 2022 - 25 septembre 2023: 
+période sur laquelle on a des données pour les 3 capteurs).
+C’est un simple comptage à partir des données brutes du capteur :
+
+Pour l'humidité relative
+
+HR < 65% : 15 mesures
+65% ≤ HR < 70% : 264 mesures
+70% ≤ HR < 75% : 1692 mesures
+75% ≤ HR < 80% : 4148 mesures
+80% ≤ HR < 85% : 5589 mesures
+85% ≤ HR < 90% : 4233 mesures
+90% ≤ HR < 95% : 1397 mesures
+HR ≥ 95% : 446 mesures
+
+
+Pour les amplitudes hydriques quotidiennes:
+
+0-1 % : 0 mesure
+1-2 % : 9 mesures
+2-3 % : 19 mesures
+3-4 % : 26 mesures
+4-5 % : 24 mesures
+5-6 % : 39 mesures
+6-7 % : 33 mesures
+7-8 % : 36 mesures
+8-9 % : 29 mesures
+9-10 % : 31 mesures
+10-11 % : 34 mesures
+11-12 % : 23 mesures
+12-13 % : 16 mesures
+13-14 % : 12 mesures
+14-15 % : 13 mesures
+15-16 % : 7 mesures
+16-17 % : 4 mesures
+17-18 % : 5 mesures
+18-19 % : 3 mesures
+19-20 % : 3 mesures
+20-21 % : 1 mesures
+21-22 % : 2 mesures
+22-23 % : 0 mesures
+23-24 % : 0 mesures
+24-25 % : 0 mesures
+
+
+les graphiques en question : Fig. HR3. Distribution 
+statistique des valeurs d’humidité relative 
+relevée par le capteur C3 entre le 25 septembre
+ 2022 et le 25 septembre 2023.
+Et sur
+Fig. HR4: Distribution statistique des amplitudes 
+hydriques quotidiennes mesurées par le capteur C3 
+entre le 25 septembre 2022 et le 25 septembre 2023.
+
+
+
+
+
+
+Bonjour,
+Merci de votre email voici nos réponses.
+1/ Découpage : Effectivement concernant les graphiques 
+en forme de camembert qui montrent les distributions des 
+valeurs d’humidité relative nous souhaitons que vous premiers 
+bien l’ancien comptage à savoir par tranches de 10% entre 40% 
+et 90% en prenant bien n compte les mêmes dates de début et de fin
+HR < 40%
+40% ≤ HR < 50%
+50% ≤ HR < 60%
+60% ≤ HR < 70%
+70% ≤ HR < 80%
+80% ≤ HR < 90%
+HR ≥ 90%
+
+Ce qui est important pour générer ce graphique est de prendre 
+comme indiqué dans l’explication le comptage des mesures ( ex : HR < 15% = 15 Mesures).
+2/ Code : Concernant le code nous ne l’avons pas et c’est pour 
+cela que nous avons besoin de vos services.
+3/ Meeting : nous pourrions avoir un échange samedi 3 Mai entre 
+20h00 et 20h30. Est-ce-que cela vous conviendrez?
+
+
+
+
+
+
+
+
+
+

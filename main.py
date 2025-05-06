@@ -52,7 +52,7 @@ def main():
 
     # Démarrer l'application
     webview.start(
-        debug=True,
+        debug=False,
         icon=os.path.join(UI_DIR, "assets","img", "logo.png"),
     )
 

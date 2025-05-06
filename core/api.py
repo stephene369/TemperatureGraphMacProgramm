@@ -1,7 +1,6 @@
 """
 Module API - Fournit l'interface entre Python et JavaScript
 """
-
 import os
 import json
 import uuid
@@ -245,11 +244,10 @@ class API:
                 return {"success": False, "message": "Capteur non trouvé"}
 
             # Ouvrir la boîte de dialogue de sélection de fichier
-            file_types = ("Fichiers Excel (*.xlsx;*.xls)", "Fichiers HOBO (*.hobo)")
+            file_types = ("Fichiers Excel (*.xlsx;*.xls)", "Fichiers HOBO (*.hobo)", "Fichiers CSV (*.csv)")
             file_path = webview.windows[0].create_file_dialog(
                 webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types
             )
-
             if not file_path:
                 return {"success": False, "message": "Aucun fichier sélectionné"}
 
@@ -391,14 +389,36 @@ class API:
                 logger.error(f"Erreur lors du chargement avec data_loader: {e}")
 
                 # Fallback: essayer de charger directement avec pandas
+                def try_read_with_different_headers(file_path, file_type):
+                    for header_row in range(5):  # Essayer les 5 premières lignes
+                        try:
+                            if file_type == 'excel':
+                                df = pd.read_excel(file_path, header=header_row)
+                            elif file_type == 'csv':
+                                df = pd.read_csv(file_path, header=header_row)
+                            elif file_type == 'hobo':
+                                df = pd.read_csv(file_path, sep="\t", header=header_row)
+                            
+                            if len(df.columns) == 2:
+                                return df
+                        except:
+                            continue
+                    return None
+
                 if normalized_path.lower().endswith((".xlsx", ".xls")):
-                    df = pd.read_excel(normalized_path)
+                    df = try_read_with_different_headers(normalized_path, 'excel')
+                    if df is None:
+                        raise ValueError("Impossible de trouver un format valide avec 2 colonnes pour le fichier Excel")
                 elif normalized_path.lower().endswith(".csv"):
-                    df = pd.read_csv(normalized_path)
+                    df = try_read_with_different_headers(normalized_path, 'csv')
+                    if df is None:
+                        raise ValueError("Impossible de trouver un format valide avec 2 colonnes pour le fichier CSV")
                 elif normalized_path.lower().endswith(".hobo"):
-                    df = pd.read_csv(normalized_path, sep="\t")
-                else:
-                    raise ValueError(
+                    df = try_read_with_different_headers(normalized_path, 'hobo')
+                    if df is None:
+                        raise ValueError("Impossible de trouver un format valide avec 2 colonnes pour le fichier HOBO")                
+                    else:
+                        raise ValueError(
                         f"Format de fichier non pris en charge: {normalized_path}"
                     )
 
@@ -587,233 +607,187 @@ class API:
 
         return {"success": True, "types": graph_types}
     
-        
-        
+    
+    
+
+
+
+
+
+
+
+
+
     def generate_graph(self, graph_type, capteur_ids, options=None):
         import pandas as pd
-        print(options)
+        
         try:
             import logging
             logger = logging.getLogger(__name__)
-            logger.info(
-                f"Génération du graphique {graph_type} pour les capteurs {capteur_ids} avec options {options}"
-            )
+            logger.info(f"Génération du graphique {graph_type} pour les capteurs {capteur_ids} avec options {options}")
             
-            # Initialiser options si None
-            if options is None:
-                options = {}
-                
+            # Initialiser options avec un dictionnaire vide par défaut
+            options = options or {}
+            
             start_date = options.get('start_date')
             end_date = options.get('end_date')
             
-            # Vérifier que les capteurs existent
+            # Convertir les dates une seule fois si elles sont spécifiées
+            start_date_obj = pd.to_datetime(start_date) if start_date else None
+            end_date_obj = pd.to_datetime(end_date) if end_date else None
+            
+            # Vérifier la validité des dates dès le début
+            if start_date_obj and end_date_obj and start_date_obj > end_date_obj:
+                return {
+                    "success": False,
+                    "message": "La date de début doit être antérieure à la date de fin"
+                }
+            
+            # Définir les types de graphiques qui nécessitent des colonnes spécifiques
+            humidity_graphs = {
+                "humidity_time", "temperature_humidity", "humidity_monthly", 
+                "humidity_daily", "humidity_distribution", "humidity_amplitude", 
+                "humidity_profile_per_sensor"
+            }
+            dew_point_graphs = {"dew_point_risk"}
+            
+            # Vérifier que les capteurs existent et préparer les données
             capteurs_data = {}
-            smallest_time_delta = None
+            time_deltas = {}
+            largest_time_delta = None
             
             for capteur_id in capteur_ids:
+                # Vérifications préliminaires
                 if capteur_id not in self.capteurs:
-                    return {
-                        "success": False,
-                        "message": f"Capteur {capteur_id} non trouvé",
-                    }
+                    return {"success": False, "message": f"Capteur {capteur_id} non trouvé"}
+                    
                 capteur_data = self.capteurs[capteur_id]
+                capteur_nom = capteur_data['nom']
                 
-                # Vérifier que le capteur a un fichier et un mappage
                 if not capteur_data.get("file_path"):
-                    return {
-                        "success": False,
-                        "message": f"Le capteur {capteur_data['nom']} n'a pas de fichier associé",
-                    }
+                    return {"success": False, "message": f"Le capteur {capteur_nom} n'a pas de fichier associé"}
                 
-                # Vérifier le mappage des colonnes nécessaires
-                required_columns = ["date", "temperature"]
-                if not all(capteur_data.get("columns", {}).get(col) for col in required_columns):
-                    return {
-                        "success": False,
-                        "message": f"Le capteur {capteur_data['nom']} n'a pas de mappage complet pour les colonnes obligatoires",
-                    }
+                columns = capteur_data.get("columns", {})
+                if not all(columns.get(col) for col in ["date", "temperature"]):
+                    return {"success": False, "message": f"Le capteur {capteur_nom} n'a pas de mappage complet pour les colonnes obligatoires"}
+                
+                # Vérifier les colonnes spécifiques selon le type de graphique
+                if graph_type in humidity_graphs and not columns.get("humidity"):
+                    return {"success": False, "message": f"Le capteur {capteur_nom} n'a pas de données d'humidité nécessaires pour ce graphique"}
                     
-                # Vérifier si le graphique nécessite des données d'humidité
-                humidity_required = graph_type in [
-                    "humidity_time",
-                    "temperature_humidity",
-                    "humidity_monthly",
-                    "humidity_daily",
-                    "humidity_distribution",
-                    "humidity_amplitude",
-                    "humidity_profile_per_sensor"
-                ]
-                if humidity_required and not capteur_data["columns"].get("humidity"):
-                    return {
-                        "success": False,
-                        "message": f"Le capteur {capteur_data['nom']} n'a pas de données d'humidité nécessaires pour ce graphique",
-                    }
-                    
-                # Vérifier si le graphique nécessite des données de point de rosée
-                dew_point_required = graph_type in ["dew_point_risk"]
-                if dew_point_required and not capteur_data["columns"].get("dew_point"):
-                    return {
-                        "success": False,
-                        "message": f"Le capteur {capteur_data['nom']} n'a pas de données de point de rosée nécessaires pour ce graphique",
-                    }
-                    
-                # Charger les données
+                if graph_type in dew_point_graphs and not columns.get("dew_point"):
+                    return {"success": False, "message": f"Le capteur {capteur_nom} n'a pas de données de point de rosée nécessaires pour ce graphique"}
+                
+                # Charger et traiter les données
                 try:
                     df = self.data_loader.load_capteur_data(capteur_data)
                     
-                    # Convertir la colonne de date en datetime si ce n'est pas déjà fait
+                    # Convertir la colonne de date en datetime si nécessaire
                     if not pd.api.types.is_datetime64_any_dtype(df['date']):
                         df['date'] = pd.to_datetime(df['date'])
                     
                     # Filtrer par date si spécifié
-                    if start_date and end_date:
-                        start_date_obj = pd.to_datetime(start_date)
-                        end_date_obj = pd.to_datetime(end_date)
-                        
-                        # Vérifier que les dates sont valides
-                        if start_date_obj > end_date_obj:
-                            return {
-                                "success": False,
-                                "message": "La date de début doit être antérieure à la date de fin"
-                            }
-                        
+                    if start_date_obj or end_date_obj:
                         # Vérifier que les dates sont dans la plage des données
-                        if start_date_obj > df['date'].max() or end_date_obj < df['date'].min():
-                            return {
-                                "success": False,
-                                "message": f"Les dates spécifiées sont en dehors de la plage de données pour le capteur {capteur_data['nom']}"
-                            }
+                        if start_date_obj and start_date_obj > df['date'].max():
+                            return {"success": False, "message": f"La date de début est postérieure à toutes les données pour le capteur {capteur_nom}"}
                         
-                        # Filtrer les données
-                        df = df[(df['date'] >= start_date_obj) & (df['date'] <= end_date_obj)]
+                        if end_date_obj and end_date_obj < df['date'].min():
+                            return {"success": False, "message": f"La date de fin est antérieure à toutes les données pour le capteur {capteur_nom}"}
                         
-                    elif start_date:
-                        start_date_obj = pd.to_datetime(start_date)
-                        
-                        # Vérifier que la date est dans la plage des données
-                        if start_date_obj > df['date'].max():
-                            return {
-                                "success": False,
-                                "message": f"La date de début est postérieure à toutes les données pour le capteur {capteur_data['nom']}"
-                            }
-                        
-                        # Filtrer les données
-                        df = df[df['date'] >= start_date_obj]
-                        
-                    elif end_date:
-                        end_date_obj = pd.to_datetime(end_date)
-                        
-                        # Vérifier que la date est dans la plage des données
-                        if end_date_obj < df['date'].min():
-                            return {
-                                "success": False,
-                                "message": f"La date de fin est antérieure à toutes les données pour le capteur {capteur_data['nom']}"
-                            }
-                        
-                        # Filtrer les données
-                        df = df[df['date'] <= end_date_obj]
+                        # Appliquer les filtres de date
+                        if start_date_obj:
+                            df = df[df['date'] >= start_date_obj]
+                        if end_date_obj:
+                            df = df[df['date'] <= end_date_obj]
                     
                     # Vérifier si le dataframe est vide après filtrage
                     if df.empty:
-                        return {
-                            "success": False,
-                            "message": f"Aucune donnée disponible pour le capteur {capteur_data['nom']} dans la plage de dates spécifiée"
-                        }
+                        return {"success": False, "message": f"Aucune donnée disponible pour le capteur {capteur_nom} dans la plage de dates spécifiée"}
                     
-                    # Calculer l'amplitude de temps (différence entre deux mesures consécutives)
+                    # Calculer l'amplitude de temps
                     df = df.sort_values('date')
                     time_diffs = df['date'].diff().dropna()
                     
                     if not time_diffs.empty:
-                        # Calculer l'amplitude médiane pour ce capteur
                         median_time_delta = time_diffs.median()
+                        time_deltas[capteur_id] = median_time_delta
                         
-                        # Mettre à jour la plus petite amplitude si nécessaire
-                        if smallest_time_delta is None or median_time_delta < smallest_time_delta:
-                            smallest_time_delta = median_time_delta
+                        # Mettre à jour la plus grande amplitude
+                        if largest_time_delta is None or median_time_delta > largest_time_delta:
+                            largest_time_delta = median_time_delta
                     
                     # Stocker les données
-                    capteurs_data[capteur_id] = {"nom": capteur_data["nom"], "data": df}
+                    capteurs_data[capteur_id] = {"nom": capteur_nom, "data": df}
                     
                 except Exception as e:
                     logger.error(f"Erreur lors du chargement des données: {e}")
-                    return {
-                        "success": False,
-                        "message": f"Erreur lors du chargement des données pour {capteur_data['nom']}: {e}",
-                    }
+                    return {"success": False, "message": f"Erreur lors du chargement des données pour {capteur_nom}: {e}"}
             
-            # Normaliser les données à la plus petite amplitude de temps
-            if smallest_time_delta is not None and len(capteur_ids) > 1:
-                for capteur_id in capteurs_data:
-                    df = capteurs_data[capteur_id]["data"]
+            # Vérifier si tous les capteurs ont le même intervalle de temps
+            need_normalization = False
+            if len(time_deltas) > 1:
+                first_delta = next(iter(time_deltas.values()))
+                for delta in time_deltas.values():
+                    if delta != first_delta:
+                        need_normalization = True
+                        break
+            
+            # Normaliser les données seulement si nécessaire
+            if need_normalization and largest_time_delta is not None:
+                logger.info("Normalisation des données avec différents intervalles de temps")
+                for capteur_id, capteur in capteurs_data.items():
+                    df = capteur["data"]
                     
-                    # Vérifier et supprimer les doublons de date avant de réindexer
+                    # Supprimer les doublons de date
                     if df['date'].duplicated().any():
-                        # Option 1: Garder la première occurrence de chaque date
                         df = df.drop_duplicates(subset=['date'], keep='first')
-                        
-                        # Option 2 (alternative): Agréger les valeurs pour les dates dupliquées
-                        # df = df.groupby('date').agg({
-                        #     'temperature': 'mean',
-                        #     'humidity': 'mean' if 'humidity' in df.columns else None,
-                        #     'dew_point': 'mean' if 'dew_point' in df.columns else None
-                        # }).reset_index()
                     
-                    # Créer un nouvel index de temps avec la plus petite amplitude
-                    min_date = df['date'].min()
-                    max_date = df['date'].max()
-                    new_index = pd.date_range(start=min_date, end=max_date, freq=smallest_time_delta)
+                    # Créer un nouvel index de temps
+                    min_date, max_date = df['date'].min(), df['date'].max()
+                    new_index = pd.date_range(start=min_date, end=max_date, freq=largest_time_delta)
                     
-                    # Réindexer le dataframe avec interpolation
+                    # Réindexer avec interpolation
                     df_reindexed = df.set_index('date').reindex(new_index).interpolate(method='time')
                     df_reindexed.reset_index(inplace=True)
                     df_reindexed.rename(columns={'index': 'date'}, inplace=True)
                     
-                    # Remplacer le dataframe original
                     capteurs_data[capteur_id]["data"] = df_reindexed
-
-            
-            # Générer le graphique en fonction du type
-            if graph_type == "temperature_time":
-                return self.graph_generator.generate_temperature_time_graph(
-                    capteurs_data
-                )
-            elif graph_type == "humidity_time":
-                return self.graph_generator.generate_humidity_time_graph(capteurs_data)
-            elif graph_type == "temperature_amplitude":
-                return self.graph_generator.generate_temperature_amplitude_graph(
-                    capteurs_data
-                )
-            elif graph_type == "humidity_amplitude":
-                return self.graph_generator.generate_humidity_amplitude_graph(
-                    capteurs_data
-                )
-            elif graph_type == "humidity_profile_per_sensor":
-                return self.graph_generator.generate_all_humidity_distribution_pair_graphs(
-                    capteurs_data
-                )
-            elif graph_type == "dew_point_risk":
-                return self.graph_generator.generate_dew_point_risk_graph_(
-                    capteurs_data
-                )
             else:
-                return {
-                    "success": False,
-                    "message": f"Type de graphique non pris en charge: {graph_type}",
-                }
+                logger.info("Normalisation ignorée - tous les capteurs ont le même intervalle de temps ou un seul capteur sélectionné")
+            
+            # Utiliser un dictionnaire pour mapper les types de graphiques aux méthodes
+            graph_generators = {
+                "temperature_time": self.graph_generator.generate_temperature_time_graph,
+                "humidity_time": self.graph_generator.generate_humidity_time_graph,
+                "temperature_amplitude": self.graph_generator.generate_temperature_amplitude_graph,
+                "humidity_amplitude": self.graph_generator.generate_humidity_amplitude_graph,
+                "humidity_profile_per_sensor": self.graph_generator.generate_all_humidity_distribution_pair_graphs,
+                "dew_point_risk": self.graph_generator.generate_dew_point_risk_graph_
+            }
+            
+            # Générer le graphique
+            if graph_type in graph_generators:
+                return graph_generators[graph_type](capteurs_data)
+            else:
+                return {"success": False, "message": f"Type de graphique non pris en charge: {graph_type}"}
+                
         except Exception as e:
             import traceback
-            logging.error(f"Exception dans generate_graph: {e}")
-            logging.error(traceback.format_exc())
-            return {
-                "success": False,
-                "message": f"Erreur lors de la génération du graphique: {e}",
-            }
+            logger.error(f"Exception dans generate_graph: {e}")
+            logger.error(traceback.format_exc())
+            return {"success": False, "message": f"Erreur lors de la génération du graphique: {e}"}
+
+        
 
 
 
-
-
+    
+    
+    
+    
+    
+    
 
 
     def export_graph(self, graph_type, capteur_ids, format="png"):
