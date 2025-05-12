@@ -210,7 +210,7 @@ class GraphGenerator:
         ax.set_title("Humidité relative quotidienne moyenne", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Humidité (%)")
-        ax.set_ylim(0, 100)
+        #ax.set_ylim(0, 100)
 
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
@@ -286,7 +286,7 @@ class GraphGenerator:
         ax.set_title("Amplitudes thermiques quotidiennes", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Température (°C)")
-        ax.set_ylim(0, 10)
+        #ax.set_ylim(0, 10)
 
         # Axe X : format français, espacé tous les 2 mois
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
@@ -392,7 +392,7 @@ class GraphGenerator:
         ax.set_title("Amplitude hydrique quotidienne", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Humidité relative (%)")
-        ax.set_ylim(0, 40)
+        #ax.set_ylim(0, 40)
 
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
@@ -519,7 +519,7 @@ class GraphGenerator:
         ax.set_title("Écart au point de rosée quotidien", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Température (°C)")
-        ax.set_ylim(0, 15)
+        #ax.set_ylim(0, 15)
 
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
@@ -896,7 +896,7 @@ class GraphGenerator:
         ax.set_title("Écart au point de rosée quotidien", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Température (°C)")
-        ax.set_ylim(0, 15)
+        #ax.set_ylim(0, 15)
 
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
@@ -997,7 +997,7 @@ class GraphGenerator:
         ax.set_title("Écart au point de rosée quotidien", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Température (°C)")
-        ax.set_ylim(0, 15)
+        #ax.set_ylim(0, 15)
 
 
         class FrenchDateFormatter(mdates.DateFormatter):
