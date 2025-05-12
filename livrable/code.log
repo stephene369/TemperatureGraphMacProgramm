@@ -1,0 +1,579 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.18)  9 MAY 2025 19:54
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./code.tex
+(code.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+(D:\Programs\MiKTeX\tex/latex/base\article.cls
+Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
+(D:\Programs\MiKTeX\tex/latex/base\size11.clo
+File: size11.clo 2023/05/17 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count187
+\c@section=\count188
+\c@subsection=\count189
+\c@subsubsection=\count190
+\c@paragraph=\count191
+\c@subparagraph=\count192
+\c@figure=\count193
+\c@table=\count194
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen140
+)
+(D:\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2024/01/07 v24.1 The Babel package
+\babel@savecnt=\count195
+\U@D=\dimen141
+\l@unhyphenated=\language79
+
+(D:\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count196
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(D:\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(D:\Programs\MiKTeX\tex/generic/babel-french\french.ldf
+Language: french 2024-07-25 v3.6c French support from the babel system
+Package babel Info: Hyphen rules for 'acadian' set to \l@french
+(babel)             (\language22). Reported on input line 91.
+Package babel Info: Hyphen rules for 'canadien' set to \l@french
+(babel)             (\language22). Reported on input line 92.
+\FB@stdchar=\count197
+Package babel Info: Making : an active character on input line 421.
+Package babel Info: Making ; an active character on input line 422.
+Package babel Info: Making ! an active character on input line 423.
+Package babel Info: Making ? an active character on input line 424.
+\FBguill@level=\count198
+\FBold@everypar=\toks17
+\FB@Mht=\dimen142
+\mc@charclass=\count199
+\mc@charfam=\count266
+\mc@charslot=\count267
+\std@mcc=\count268
+\dec@mcc=\count269
+\FB@parskip=\dimen143
+\listindentFB=\dimen144
+\descindentFB=\dimen145
+\labelindentFB=\dimen146
+\labelwidthFB=\dimen147
+\leftmarginFB=\dimen148
+\parindentFFN=\dimen149
+\FBfnindent=\dimen150
+))
+(D:\Programs\MiKTeX\tex/generic/babel/locale/fr\babel-french.tex
+Package babel Info: Importing font and identification data for french
+(babel)             from babel-fr.ini. Reported on input line 11.
+)
+(D:\Programs\MiKTeX\tex/latex/carlisle\scalefnt.sty)
+(D:\Programs\MiKTeX\tex/latex/base\inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks18
+\inpenc@posthook=\toks19
+)
+(D:\Programs\MiKTeX\tex/latex/base\fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+)
+(D:\Programs\MiKTeX\tex/latex/lm\lmodern.sty
+Package: lmodern 2015/05/01 v1.6.1 Latin Modern Fonts
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/lmr/m/n on input line 22.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/lmm/m/it on input line 23.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/lmsy/m/n on input line 24.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 25.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 26.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/lmm/b/it on input line 27.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/lmsy/b/n on input line 28.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 29.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 31.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 32.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/lmr/m/it on input line 33.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> OT1/lmss/bx/n on input line 36.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/lmr/bx/it on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
+)
+(D:\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+Package: hyperref 2023-11-26 v7.01g Hypertext links for LaTeX
+
+(D:\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+Package: iftex 2022/02/03 v1.0f TeX engine tests
+)
+(D:\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+(D:\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks20
+)
+(D:\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)
+(D:\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(D:\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+
+(D:\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+(D:\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+))
+(D:\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(D:\Programs\MiKTeX\tex/latex/letltxmacro\letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+(D:\Programs\MiKTeX\tex/latex/auxhook\auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+(D:\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
+
+(D:\Programs\MiKTeX\tex/latex/refcount\refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(D:\Programs\MiKTeX\tex/generic/gettitlestring\gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+
+(D:\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count270
+)
+(D:\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count271
+)
+\@linkdim=\dimen151
+\Hy@linkcounter=\count272
+\Hy@pagecounter=\count273
+
+(D:\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
+File: pd1enc.def 2023-11-26 v7.01g Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(D:\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count274
+
+(D:\Programs\MiKTeX\tex/latex/hyperref\puenc.def
+File: puenc.def 2023-11-26 v7.01g Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4181.
+Package hyperref Info: Link nesting OFF on input line 4186.
+Package hyperref Info: Hyper index ON on input line 4189.
+Package hyperref Info: Plain pages OFF on input line 4196.
+Package hyperref Info: Backreferencing OFF on input line 4201.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4448.
+\c@Hy@tempcnt=\count275
+
+(D:\Programs\MiKTeX\tex/latex/url\url.sty
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4786.
+\XeTeXLinkMargin=\dimen152
+
+(D:\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(D:\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count276
+\Field@Width=\dimen153
+\Fld@charsize=\dimen154
+Package hyperref Info: Hyper figures OFF on input line 6065.
+Package hyperref Info: Link nesting OFF on input line 6070.
+Package hyperref Info: Hyper index ON on input line 6073.
+Package hyperref Info: backreferencing OFF on input line 6080.
+Package hyperref Info: Link coloring OFF on input line 6085.
+Package hyperref Info: Link coloring with OCG OFF on input line 6090.
+Package hyperref Info: PDF/A mode OFF on input line 6095.
+
+(D:\Programs\MiKTeX\tex/latex/base\atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count277
+\c@Item=\count278
+\c@Hfootnote=\count279
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(D:\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+File: hpdftex.def 2023-11-26 v7.01g Hyperref driver for pdfTeX
+
+(D:\Programs\MiKTeX\tex/latex/base\atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+\Fld@listcount=\count280
+\c@bookmark@seq@number=\count281
+
+(D:\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfilecheck.sty
+Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
+
+(D:\Programs\MiKTeX\tex/generic/uniquecounter\uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+85.
+)
+\Hy@SectionHShift=\skip50
+)
+(D:\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(D:\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
+
+(D:\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(D:\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+
+(D:\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen155
+\Gin@req@width=\dimen156
+)
+(D:\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+Package: xcolor 2023/11/15 v3.01 LaTeX color extensions (UK)
+
+(D:\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+
+(D:\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1350.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1354.
+Package xcolor Info: Model `RGB' extended on input line 1366.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1368.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
+)
+(D:\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(D:\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count282
+\Gm@cntv=\count283
+\c@Gm@tempcnt=\count284
+\Gm@bindingoffset=\dimen157
+\Gm@wd@mp=\dimen158
+\Gm@odd@mp=\dimen159
+\Gm@even@mp=\dimen160
+\Gm@layoutwidth=\dimen161
+\Gm@layoutheight=\dimen162
+\Gm@layouthoffset=\dimen163
+\Gm@layoutvoffset=\dimen164
+\Gm@dimlist=\toks21
+
+(D:\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+Package hyperref Info: Option `colorlinks' set `true' on input line 21.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 31
+.
+
+(D:\Programs\MiKTeX\tex/latex/lm\t1lmr.fd
+File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+(D:\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
+File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count285
+\l__pdf_internal_box=\box51
+) (code.aux)
+\openout1 = `code.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Info: Redefining \degres on input line 31.
+LaTeX Info: Redefining \up on input line 31.
+Package hyperref Info: Link coloring ON on input line 31.
+
+(code.out) (code.out)
+\@outlinefile=\write3
+\openout3 = `code.out'.
+
+ (D:\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count286
+\scratchdimen=\dimen165
+\scratchbox=\box52
+\nofMPsegments=\count287
+\nofMParguments=\count288
+\everyMPshowfont=\toks22
+\MPscratchCnt=\count289
+\MPscratchDim=\dimen166
+\MPnumerator=\count290
+\makeMPintoPDFobject=\count291
+\everyMPtoPDFconversion=\toks23
+) (D:\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(D:\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(71.13188pt, 455.24411pt, 71.13188pt)
+* v-part:(T,H,B)=(71.13188pt, 702.78308pt, 71.13188pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=455.24411pt
+* \textheight=702.78308pt
+* \oddsidemargin=-1.1381pt
+* \evensidemargin=-1.1381pt
+* \topmargin=-38.1381pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=50.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+<../ui/assets/img/logo.png, id=31, 207.02344pt x 193.47281pt>
+File: ../ui/assets/img/logo.png Graphic file (type png)
+<use ../ui/assets/img/logo.png>
+Package pdftex.def Info: ../ui/assets/img/logo.png  used on input line 34.
+(pdftex.def)             Requested size: 142.26378pt x 132.95613pt.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 3
+4.
+(D:\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
+File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 3
+4.
+
+(D:\Programs\MiKTeX\tex/latex/lm\omllmm.fd
+File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
+34.
+
+(D:\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
+File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
+34.
+
+(D:\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
+File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 34.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 34.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 34.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 5
+1.
+
+(D:\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [1
+
+{C:/Users/stephene/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/Program
+s/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{D:/Programs/MiKTeX/fonts/enc/dvips/lm/lm
+-ts1.enc} <../ui/assets/img/logo.png>]
+<../screenshots/Écart_au_point_de_rosée_(risque_de_condensation)-id-dew_point
+_risk-20250506_143243.png, id=44, 1300.86pt x 578.16pt>
+File: ../screenshots/Écart_au_point_de_rosée_(risque_de_condensation)-id-dew_
+point_risk-20250506_143243.png Graphic file (type png)
+<use ../screenshots/Écart_au_point_de_rosée_(risque_de_condensation)-id-dew_p
+oint_risk-20250506_143243.png>
+Package pdftex.def Info: ../screenshots/Écart_au_point_de_rosée_(risque_de_co
+ndensation)-id-dew_point_risk-20250506_143243.png  used on input line 82.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+<../screenshots/Amplitude_hydrique_quotidienne-id-humidity_amplitude-20250506_1
+43243.png, id=45, 1300.86pt x 578.16pt>
+File: ../screenshots/Amplitude_hydrique_quotidienne-id-humidity_amplitude-20250
+506_143243.png Graphic file (type png)
+<use ../screenshots/Amplitude_hydrique_quotidienne-id-humidity_amplitude-202505
+06_143243.png>
+Package pdftex.def Info: ../screenshots/Amplitude_hydrique_quotidienne-id-humid
+ity_amplitude-20250506_143243.png  used on input line 88.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+ [2 <../screenshots/Écart_au_point_de_rosée_(risque_de_condensation)-id-dew_p
+oint_risk-20250506_143243.png> <../screenshots/Amplitude_hydrique_quotidienne-i
+d-humidity_amplitude-20250506_143243.png>]
+<../screenshots/Amplitude_thermique_quotidienne-id-temperature_amplitude-202505
+06_143243.png, id=55, 1300.86pt x 578.16pt>
+File: ../screenshots/Amplitude_thermique_quotidienne-id-temperature_amplitude-2
+0250506_143243.png Graphic file (type png)
+<use ../screenshots/Amplitude_thermique_quotidienne-id-temperature_amplitude-20
+250506_143243.png>
+Package pdftex.def Info: ../screenshots/Amplitude_thermique_quotidienne-id-temp
+erature_amplitude-20250506_143243.png  used on input line 96.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+<../screenshots/Humidité_en_fonction_du_temps-id-humidity_time-20250506_143243
+.png, id=56, 1300.86pt x 578.16pt>
+File: ../screenshots/Humidité_en_fonction_du_temps-id-humidity_time-20250506_1
+43243.png Graphic file (type png)
+<use ../screenshots/Humidité_en_fonction_du_temps-id-humidity_time-20250506_14
+3243.png>
+Package pdftex.def Info: ../screenshots/Humidité_en_fonction_du_temps-id-humid
+ity_time-20250506_143243.png  used on input line 102.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+ [3 <../screenshots/Amplitude_thermique_quotidienne-id-temperature_amplitude-20
+250506_143243.png> <../screenshots/Humidité_en_fonction_du_temps-id-humidity_t
+ime-20250506_143243.png>]
+<../screenshots/Profil_d'humidité_par_capteur-id-humidity_profile_per_sensor-2
+0250506_143243.png, id=65, 939.51pt x 361.35pt>
+File: ../screenshots/Profil_d'humidité_par_capteur-id-humidity_profile_per_sen
+sor-20250506_143243.png Graphic file (type png)
+<use ../screenshots/Profil_d'humidité_par_capteur-id-humidity_profile_per_sens
+or-20250506_143243.png>
+Package pdftex.def Info: ../screenshots/Profil_d'humidité_par_capteur-id-humid
+ity_profile_per_sensor-20250506_143243.png  used on input line 110.
+(pdftex.def)             Requested size: 364.19667pt x 140.0713pt.
+<../screenshots/Températures_quotidiennes_(Température_en_fonction_du_temps)-
+id-temperature_time-20250506_143243.png, id=66, 1300.86pt x 578.16pt>
+File: ../screenshots/Températures_quotidiennes_(Température_en_fonction_du_te
+mps)-id-temperature_time-20250506_143243.png Graphic file (type png)
+<use ../screenshots/Températures_quotidiennes_(Température_en_fonction_du_tem
+ps)-id-temperature_time-20250506_143243.png>
+Package pdftex.def Info: ../screenshots/Températures_quotidiennes_(Températur
+e_en_fonction_du_temps)-id-temperature_time-20250506_143243.png  used on input 
+line 116.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+
+[4 <../screenshots/Profil_d'humidité_par_capteur-id-humidity_profile_per_senso
+r-20250506_143243.png> <../screenshots/Températures_quotidiennes_(Température
+_en_fonction_du_temps)-id-temperature_time-20250506_143243.png>]
+<../screenshots/Température_moyenne_quotidienne_par_capteur_1-Capteur---202504
+24_165815.png, id=75, 1300.86pt x 578.16pt>
+File: ../screenshots/Température_moyenne_quotidienne_par_capteur_1-Capteur---2
+0250424_165815.png Graphic file (type png)
+<use ../screenshots/Température_moyenne_quotidienne_par_capteur_1-Capteur---20
+250424_165815.png>
+Package pdftex.def Info: ../screenshots/Température_moyenne_quotidienne_par_ca
+pteur_1-Capteur---20250424_165815.png  used on input line 124.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+<../screenshots/Amplitude_thermique_quotidienne_1-Capteur---20250427_112247.png
+, id=76, 1300.86pt x 578.16pt>
+File: ../screenshots/Amplitude_thermique_quotidienne_1-Capteur---20250427_11224
+7.png Graphic file (type png)
+<use ../screenshots/Amplitude_thermique_quotidienne_1-Capteur---20250427_112247
+.png>
+Package pdftex.def Info: ../screenshots/Amplitude_thermique_quotidienne_1-Capte
+ur---20250427_112247.png  used on input line 130.
+(pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
+ [5 <../screenshots/Température_moyenne_quotidienne_par_capteur_1-Capteur---20
+250424_165815.png> <../screenshots/Amplitude_thermique_quotidienne_1-Capteur---
+20250427_112247.png>]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.95> on input line 148.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
+53.
+ (D:\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [6] (code.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+ ***********
+Package rerunfilecheck Info: File `code.out' has not changed.
+(rerunfilecheck)             Checksum: 58A8B23EC5FAF6C26384D447E79AC2B8;1195.
+ ) 
+Here is how much of TeX's memory you used:
+ 11787 strings out of 474486
+ 192631 string characters out of 5755940
+ 1935542 words of memory out of 5000000
+ 33893 multiletter control sequences out of 15000+600000
+ 607224 words of font info for 64 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 75i,6n,79p,525b,526s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<D:/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><D:/Programs/MiKTeX/font
+s/type1/public/lm/lmbx12.pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmcsc10.
+pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Programs/MiKTeX/fon
+ts/type1/public/lm/lmr12.pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.p
+fb>
+Output written on code.pdf (6 pages, 2606316 bytes).
+PDF statistics:
+ 132 PDF objects out of 1000 (max. 8388607)
+ 26 named destinations out of 1000 (max. 500000)
+ 102 words of extra memory for PDF output out of 10000 (max. 10000000)
+
