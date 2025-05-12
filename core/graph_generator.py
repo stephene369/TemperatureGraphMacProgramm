@@ -998,6 +998,7 @@ class GraphGenerator:
         ax.set_xlabel("Date")
         ax.set_ylabel("Température (°C)")
         #ax.set_ylim(0, 15)
+        # update
 
 
         class FrenchDateFormatter(mdates.DateFormatter):
