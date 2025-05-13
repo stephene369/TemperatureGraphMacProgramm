@@ -1,0 +1,26 @@
+[
+  {
+    "id": "5f9f7f48-7302-4e3b-8a97-b4560c39e347",
+    "timestamp": "2025-05-13T21:50:39.500658",
+    "action": "Ajout de capteur",
+    "capteur_id": "ad09c11a-19c3-4783-9584-6d7aa39f729c",
+    "capteur_nom": "Nord",
+    "details": null
+  },
+  {
+    "id": "aedd2d74-4e50-4b7d-b0c6-99f2fa8cddd1",
+    "timestamp": "2025-05-13T21:50:54.388006",
+    "action": "Association de fichier",
+    "capteur_id": "ad09c11a-19c3-4783-9584-6d7aa39f729c",
+    "capteur_nom": "Nord",
+    "details": {
+      "file_path": "E:\\projects\\TemperatureGraphMacProgramm\\documentation\\21027238 Nord 2023-09-27 10_57_14 CET (Data CET)(1).xlsx",
+      "columns": {
+        "date": "Date-Time (CET)",
+        "temperature": "Ch: 2 - Temperature   (°C )",
+        "humidity": "Ch: 3 - RH   (%)",
+        "dew_point": "Dew Point   (°C)"
+      }
+    }
+  }
+]
