@@ -10,6 +10,11 @@ build/
 livrable/
 dist/
 output/
+data/
+tests/
+ui/*
+core/*
+
 # eggs/
 # .eggs/
 # lib/
