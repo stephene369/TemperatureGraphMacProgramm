@@ -5,8 +5,9 @@
 # *.pyd
 # .Python
 env/
+core/
 build/
-# develop-eggs/
+livrable/
 dist/
 output/
 # eggs/
@@ -25,4 +26,4 @@ output/
 # *.log
 # *.sqlite3
 # .DS_Store
-livrable
+
