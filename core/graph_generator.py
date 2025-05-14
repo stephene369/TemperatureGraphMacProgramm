@@ -108,10 +108,10 @@ class GraphGenerator:
             color_index += 1
 
         # Configuration du graphique
-        ax.set_title("Températures quotidiennes moyennes", fontsize=14)
+        ax.set_title("Températures quotidiennes", fontsize=14)
         ax.set_xlabel("Date")
         ax.set_ylabel("Température (°C)")
-        ax.set_ylim(-10, 40)
+        # ax.set_ylim(-10, 40)
 
         ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
         ax.xaxis.set_major_formatter(FrenchDateFormatter('%d %B\n%Y'))
@@ -138,7 +138,7 @@ class GraphGenerator:
             "success": True,
             "data": {
                 "type": "line",
-                "title": "Température moyenne quotidienne par capteur",
+                "title": "Températures quotidiennes",
                 "x_axis": "Date",
                 "y_axis": "Température (°C)",
             },
@@ -235,7 +235,7 @@ class GraphGenerator:
             "success": True,
             "data": {
                 "type": "line",
-                "title": "Humidité moyenne quotidienne par capteur",
+                "title": "Humidité relative quotidienne",
                 "x_axis": "Date",
                 "y_axis": "Humidité (%)",
             },
@@ -246,7 +246,7 @@ class GraphGenerator:
 
     def generate_temperature_amplitude_graph(self, capteurs_data):
         """
-        Générer un graphique d'amplitudes thermiques quotidiennes (Tmax - Tmin) avec le style ClimaGraph.
+        Générer un graphique d'amplitudes thermiques quotidiennes (Tmax - Tmin) avec le style ISCGraph.
 
         Args:
             capteurs_data (dict): Données des capteurs
@@ -314,26 +314,26 @@ class GraphGenerator:
         datasets = []
         all_dates = []
 
-        for capteur_id, capteur in capteurs_data.items():
-            df = capteur["data"].copy()
-            df["date_only"] = df["date"].dt.floor("D")
-            grouped = df.groupby("date_only")["temperature"]
-            amplitude = (grouped.max() - grouped.min()).reset_index()
-            amplitude.columns = ["date", "amplitude"]
+        # for capteur_id, capteur in capteurs_data.items():
+        #     df = capteur["data"].copy()
+        #     df["date_only"] = df["date"].dt.floor("D")
+        #     grouped = df.groupby("date_only")["temperature"]
+        #     amplitude = (grouped.max() - grouped.min()).reset_index()
+        #     amplitude.columns = ["date", "amplitude"]
 
-            dates = amplitude["date"].dt.strftime('%Y-%m-%d').tolist()
-            values = amplitude["amplitude"].round(2).tolist()
-            all_dates.extend(dates)
+        #     dates = amplitude["date"].dt.strftime('%Y-%m-%d').tolist()
+        #     values = amplitude["amplitude"].round(2).tolist()
+        #     all_dates.extend(dates)
 
-            r, g, b = random.randint(0, 200, 3)
-            datasets.append({
-                "label": capteur["nom"],
-                "data": values,
-                "borderColor": f"rgba({r},{g},{b},1)",
-                "backgroundColor": f"rgba({r},{g},{b},0.2)",
-                "fill": False,
-                "tension": 0.1
-            })
+        #     r, g, b = random.randint(0, 200, 3)
+        #     datasets.append({
+        #         "label": capteur["nom"],
+        #         "data": values,
+        #         "borderColor": f"rgba({r},{g},{b},1)",
+        #         "backgroundColor": f"rgba({r},{g},{b},0.2)",
+        #         "fill": False,
+        #         "tension": 0.1
+        #     })
 
         all_dates = sorted(list(set(all_dates)))
 
@@ -341,7 +341,7 @@ class GraphGenerator:
             "success": True,
             "data": {
                 "type": "line",
-                "title": "Amplitude thermique quotidienne",
+                "title": "Amplitude hydrique quotidienne",
                 "x_axis": "Date",
                 "y_axis": "Amplitude (°C)",
                 "labels": all_dates,

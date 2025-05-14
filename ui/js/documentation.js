@@ -14,12 +14,12 @@ function loadDocumentationPage() {
             icon: "bx bx-info-circle text-blue-500",
             content: `
                 <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg mb-6 transform transition-all duration-300 hover:scale-[1.01] hover:shadow-md">
-                    <p class="mb-4 leading-relaxed">ClimaGraph est une application d'analyse de données climatiques qui vous permet de visualiser et d'analyser les données de température et d'humidité provenant de différents capteurs.</p>
+                    <p class="mb-4 leading-relaxed">ISCGraph  est une application d'analyse de données climatiques qui vous permet de visualiser et d'analyser les données de température et d'humidité provenant de différents capteurs.</p>
                     <p class="mb-4">Cette documentation vous guidera à travers les différentes fonctionnalités de l'application et vous expliquera comment les utiliser efficacement.</p>
                 </div>
                 
                 <div class="flex justify-center my-6 animate__animated animate__pulse animate__infinite animate__slower">
-                    <img src="assets/img/logo.png" alt="ClimaGraph Logo" class="w-32 h-32 drop-shadow-lg">
+                    <img src="assets/img/logo.png" alt="ISCGraph  Logo" class="w-32 h-32 drop-shadow-lg">
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
@@ -46,7 +46,7 @@ function loadDocumentationPage() {
             icon: "bx bx-walk text-green-500",
             content: `
                 <div class="p-5 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 rounded-lg mb-6 transform transition-all duration-300 hover:shadow-md">
-                    <p class="mb-4">Pour commencer à utiliser ClimaGraph, suivez ces étapes simples :</p>
+                    <p class="mb-4">Pour commencer à utiliser ISCGraph , suivez ces étapes simples :</p>
                 </div>
                 
                 <div class="relative pl-8 pb-8">
@@ -782,7 +782,7 @@ function loadDocumentationPage() {
             icon: "bx bx-bulb text-yellow-500",
             content: `
                 <div class="p-5 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg mb-6 transform transition-all duration-300 hover:shadow-md">
-                    <p class="mb-4">Cette section regroupe des conseils et astuces pour tirer le meilleur parti de ClimaGraph et optimiser votre analyse de données climatiques.</p>
+                    <p class="mb-4">Cette section regroupe des conseils et astuces pour tirer le meilleur parti de ISCGraph  et optimiser votre analyse de données climatiques.</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -1014,7 +1014,7 @@ function loadDocumentationPage() {
             icon: "bx bx-wrench text-red-500",
             content: `
                 <div class="p-5 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30 rounded-lg mb-6 transform transition-all duration-300 hover:shadow-md">
-                    <p class="mb-4">Cette section vous aide à résoudre les problèmes courants que vous pourriez rencontrer lors de l'utilisation de ClimaGraph.</p>
+                    <p class="mb-4">Cette section vous aide à résoudre les problèmes courants que vous pourriez rencontrer lors de l'utilisation de ISCGraph .</p>
                 </div>
                 
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md mb-6 transform transition-all duration-300 hover:shadow-lg">
@@ -1281,7 +1281,7 @@ function loadDocumentationPage() {
                 
                 <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-4 border-l-4 border-blue-500">
                     <h5 class="font-semibold mb-2 flex items-center"><i class='bx bx-support text-blue-500 mr-2'></i> Besoin d'aide supplémentaire?</h5>
-                    <p>Si vous rencontrez un problème qui n'est pas couvert dans cette section, vous pouvez contacter le support technique à l'adresse <a href="mailto:support@climagraph.com" class="text-blue-600 dark:text-blue-400 hover:underline">support@climagraph.com</a> en décrivant précisément votre problème et en joignant des captures d'écran si possible.</p>
+                    <p>Si vous rencontrez un problème qui n'est pas couvert dans cette section, vous pouvez contacter le support technique à l'adresse <a href="mailto:support@ISCGraph .com" class="text-blue-600 dark:text-blue-400 hover:underline">support@ISCGraph .com</a> en décrivant précisément votre problème et en joignant des captures d'écran si possible.</p>
                 </div>
             `
         }
@@ -1298,8 +1298,8 @@ function updateDocumentationUI() {
     // Générer le contenu HTML
     let html = `
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <h3 class="text-lg font-semibold mb-4">📚 Documentation ClimaGraph</h3>
-            <p class="mb-6">Guide complet d'utilisation de l'application ClimaGraph.</p>
+            <h3 class="text-lg font-semibold mb-4">📚 Documentation ISCGraph </h3>
+            <p class="mb-6">Guide complet d'utilisation de l'application ISCGraph .</p>
             
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- Menu de navigation -->

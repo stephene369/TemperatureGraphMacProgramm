@@ -86,11 +86,11 @@ function updatePageTitle(page) {
             title = 'Historique';
             break;
         default:
-            title = 'ClimaGraph';
+            title = 'ISCGraph';
     }
     
     document.getElementById('page-title').textContent = title;
-    document.title = `ClimaGraph - ${title}`;
+    document.title = `ISCGraph - ${title}`;
 }
 
 // Charger le contenu spécifique à la page

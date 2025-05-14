@@ -1,5 +1,5 @@
 """
-ClimaGraph - Application d'analyse de température et d'humidité
+ISCGraph  - Application d'analyse de température et d'humidité
 Point d'entrée principal de l'application
 """
 
@@ -24,8 +24,8 @@ else:  # Linux
     if not os.path.exists(pictures_dir):
         pictures_dir = os.path.join(os.path.expanduser("~"), "Images")
 
-# Set ClimaGraph images directory
-IMAGE_OUTPUT_DIR = os.path.join(pictures_dir, "ClimaGraph")
+# Set ISCGraph  images directory
+IMAGE_OUTPUT_DIR = os.path.join(pictures_dir, "ISCGraph ")
 
 # Create directories if they don't exist
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -41,7 +41,7 @@ def main():
 
     # Créer la fenêtre principale
     webview.create_window(
-        title="ClimaGraph",
+        title="ISCGraph ",
         url=os.path.join(UI_DIR, "index.html"),
         js_api=api,
         width=1500,

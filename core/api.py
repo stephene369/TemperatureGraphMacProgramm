@@ -66,7 +66,7 @@ class API:
         return {
             "success": True,
             "version": "1.0.0",
-            "name": "ClimaGraph",
+            "name": "ISCGraph",
             "data_dir": self.data_dir,
             "output_dir": self.output_dir,
         }
@@ -550,17 +550,17 @@ class API:
         graph_types = [
             {
                 "id": "temperature_time",
-                "name": "Températures quotidiennes (Température en fonction du temps)",
+                "name": "Températures quotidiennes",
                 "description": "Graphique linéaire montrant l'évolution quotidienne de la température pour chaque capteur.",
             },
             {
                 "id": "temperature_amplitude",
-                "name": "Amplitude thermique quotidienne",
+                "name": "Amplitude thermiques quotidiennes",
                 "description": "Graphique linéaire montrant les écarts journaliers de température (max - min) pour chaque capteur.",
             },
             {
                 "id": "humidity_time",
-                "name": "Humidité en fonction du temps",
+                "name": "Humidité relative quotidienne",
                 "description": "Graphique linéaire montrant l'évolution quotidienne de l'humidité relative pour chaque capteur.",
             },
             {
