@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.18)  9 MAY 2025 19:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.18)  14 MAY 2025 08:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -543,37 +543,44 @@ ur---20250427_112247.png  used on input line 130.
 (pdftex.def)             Requested size: 364.19667pt x 161.86604pt.
  [5 <../screenshots/Température_moyenne_quotidienne_par_capteur_1-Capteur---20
 250424_165815.png> <../screenshots/Amplitude_thermique_quotidienne_1-Capteur---
-20250427_112247.png>]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 148.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-53.
- (D:\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [6] (code.aux)
+20250427_112247.png>] (code.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
-Package rerunfilecheck Info: File `code.out' has not changed.
-(rerunfilecheck)             Checksum: 58A8B23EC5FAF6C26384D447E79AC2B8;1195.
+
+
+Package rerunfilecheck Warning: File `code.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `code.out':
+(rerunfilecheck)             Before: 58A8B23EC5FAF6C26384D447E79AC2B8;1195
+(rerunfilecheck)             After:  B2EA799A4AC39125E5E954398C97FE1C;790.
  ) 
 Here is how much of TeX's memory you used:
- 11787 strings out of 474486
- 192631 string characters out of 5755940
+ 11726 strings out of 474486
+ 191678 string characters out of 5755940
  1935542 words of memory out of 5000000
- 33893 multiletter control sequences out of 15000+600000
- 607224 words of font info for 64 fonts, out of 8000000 for 9000
+ 33842 multiletter control sequences out of 15000+600000
+ 597307 words of font info for 58 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,79p,525b,526s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<D:/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><D:/Programs/MiKTeX/font
-s/type1/public/lm/lmbx12.pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmcsc10.
-pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Programs/MiKTeX/fon
-ts/type1/public/lm/lmr12.pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.p
-fb>
-Output written on code.pdf (6 pages, 2606316 bytes).
+ 75i,6n,79p,524b,526s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{section.6} has been referenced but does not exist, 
+replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.5.1} has been referenced but does not ex
+ist, replaced by a fixed one
+
+<D:/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><D:/Programs/MiKTeX/fonts/
+type1/public/lm/lmbx12.pfb><D:/Programs/MiKTeX/fonts/type1/public/lm/lmcsc10.pf
+b><D:/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Programs/MiKTeX/fonts
+/type1/public/lm/lmr12.pfb>
+Output written on code.pdf (5 pages, 2576350 bytes).
 PDF statistics:
- 132 PDF objects out of 1000 (max. 8388607)
- 26 named destinations out of 1000 (max. 500000)
+ 118 PDF objects out of 1000 (max. 8388607)
+ 22 named destinations out of 1000 (max. 500000)
  102 words of extra memory for PDF output out of 10000 (max. 10000000)
 
