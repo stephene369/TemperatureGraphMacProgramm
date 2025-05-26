@@ -724,6 +724,7 @@ class GraphGenerator:
 
 
         images_base64 = []
+        noms = []
 
         pie_colors = [
     "#a8cce6",  # légèrement plus sombre que #b3d9f2
@@ -808,6 +809,7 @@ class GraphGenerator:
                 plt.savefig(buf, format='png', dpi=150)
                 buf.seek(0)
                 images_base64.append(base64.b64encode(buf.read()).decode('utf-8'))
+                noms.append(nom)
                 plt.close()
 
             except Exception as e:
@@ -823,7 +825,8 @@ class GraphGenerator:
                 "y_axis": "Fréquence (%)",
                 "description": "Pour chaque capteur, cette figure affiche un camembert des classes d'humidité relative (moyenne quotidienne) et un histogramme des amplitudes hydriques journalières.",
             },
-            "image": images_base64
+            "image": images_base64,
+            "noms":noms
         }
 
 

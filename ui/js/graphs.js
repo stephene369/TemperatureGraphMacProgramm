@@ -32,7 +32,7 @@ function loadGraphsPage() {
       } else {
         throw new Error(
           response.message ||
-            "Erreur lors du chargement des types de graphiques"
+          "Erreur lors du chargement des types de graphiques"
         );
       }
     })
@@ -256,7 +256,7 @@ function generateGraph() {
   window.pywebview.api
     .generate_graph(graphType, capteurIds, options)
     .then((response) => {
-      console.log("Réponse reçue :", response);  
+      console.log("Réponse reçue :", response);
       hideLoading();
       if (response.success) {
         // Afficher le graphique
@@ -505,13 +505,28 @@ function generateAllGraphTypes(capteurIds, startDate, endDate) {
       .then((response) => {
         if (response.success) {
           // Stocker les données du graphique
-          generatedGraphs.push({
-            id: graphType.id,
-            name: graphType.name,
-            image: Array.isArray(response.image)
-              ? response.image[0]
-              : response.image,
-          });
+          // Stocker les données du graphique
+          if (Array.isArray(response.image) && response.image.length > 1) {
+            // Si plusieurs images, ajouter chacune avec un suffixe numéroté
+            response.image.forEach((img, index) => {
+              generatedGraphs.push({
+                id: `${graphType.id}_${index + 1}`,
+                name: `${graphType.name} ${index + 1}`,
+                image: img,
+              });
+            });
+          } else {
+            // Si une seule image (ou pas un tableau)
+            generatedGraphs.push({
+              id: graphType.id,
+              name: graphType.name,
+              image: Array.isArray(response.image)
+                ? response.image[0]
+                : response.image,
+            });
+          }
+
+
 
           // Créer un conteneur pour ce graphique
           const singleGraphContainer = document.createElement("div");
@@ -768,7 +783,7 @@ function doExportGraph(imageData, filename, format) {
       } else {
         showNotification(
           response.message ||
-            `Erreur lors de l'export en ${format.toUpperCase()}`,
+          `Erreur lors de l'export en ${format.toUpperCase()}`,
           "error"
         );
       }
