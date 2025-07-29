@@ -12,7 +12,6 @@ dist/
 output/
 data/
 tests/
-ui/*
 core/*
 
 # eggs/

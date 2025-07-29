@@ -1,4 +1,11 @@
-/* Base */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
 :root {
     --primary-color: #3b82f6;
     --primary-hover: #2563eb;

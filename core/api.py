@@ -8,6 +8,7 @@ import datetime
 from core.storage import Storage
 from core.data_loader import DataLoader
 from core.graph_generator import GraphGenerator
+from core.data_statistics import DataStatistics
 from core.utils import add_history_entry
 import webview
 from print_color.print_color import print
@@ -1111,4 +1112,242 @@ class API:
             return {
                 "success": False,
                 "message": f"Erreur lors de l'enregistrement des images: {e}",
+            }
+
+    def get_data_statistics(self, capteur_id, start_date=None, end_date=None):
+        """
+        Calcule les statistiques pour un capteur donné
+        
+        Args:
+            capteur_id (str): ID du capteur
+            start_date (str): Date de début (optionnelle, format YYYY-MM-DD)
+            end_date (str): Date de fin (optionnelle, format YYYY-MM-DD)
+            
+        Returns:
+            dict: Statistiques calculées ou message d'erreur
+        """
+        try:
+            # Vérifier que le capteur existe
+            capteur = None
+            for c in self.storage.capteurs:
+                if c["id"] == capteur_id:
+                    capteur = c
+                    break
+            
+            if not capteur:
+                return {
+                    "success": False,
+                    "message": "Capteur non trouvé"
+                }
+            
+            # Vérifier que le capteur a un fichier associé
+            if not capteur.get("file_path"):
+                return {
+                    "success": False,
+                    "message": "Aucun fichier associé à ce capteur"
+                }
+            
+            # Vérifier que le mappage des colonnes est configuré
+            if not capteur.get("columns"):
+                return {
+                    "success": False,
+                    "message": "Mappage des colonnes non configuré pour ce capteur"
+                }
+            
+            # Charger les données
+            try:
+                data_loader = DataLoader()
+                df = data_loader.load_file(capteur["file_path"])
+                
+                if df is None or df.empty:
+                    return {
+                        "success": False,
+                        "message": "Impossible de charger les données du fichier"
+                    }
+                
+            except Exception as e:
+                return {
+                    "success": False,
+                    "message": f"Erreur lors du chargement du fichier: {str(e)}"
+                }
+            
+            # Créer l'analyseur de statistiques
+            stats_analyzer = DataStatistics(df, capteur["columns"])
+            
+            # Calculer toutes les statistiques
+            statistics = stats_analyzer.get_all_statistics(start_date, end_date)
+            
+            # Ajouter des informations sur le capteur
+            result = {
+                "success": True,
+                "capteur_info": {
+                    "id": capteur["id"],
+                    "nom": capteur["nom"],
+                    "file_path": capteur["file_path"]
+                },
+                "periode_analyse": {
+                    "debut": start_date,
+                    "fin": end_date
+                },
+                "statistiques": statistics
+            }
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history,
+                "Analyse statistique",
+                f"Statistiques calculées pour le capteur '{capteur['nom']}'",
+                {
+                    "capteur": capteur["nom"],
+                    "periode": f"{start_date or 'début'} à {end_date or 'fin'}",
+                    "types_analyses": list(statistics.keys())
+                }
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {
+                "success": False,
+                "message": f"Erreur lors du calcul des statistiques: {str(e)}"
+            }
+
+    def get_available_capteurs_for_statistics(self):
+        """
+        Récupère la liste des capteurs disponibles pour l'analyse statistique
+        
+        Returns:
+            dict: Liste des capteurs avec fichiers et mappage configurés
+        """
+        try:
+            available_capteurs = []
+            
+            for capteur in self.storage.capteurs:
+                # Vérifier que le capteur a un fichier et un mappage
+                if (capteur.get("file_path") and 
+                    capteur.get("columns") and 
+                    capteur["columns"].get("date")):
+                    
+                    # Déterminer quels types de données sont disponibles
+                    available_data_types = []
+                    if capteur["columns"].get("temperature"):
+                        available_data_types.append("temperature")
+                    if capteur["columns"].get("humidity"):
+                        available_data_types.append("humidity")
+                    if capteur["columns"].get("luminosity"):
+                        available_data_types.append("luminosity")
+                    
+                    available_capteurs.append({
+                        "id": capteur["id"],
+                        "nom": capteur["nom"],
+                        "file_path": capteur["file_path"],
+                        "available_data_types": available_data_types,
+                        "columns_mapped": capteur["columns"]
+                    })
+            
+            return {
+                "success": True,
+                "capteurs": available_capteurs
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Erreur lors de la récupération des capteurs: {str(e)}"
+            }
+
+    def export_statistics_to_excel(self, capteur_id, start_date=None, end_date=None):
+        """
+        Exporte les statistiques vers un fichier Excel
+        
+        Args:
+            capteur_id (str): ID du capteur
+            start_date (str): Date de début (optionnelle)
+            end_date (str): Date de fin (optionnelle)
+            
+        Returns:
+            dict: Chemin du fichier exporté ou message d'erreur
+        """
+        try:
+            # Obtenir les statistiques
+            stats_result = self.get_data_statistics(capteur_id, start_date, end_date)
+            
+            if not stats_result.get("success"):
+                return stats_result
+            
+            import pandas as pd
+            from datetime import datetime
+            
+            # Créer le nom du fichier
+            capteur_nom = stats_result["capteur_info"]["nom"]
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"statistiques_{capteur_nom}_{timestamp}.xlsx"
+            filepath = os.path.join(self.output_dir, filename)
+            
+            # Préparer les données pour Excel
+            excel_data = {}
+            
+            # Statistiques de température
+            if "temperature" in stats_result["statistiques"] and not stats_result["statistiques"]["temperature"].get("error"):
+                temp_stats = stats_result["statistiques"]["temperature"]
+                excel_data["Température"] = pd.DataFrame([
+                    {"Métrique": "Écart maximal journalier (°C)", "Valeur": temp_stats.get("ecart_maximal_journalier", "N/A")},
+                    {"Métrique": "Écart moyen journalier (°C)", "Valeur": temp_stats.get("ecart_moyen_journalier", "N/A")},
+                    {"Métrique": "Température minimale (°C)", "Valeur": temp_stats.get("temperature_minimale", "N/A")},
+                    {"Métrique": "Température maximale (°C)", "Valeur": temp_stats.get("temperature_maximale", "N/A")},
+                ])
+            
+            # Statistiques d'humidité
+            if "humidity" in stats_result["statistiques"] and not stats_result["statistiques"]["humidity"].get("error"):
+                hum_stats = stats_result["statistiques"]["humidity"]
+                excel_data["Humidité"] = pd.DataFrame([
+                    {"Métrique": "Variation maximale quotidienne (%)", "Valeur": hum_stats.get("variation_maximale_quotidienne", "N/A")},
+                    {"Métrique": "Écart moyen journalier (%)", "Valeur": hum_stats.get("ecart_moyen_journalier", "N/A")},
+                    {"Métrique": "% au-dessus de 65% HR", "Valeur": hum_stats.get("pourcentage_au_dessus_65", "N/A")},
+                    {"Métrique": "% au-dessous de 55% HR", "Valeur": hum_stats.get("pourcentage_au_dessous_55", "N/A")},
+                    {"Métrique": "% fluctuations > ±10%", "Valeur": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")},
+                    {"Métrique": "Humidité minimale (%)", "Valeur": hum_stats.get("humidite_minimale", "N/A")},
+                    {"Métrique": "Humidité maximale (%)", "Valeur": hum_stats.get("humidite_maximale", "N/A")},
+                ])
+            
+            # Statistiques de luminosité
+            if "luminosity" in stats_result["statistiques"] and not stats_result["statistiques"]["luminosity"].get("error"):
+                lum_stats = stats_result["statistiques"]["luminosity"]
+                excel_data["Luminosité"] = pd.DataFrame([
+                    {"Métrique": "Valeur maximale (lux)", "Valeur": lum_stats.get("valeur_maximale_lux", "N/A")},
+                    {"Métrique": "Durée exposition > 100 lux (min)", "Valeur": lum_stats.get("duree_exposition_100_lux_minutes", "N/A")},
+                ])
+            
+            # Écrire le fichier Excel
+            with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+                for sheet_name, df in excel_data.items():
+                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+            
+            # Ajouter à l'historique
+            add_history_entry(
+                self.history,
+                "Export statistiques",
+                f"Statistiques exportées pour le capteur '{capteur_nom}'",
+                {
+                    "fichier": filename,
+                    "capteur": capteur_nom,
+                    "periode": f"{start_date or 'début'} à {end_date or 'fin'}"
+                }
+            )
+            
+            return {
+                "success": True,
+                "filepath": filepath,
+                "filename": filename,
+                "message": f"Statistiques exportées avec succès vers {filename}"
+            }
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {
+                "success": False,
+                "message": f"Erreur lors de l'export: {str(e)}"
             }
