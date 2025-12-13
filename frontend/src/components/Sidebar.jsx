@@ -6,7 +6,7 @@ const Sidebar = ({ currentPage, navigateTo, isMobileMenuOpen, toggleMobileMenu }
     { id: 'capteurs', label: 'Capteurs & Fichiers', icon: 'bxs-folder' },
     { id: 'mapping', label: 'Mappage des Colonnes', icon: 'bxs-grid-alt' },
     { id: 'graphs', label: 'Graphiques', icon: 'bxs-bar-chart-alt-2' },
-    { id: 'statistics', label: 'Analyse Statistique', icon: 'bxs-calculator' },
+    // { id: 'statistics', label: 'Analyse Statistique', icon: 'bxs-calculator' },
     { id: 'history', label: 'Historique', icon: 'bxs-time' },
     { id: 'documentation', label: 'Documentation', icon: 'bxs-book' }
   ];
@@ -68,8 +68,8 @@ const Sidebar = ({ currentPage, navigateTo, isMobileMenuOpen, toggleMobileMenu }
         {/* Footer */}
         <div className="absolute bottom-4 left-4 right-4">
           <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            <p>ISCGraph v1.0</p>
-            <p>© 2024 - Analyse climatique</p>
+            <p>ISCGraph v2.0</p>
+            <p>© 2025 - ISC-Graph</p>
           </div>
         </div>
       </div>

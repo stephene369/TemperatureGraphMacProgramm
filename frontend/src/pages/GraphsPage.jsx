@@ -13,6 +13,11 @@ const GraphsPage = () => {
   const [generatedGraphs, setGeneratedGraphs] = useState([]);
   const [showGraphContainer, setShowGraphContainer] = useState(false);
 
+  // Nouveaux états pour les onglets et statistiques
+  const [activeTab, setActiveTab] = useState('graphs'); // 'graphs' ou 'statistics'
+  const [statistics, setStatistics] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -23,7 +28,7 @@ const GraphsPage = () => {
       const capteursResponse = await ApiService.getCapteursForGraphs();
       if (capteursResponse.success) {
         setCapteurs(capteursResponse.capteurs);
-        
+
         // Charger les types de graphiques
         const typesResponse = await ApiService.getGraphTypes();
         if (typesResponse.success) {
@@ -91,7 +96,7 @@ const GraphsPage = () => {
       if (endDate) options.end_date = endDate;
 
       const response = await ApiService.generateGraph(selectedGraphType, selectedCapteurs, options);
-      
+
       hideLoading();
 
       if (response.success) {
@@ -126,13 +131,13 @@ const GraphsPage = () => {
     if (endDate) options.end_date = endDate;
 
     const allGraphs = [];
-    
+
     try {
       // Générer chaque type de graphique séquentiellement
       for (const graphType of graphTypes) {
         try {
           const response = await ApiService.generateGraph(graphType.id, selectedCapteurs, options);
-          
+
           if (response.success) {
             if (Array.isArray(response.image) && response.image.length > 1) {
               response.image.forEach((img, index) => {
@@ -162,7 +167,7 @@ const GraphsPage = () => {
       setGeneratedGraphs(allGraphs);
       setShowGraphContainer(true);
       hideLoading();
-      
+
     } catch (error) {
       hideLoading();
       showNotification('Erreur lors de la génération des graphiques', 'error');
@@ -172,11 +177,11 @@ const GraphsPage = () => {
 
   const downloadSingleImage = async (imageData, filename) => {
     showLoading('Préparation du téléchargement...');
-    
+
     try {
       const response = await ApiService.saveImageWithDialog(imageData, filename);
       hideLoading();
-      
+
       if (response.success) {
         showNotification('Image enregistrée avec succès', 'success');
       } else {
@@ -191,9 +196,9 @@ const GraphsPage = () => {
 
   const downloadAllImages = async () => {
     showLoading('Préparation du téléchargement...');
-    
+
     try {
-      const imagesData = generatedGraphs.flatMap(graph => 
+      const imagesData = generatedGraphs.flatMap(graph =>
         graph.images.map((img, index) => ({
           id: graph.images.length > 1 ? `${graph.id}_${index + 1}` : graph.id,
           name: graph.images.length > 1 ? `${graph.title}_${index + 1}` : graph.title,
@@ -203,7 +208,7 @@ const GraphsPage = () => {
 
       const response = await ApiService.saveAllImagesWithDialog(imagesData);
       hideLoading();
-      
+
       if (response.success) {
         showNotification('Images enregistrées avec succès', 'success');
       } else {
@@ -216,45 +221,313 @@ const GraphsPage = () => {
     }
   };
 
+  // Nouvelles fonctions pour les statistiques
+  const analyzeStatistics = async () => {
+    if (selectedCapteurs.length === 0) {
+      showNotification('Veuillez sélectionner au moins un capteur', 'warning');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      showLoading('Analyse des données en cours...');
+      const response = await ApiService.getDataStatistics(selectedCapteurs, startDate || null, endDate || null);
+
+      if (response.success) {
+        setStatistics(response);
+        showNotification('Analyse terminée avec succès', 'success');
+      } else {
+        showNotification(response.message || 'Erreur lors de l\'analyse', 'error');
+        setStatistics(null);
+      }
+    } catch (error) {
+      showNotification('Erreur lors de l\'analyse des données', 'error');
+      console.error('Error analyzing statistics:', error);
+      setStatistics(null);
+    } finally {
+      setIsAnalyzing(false);
+      hideLoading();
+    }
+  };
+
+  const exportToExcel = async () => {
+    if (selectedCapteurs.length === 0) {
+      showNotification('Veuillez sélectionner au moins un capteur', 'warning');
+      return;
+    }
+
+    try {
+      showLoading('Export en cours...');
+      const response = await ApiService.exportStatisticsToExcel(selectedCapteurs, startDate || null, endDate || null);
+
+      if (response.success) {
+        showNotification(`Export réussi: ${response.filename}`, 'success');
+      } else {
+        showNotification(response.message || 'Erreur lors de l\'export', 'error');
+      }
+    } catch (error) {
+      showNotification('Erreur lors de l\'export', 'error');
+      console.error('Error exporting statistics:', error);
+    } finally {
+      hideLoading();
+    }
+  };
+
+  const renderStatisticsSummary = () => {
+    if (!statistics || !statistics.results) return null;
+
+    return (
+      <div className="space-y-6">
+        {/* Résumé général */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+            <i className="bx bx-bar-chart-alt text-green-500 mr-2"></i>
+            Résumé de l'analyse - Capteurs sélectionnés pour graphiques
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {statistics.results.filter(r => r.success).length}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Capteurs analysés</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                {statistics.results.filter(r => r.success && r.statistiques.temperature && !r.statistiques.temperature.error).length}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Données température</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                {statistics.results.filter(r => r.success && r.statistiques.humidity && !r.statistiques.humidity.error).length}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Données humidité</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                {statistics.results.filter(r => r.success && r.statistiques.dew_point && !r.statistiques.dew_point.error).length}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Données point de rosée</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Tableau de synthèse */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+            <i className="bx bx-table text-blue-500 mr-2"></i>
+            Tableau de synthèse - Période: {startDate || 'début'} à {endDate || 'fin'}
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Capteur
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Temp. Min/Max (°C)
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    HR Min/Max (%)
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    % HR &gt; 65%
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    % HR &lt; 55%
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Point Rosée (°C)
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {statistics.results.filter(r => r.success).map((result) => (
+                  <tr key={result.capteur_id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {result.capteur_info.nom}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {result.statistiques.temperature && !result.statistiques.temperature.error
+                        ? `${result.statistiques.temperature.temperature_minimale} / ${result.statistiques.temperature.temperature_maximale}`
+                        : 'N/A'
+                      }
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {result.statistiques.humidity && !result.statistiques.humidity.error
+                        ? `${result.statistiques.humidity.humidite_minimale} / ${result.statistiques.humidity.humidite_maximale}`
+                        : 'N/A'
+                      }
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {result.statistiques.humidity && !result.statistiques.humidity.error
+                        ? `${result.statistiques.humidity.pourcentage_au_dessus_65}%`
+                        : 'N/A'
+                      }
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {result.statistiques.humidity && !result.statistiques.humidity.error
+                        ? `${result.statistiques.humidity.pourcentage_au_dessous_55}%`
+                        : 'N/A'
+                      }
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {result.statistiques.dew_point && !result.statistiques.dew_point.error
+                        ? `${result.statistiques.dew_point.point_rosee_minimal} / ${result.statistiques.dew_point.point_rosee_maximal}`
+                        : 'N/A'
+                      }
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Actions pour les statistiques */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <i className="bx bx-download text-green-500 mr-2"></i>
+            Export des données
+          </h3>
+          <div className="flex gap-4">
+            <button
+              onClick={exportToExcel}
+              disabled={selectedCapteurs.length === 0}
+              className="btn-primary flex items-center"
+            >
+              <i className="bx bx-download mr-2"></i>
+              Exporter Tableau Excel
+            </button>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            Le fichier Excel contiendra une feuille de synthèse et une feuille détaillée par capteur.
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Configuration des graphiques */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold mb-4">📊 Graphiques</h3>
-        <p className="mb-6">Générez des graphiques à partir de vos données climatiques.</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Sélection du type de graphique */}
-          <div className="space-y-4">
+      {/* Onglets */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <button
+              onClick={() => setActiveTab('graphs')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'graphs'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+            >
+              <i className="bx bx-bar-chart-alt-2 mr-2"></i>
+              Graphiques
+            </button>
+            <button
+              onClick={() => setActiveTab('statistics')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'statistics'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+            >
+              <i className="bx bx-table mr-2"></i>
+              Tableaux de synthèse
+            </button>
+          </nav>
+        </div>
+
+        <div className="p-6">
+          {activeTab === 'graphs' ? (
             <div>
-              <label htmlFor="graph-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Type de graphique
-              </label>
-              <select 
-                id="graph-type"
-                value={selectedGraphType}
-                onChange={(e) => setSelectedGraphType(e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                <option 
-                  value="all" 
-                  style={{ backgroundColor: '#4a6cf7', color: 'white', border: '2px solid #3451b2', fontWeight: 'bold' }}
-                >
-                  Tous les types de graphiques
-                </option>
-                <option value="">-- Sélectionnez un type --</option>
-                {graphTypes.map(type => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {updateGraphDescription()}
-              </p>
+              <h3 className="text-lg font-semibold mb-4">📊 Graphiques</h3>
+              <p className="mb-6">Générez des graphiques à partir de vos données climatiques.</p>
             </div>
-            
-            {/* Sélection des capteurs */}
+          ) : (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">📊 Tableaux de synthèse</h3>
+              <p className="mb-6">Analysez et exportez les statistiques des capteurs sélectionnés avec la même plage de dates que pour les graphiques.</p>
+
+              {/* Actions pour les statistiques */}
+              <div className="flex gap-4 mb-6">
+                <button
+                  onClick={analyzeStatistics}
+                  disabled={selectedCapteurs.length === 0 || isAnalyzing}
+                  className="btn-primary flex items-center"
+                >
+                  <i className="bx bx-bar-chart-alt mr-2"></i>
+                  {isAnalyzing ? 'Analyse en cours...' : 'Analyser les capteurs sélectionnés'}
+                </button>
+
+                <button
+                  onClick={exportToExcel}
+                  disabled={selectedCapteurs.length === 0}
+                  className="btn-secondary flex items-center"
+                >
+                  <i className="bx bx-download mr-2"></i>
+                  Exporter Excel
+                </button>
+              </div>
+
+              {/* {selectedCapteurs.length === 0 && (
+                <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg border-l-4 border-yellow-500 mb-6">
+                  <p className="text-yellow-700 dark:text-yellow-300">
+                    <i className="bx bx-info-circle mr-2"></i>
+                    Sélectionnez des capteurs ci-dessous pour générer les tableaux de synthèse.
+                  </p>
+                </div>
+              )} */}
+            </div>
+          )}
+        </div>
+      </div>
+
+
+      {/* Configuration commune des capteurs et dates */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold mb-4">⚙️ Configuration</h3>
+        <p className="mb-6">
+          Sélectionnez vos capteurs et la période d'analyse. Ces paramètres s'appliquent à la fois aux graphiques et aux tableaux de synthèse.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Colonne gauche */}
+          <div className="space-y-6">
+
+            {/* Type de graphique */}
+            {activeTab === 'graphs' && (
+              <div>
+                <label htmlFor="graph-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Type de graphique
+                </label>
+                <select
+                  id="graph-type"
+                  value={selectedGraphType}
+                  onChange={(e) => setSelectedGraphType(e.target.value)}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
+                  <option
+                    value="all"
+                    style={{ backgroundColor: '#4a6cf7', color: 'white', border: '2px solid #3451b2', fontWeight: 'bold' }}
+                  >
+                    Tous les types de graphiques
+                  </option>
+                  <option value="">-- Sélectionnez un type --</option>
+                  {graphTypes.map(type => (
+                    <option key={type.id} value={type.id}>
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  {updateGraphDescription()}
+                </p>
+              </div>
+            )}
+
+            {/* Choix des capteurs */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Capteurs à inclure
@@ -283,14 +556,15 @@ const GraphsPage = () => {
               </div>
               {capteurs.length > 0 && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Sélectionnez un ou plusieurs capteurs à inclure dans le graphique.
+                  Sélectionnez un ou plusieurs capteurs pour {activeTab === 'graphs' ? 'les graphiques' : 'l\'analyse statistique'}.
                 </p>
               )}
             </div>
           </div>
-          
-          {/* Sélection des dates */}
-          <div className="space-y-4">
+
+          {/* Colonne droite */}
+          <div className="space-y-6">
+            {/* Date de début */}
             <div>
               <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Date de début (optionnelle)
@@ -306,7 +580,8 @@ const GraphsPage = () => {
                 Laissez vide pour utiliser toutes les données disponibles.
               </p>
             </div>
-            
+
+            {/* Date de fin */}
             <div>
               <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Date de fin (optionnelle)
@@ -324,20 +599,24 @@ const GraphsPage = () => {
             </div>
           </div>
         </div>
-        
-        <div className="flex justify-end mt-6">
-          <button
-            onClick={generateGraph}
-            className="btn-primary"
-            disabled={selectedCapteurs.length === 0}
-          >
-            Générer le graphique
-          </button>
-        </div>
+
+        {/* Bouton de génération - seulement pour l'onglet graphiques */}
+        {activeTab === 'graphs' && (
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={generateGraph}
+              className="btn-primary"
+              disabled={selectedCapteurs.length === 0}
+            >
+              Générer le graphique
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Affichage des graphiques générés */}
-      {showGraphContainer && generatedGraphs.length > 0 && (
+
+      {/* Affichage des graphiques générés - seulement pour l'onglet graphiques */}
+      {activeTab === 'graphs' && showGraphContainer && generatedGraphs.length > 0 && (
         <div className="space-y-6">
           {selectedGraphType === 'all' && generatedGraphs.length > 1 && (
             <div className="flex justify-center">
@@ -358,7 +637,7 @@ const GraphsPage = () => {
               <div className="flex justify-between items-center mb-4">
                 <h4 className="text-lg font-semibold">{graph.title}</h4>
               </div>
-              
+
               <div className="grid grid-cols-1 gap-4">
                 {graph.images.map((imageData, index) => (
                   <div key={index} className="relative">
@@ -383,6 +662,11 @@ const GraphsPage = () => {
           ))}
         </div>
       )}
+
+
+
+      {/* Affichage des statistiques - seulement pour l'onglet statistiques */}
+      {activeTab === 'statistics' && renderStatisticsSummary()}
 
       {/* Remarques */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">

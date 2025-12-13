@@ -13,6 +13,7 @@ output/
 data/
 tests/
 core/*
+latex/
 
 # eggs/
 # .eggs/

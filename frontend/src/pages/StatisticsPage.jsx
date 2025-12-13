@@ -5,7 +5,7 @@ import { showLoading, hideLoading } from '../hooks/useLoading';
 
 const StatisticsPage = () => {
   const [capteurs, setCapteurs] = useState([]);
-  const [selectedCapteur, setSelectedCapteur] = useState('');
+  const [selectedCapteurs, setSelectedCapteurs] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [statistics, setStatistics] = useState(null);
@@ -192,7 +192,7 @@ const StatisticsPage = () => {
 
           <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
             <h5 className="font-semibold mb-2 text-yellow-700 dark:text-yellow-300">
-              <i className="bx bx-shuffle mr-2"></i>Fluctuations > ±10%
+              <i className="bx bx-shuffle mr-2"></i>Fluctuations ±10%
             </h5>
             <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
               {humStats.pourcentage_fluctuations_elevees}%
@@ -246,7 +246,7 @@ const StatisticsPage = () => {
 
         <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
           <h5 className="font-semibold mb-2 text-orange-700 dark:text-orange-300">
-            <i className="bx bx-time mr-2"></i>Exposition > 100 lux
+            <i className="bx bx-time mr-2"></i>Exposition 100 lux
           </h5>
           <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
             {lumStats.duree_exposition_100_lux_minutes} min

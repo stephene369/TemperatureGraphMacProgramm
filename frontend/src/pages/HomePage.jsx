@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ApiService } from '../services/ApiService';
 import TestNotifications from '../components/TestNotifications';
 
-const HomePage = () => {
+const HomePage = ({ navigateTo }) => {
   const [stats, setStats] = useState({
     capteurs: 0,
     graphiques: 0,
@@ -34,28 +34,28 @@ const HomePage = () => {
       description: 'Créez un nouveau capteur pour vos données',
       icon: 'bx-plus-circle',
       color: 'blue',
-      action: () => console.log('Add capteur')
+      action: () => navigateTo?.('capteurs')
     },
     {
       title: 'Importer des données',
       description: 'Associez des fichiers à vos capteurs',
       icon: 'bx-upload',
       color: 'green',
-      action: () => console.log('Import data')
+      action: () => navigateTo?.('capteurs')
     },
     {
       title: 'Générer un graphique',
       description: 'Créez des visualisations de vos données',
       icon: 'bx-bar-chart-alt-2',
       color: 'purple',
-      action: () => console.log('Generate graph')
+      action: () => navigateTo?.('graphs')
     },
     {
       title: 'Voir l\'historique',
       description: 'Consultez les opérations récentes',
       icon: 'bx-history',
       color: 'orange',
-      action: () => console.log('View history')
+      action: () => navigateTo?.('history')
     }
   ];
 
@@ -94,18 +94,6 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-
-        {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-              <i className="bx bxs-bar-chart-alt-2 text-2xl text-purple-600 dark:text-purple-400"></i>
-            </div>
-            <div className="ml-4">
-              <h3 className="text-2xl font-bold">{stats.graphiques}</h3>
-              <p className="text-gray-500 dark:text-gray-400">Graphiques générés</p>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       {/* Quick Actions */}
@@ -140,53 +128,38 @@ const HomePage = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Pour commencer</h3>
         <div className="space-y-4">
-          <div className="flex items-start">
-            <span className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">
-              1
-            </span>
-            <div className="ml-3">
-              <h4 className="font-semibold">Ajoutez vos capteurs</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Créez des capteurs pour organiser vos données de température et d'humidité
-              </p>
+          {[
+            {
+              step: 1,
+              title: 'Ajoutez vos capteurs',
+              desc: 'Créez des capteurs pour organiser vos données de température et d\'humidité'
+            },
+            {
+              step: 2,
+              title: 'Associez vos fichiers',
+              desc: 'Importez vos fichiers Excel (.xlsx, .xls), CSV ou HOBO contenant les données'
+            },
+            {
+              step: 3,
+              title: 'Configurez le mappage',
+              desc: 'Définissez quelles colonnes correspondent aux dates, températures et autres données'
+            },
+            {
+              step: 4,
+              title: 'Générez vos graphiques',
+              desc: 'Créez des visualisations personnalisées de vos données climatiques'
+            }
+          ].map(item => (
+            <div className="flex items-start" key={item.step}>
+              <span className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">
+                {item.step}
+              </span>
+              <div className="ml-3">
+                <h4 className="font-semibold">{item.title}</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-start">
-            <span className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">
-              2
-            </span>
-            <div className="ml-3">
-              <h4 className="font-semibold">Associez vos fichiers</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Importez vos fichiers Excel (.xlsx, .xls), CSV ou HOBO contenant les données
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex items-start">
-            <span className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">
-              3
-            </span>
-            <div className="ml-3">
-              <h4 className="font-semibold">Configurez le mappage</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Définissez quelles colonnes correspondent aux dates, températures et autres données
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex items-start">
-            <span className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">
-              4
-            </span>
-            <div className="ml-3">
-              <h4 className="font-semibold">Générez vos graphiques</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Créez des visualisations personnalisées de vos données climatiques
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 

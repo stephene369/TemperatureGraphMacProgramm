@@ -51,10 +51,6 @@ const Header = ({ pageTitle, currentPage, isDarkMode, toggleTheme, toggleMobileM
 
         {/* Right side */}
         <div className="flex items-center gap-4">
-          {/* Page specific actions */}
-          <div id="header-actions">
-            {getHeaderActions()}
-          </div>
 
           {/* Theme toggle */}
           <button
@@ -66,15 +62,6 @@ const Header = ({ pageTitle, currentPage, isDarkMode, toggleTheme, toggleMobileM
             <i className={`bx ${isDarkMode ? 'bx-sun' : 'bx-moon'} text-xl`}></i>
           </button>
 
-          {/* Notifications */}
-          <button className="btn-icon text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <i className="bx bx-bell text-xl"></i>
-          </button>
-
-          {/* Settings */}
-          <button className="btn-icon text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <i className="bx bx-cog text-xl"></i>
-          </button>
         </div>
       </div>
     </header>

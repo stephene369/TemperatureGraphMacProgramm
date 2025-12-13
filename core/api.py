@@ -35,7 +35,7 @@ class API:
     Expose les méthodes accessibles depuis l'interface web
     """
 
-    def __init__(self, base_dir, data_dir, output_dir, image_outputdir):
+    def __init__(self, base_dir, data_dir, output_dir, image_outputdir, file_outputdir):
         """
         Initialise l'API avec les chemins de base et charge les données
 
@@ -49,6 +49,7 @@ class API:
         self.data_dir = data_dir
         self.output_dir = output_dir
         self.image_outputdir = image_outputdir
+        self.file_outputdir = file_outputdir
 
         # Initialiser le stockage
         self.storage = Storage(data_dir)
@@ -1114,12 +1115,12 @@ class API:
                 "message": f"Erreur lors de l'enregistrement des images: {e}",
             }
 
-    def get_data_statistics(self, capteur_id, start_date=None, end_date=None):
+    def get_data_statistics(self, capteur_ids, start_date=None, end_date=None):
         """
-        Calcule les statistiques pour un capteur donné
+        Calcule les statistiques pour un ou plusieurs capteurs
         
         Args:
-            capteur_id (str): ID du capteur
+            capteur_ids (str or list): ID du capteur ou liste d'IDs des capteurs
             start_date (str): Date de début (optionnelle, format YYYY-MM-DD)
             end_date (str): Date de fin (optionnelle, format YYYY-MM-DD)
             
@@ -1127,84 +1128,102 @@ class API:
             dict: Statistiques calculées ou message d'erreur
         """
         try:
-            # Vérifier que le capteur existe
-            capteur = None
-            for c in self.storage.capteurs:
-                if c["id"] == capteur_id:
-                    capteur = c
-                    break
+            # Convertir en liste si un seul ID est fourni
+            if isinstance(capteur_ids, str):
+                capteur_ids = [capteur_ids]
             
-            if not capteur:
-                return {
-                    "success": False,
-                    "message": "Capteur non trouvé"
-                }
+            results = []
             
-            # Vérifier que le capteur a un fichier associé
-            if not capteur.get("file_path"):
-                return {
-                    "success": False,
-                    "message": "Aucun fichier associé à ce capteur"
-                }
-            
-            # Vérifier que le mappage des colonnes est configuré
-            if not capteur.get("columns"):
-                return {
-                    "success": False,
-                    "message": "Mappage des colonnes non configuré pour ce capteur"
-                }
-            
-            # Charger les données
-            try:
-                data_loader = DataLoader()
-                df = data_loader.load_file(capteur["file_path"])
-                
-                if df is None or df.empty:
-                    return {
+            for capteur_id in capteur_ids:
+                # Vérifier que le capteur existe
+                if capteur_id not in self.capteurs:
+                    results.append({
+                        "capteur_id": capteur_id,
                         "success": False,
-                        "message": "Impossible de charger les données du fichier"
-                    }
+                        "message": f"Capteur {capteur_id} non trouvé"
+                    })
+                    continue
                 
-            except Exception as e:
-                return {
-                    "success": False,
-                    "message": f"Erreur lors du chargement du fichier: {str(e)}"
+                capteur_data = self.capteurs[capteur_id]
+                
+                # Vérifier que le capteur a un fichier associé
+                if not capteur_data.get("file_path"):
+                    results.append({
+                        "capteur_id": capteur_id,
+                        "success": False,
+                        "message": f"Aucun fichier associé au capteur {capteur_data.get('nom', capteur_id)}"
+                    })
+                    continue
+                
+                # Vérifier que le mappage des colonnes est configuré
+                if not capteur_data.get("columns"):
+                    results.append({
+                        "capteur_id": capteur_id,
+                        "success": False,
+                        "message": f"Mappage des colonnes non configuré pour le capteur {capteur_data.get('nom', capteur_id)}"
+                    })
+                    continue
+                
+                # Charger les données
+                try:
+                    data_loader = DataLoader()
+                    df = data_loader.load_file(capteur_data["file_path"])
+                    
+                    if df is None or df.empty:
+                        results.append({
+                            "capteur_id": capteur_id,
+                            "success": False,
+                            "message": f"Impossible de charger les données du fichier pour {capteur_data.get('nom', capteur_id)}"
+                        })
+                        continue
+                    
+                except Exception as e:
+                    results.append({
+                        "capteur_id": capteur_id,
+                        "success": False,
+                        "message": f"Erreur lors du chargement du fichier pour {capteur_data.get('nom', capteur_id)}: {str(e)}"
+                    })
+                    continue
+                
+                # Créer l'analyseur de statistiques
+                stats_analyzer = DataStatistics(df, capteur_data["columns"])
+                
+                # Calculer toutes les statistiques
+                statistics = stats_analyzer.get_all_statistics(start_date, end_date)
+                
+                # Ajouter le résultat
+                results.append({
+                    "capteur_id": capteur_id,
+                    "success": True,
+                    "capteur_info": {
+                        "id": capteur_id,
+                        "nom": capteur_data.get("nom"),
+                        "file_path": capteur_data["file_path"]
+                    },
+                    "statistiques": statistics
+                })
+            
+            # Ajouter à l'historique
+            capteur_names = [self.capteurs[cid].get("nom", cid) for cid in capteur_ids if cid in self.capteurs]
+            add_history_entry(
+                self.history,
+                "Analyse statistique multiple",
+                f"Statistiques calculées pour {len(capteur_names)} capteur(s): {', '.join(capteur_names)}",
+                {
+                    "capteurs": capteur_names,
+                    "periode": f"{start_date or 'début'} à {end_date or 'fin'}",
+                    "nombre_capteurs": len(capteur_ids)
                 }
+            )
             
-            # Créer l'analyseur de statistiques
-            stats_analyzer = DataStatistics(df, capteur["columns"])
-            
-            # Calculer toutes les statistiques
-            statistics = stats_analyzer.get_all_statistics(start_date, end_date)
-            
-            # Ajouter des informations sur le capteur
-            result = {
+            return {
                 "success": True,
-                "capteur_info": {
-                    "id": capteur["id"],
-                    "nom": capteur["nom"],
-                    "file_path": capteur["file_path"]
-                },
                 "periode_analyse": {
                     "debut": start_date,
                     "fin": end_date
                 },
-                "statistiques": statistics
+                "results": results
             }
-            
-            # Ajouter à l'historique
-            add_history_entry(
-                self.history,
-                "Analyse statistique",
-                f"Statistiques calculées pour le capteur '{capteur['nom']}'",
-                {
-                    "capteur": capteur["nom"],
-                    "periode": f"{start_date or 'début'} à {end_date or 'fin'}",
-                    "types_analyses": list(statistics.keys())
-                }
-            )
-            
-            return result
             
         except Exception as e:
             import traceback
@@ -1214,56 +1233,62 @@ class API:
                 "message": f"Erreur lors du calcul des statistiques: {str(e)}"
             }
 
+
+
     def get_available_capteurs_for_statistics(self):
         """
         Récupère la liste des capteurs disponibles pour l'analyse statistique
-        
+
         Returns:
             dict: Liste des capteurs avec fichiers et mappage configurés
         """
         try:
             available_capteurs = []
-            
-            for capteur in self.storage.capteurs:
-                # Vérifier que le capteur a un fichier et un mappage
-                if (capteur.get("file_path") and 
-                    capteur.get("columns") and 
-                    capteur["columns"].get("date")):
-                    
-                    # Déterminer quels types de données sont disponibles
+
+            for capteur_id, capteur_data in self.capteurs.items():
+                file_path = capteur_data.get("file_path")
+                columns = capteur_data.get("columns")
+
+                # Vérifier que le capteur a un fichier et un mappage avec la colonne 'date'
+                if file_path and columns and columns.get("date"):
+                    # Déterminer les types de données disponibles
                     available_data_types = []
-                    if capteur["columns"].get("temperature"):
+                    if columns.get("temperature"):
                         available_data_types.append("temperature")
-                    if capteur["columns"].get("humidity"):
+                    if columns.get("humidity"):
                         available_data_types.append("humidity")
-                    if capteur["columns"].get("luminosity"):
+                    if columns.get("luminosity"):
                         available_data_types.append("luminosity")
-                    
+                    if columns.get("dew_point"):
+                        available_data_types.append("dew_point")
+
                     available_capteurs.append({
-                        "id": capteur["id"],
-                        "nom": capteur["nom"],
-                        "file_path": capteur["file_path"],
+                        "id": capteur_id,
+                        "nom": capteur_data.get("nom"),
+                        "file_path": file_path,
                         "available_data_types": available_data_types,
-                        "columns_mapped": capteur["columns"]
+                        "columns_mapped": columns
                     })
-            
+
             return {
                 "success": True,
                 "capteurs": available_capteurs
             }
-            
+
         except Exception as e:
             return {
                 "success": False,
                 "message": f"Erreur lors de la récupération des capteurs: {str(e)}"
             }
 
-    def export_statistics_to_excel(self, capteur_id, start_date=None, end_date=None):
+
+
+    def export_statistics_to_excel(self, capteur_ids, start_date=None, end_date=None):
         """
-        Exporte les statistiques vers un fichier Excel
+        Exporte les statistiques vers un fichier Excel avec tableau de synthèse
         
         Args:
-            capteur_id (str): ID du capteur
+            capteur_ids (str or list): ID du capteur ou liste d'IDs des capteurs
             start_date (str): Date de début (optionnelle)
             end_date (str): Date de fin (optionnelle)
             
@@ -1272,7 +1297,7 @@ class API:
         """
         try:
             # Obtenir les statistiques
-            stats_result = self.get_data_statistics(capteur_id, start_date, end_date)
+            stats_result = self.get_data_statistics(capteur_ids, start_date, end_date)
             
             if not stats_result.get("success"):
                 return stats_result
@@ -1280,60 +1305,189 @@ class API:
             import pandas as pd
             from datetime import datetime
             
-            # Créer le nom du fichier
-            capteur_nom = stats_result["capteur_info"]["nom"]
+            
+            
+            # Convertir en liste si un seul ID est fourni
+            if isinstance(capteur_ids, str):
+                capteur_ids = [capteur_ids]
+            
+            
+            
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"statistiques_{capteur_nom}_{timestamp}.xlsx"
-            filepath = os.path.join(self.output_dir, filename)
+            if isinstance(capteur_ids, str):
+                capteur_ids = [capteur_ids]
+
+            if len(capteur_ids) == 1:
+                capteur_nom = self.capteurs[capteur_ids[0]].get("nom", capteur_ids[0])
+                default_filename = f"statistiques_{capteur_nom}_{timestamp}.xlsx"
+            else:
+                default_filename = f"statistiques_{len(capteur_ids)}capteurs_{timestamp}.xlsx"    
+                # Ouvrir la boîte de dialogue de sauvegarde
+
+            file_path = webview.windows[0].create_file_dialog(
+                webview.SAVE_DIALOG,
+                directory=self.file_outputdir,
+                save_filename=default_filename,
+                file_types=(
+                    "Fichier Excel (*.xlsx)",
+                ),
+            )
+
+            # Gérer l'annulation
+            if not file_path:
+                return {
+                    "success": False,
+                    "message": "Export annulé par l'utilisateur."
+                }
+            # Pywebview peut retourner une liste (sur Windows)
+            if isinstance(file_path, list):
+                file_path = file_path[0]
+            filename = os.path.basename(file_path)
+            filepath = file_path
+            
             
             # Préparer les données pour Excel
             excel_data = {}
             
-            # Statistiques de température
-            if "temperature" in stats_result["statistiques"] and not stats_result["statistiques"]["temperature"].get("error"):
-                temp_stats = stats_result["statistiques"]["temperature"]
-                excel_data["Température"] = pd.DataFrame([
-                    {"Métrique": "Écart maximal journalier (°C)", "Valeur": temp_stats.get("ecart_maximal_journalier", "N/A")},
-                    {"Métrique": "Écart moyen journalier (°C)", "Valeur": temp_stats.get("ecart_moyen_journalier", "N/A")},
-                    {"Métrique": "Température minimale (°C)", "Valeur": temp_stats.get("temperature_minimale", "N/A")},
-                    {"Métrique": "Température maximale (°C)", "Valeur": temp_stats.get("temperature_maximale", "N/A")},
-                ])
+            # 1. Tableau de synthèse général
+            synthese_data = []
+            for result in stats_result["results"]:
+                if result["success"]:
+                    capteur_info = result["capteur_info"]
+                    stats = result["statistiques"]
+                    
+                    row = {
+                        "Capteur": capteur_info["nom"],
+                        "ID": capteur_info["id"],
+                        "Fichier": capteur_info["file_path"].split('\\')[-1] if capteur_info["file_path"] else "N/A"
+                    }
+                    
+                    # Température
+                    temp_stats = stats.get("temperature", {})
+                    if not temp_stats.get("error"):
+                        row.update({
+                            "Temp Min (°C)": temp_stats.get("temperature_minimale", "N/A"),
+                            "Temp Max (°C)": temp_stats.get("temperature_maximale", "N/A"),
+                            "Écart Max Jour (°C)": temp_stats.get("ecart_maximal_journalier", "N/A"),
+                            "Écart Moy Jour (°C)": temp_stats.get("ecart_moyen_journalier", "N/A")
+                        })
+                    
+                    # Humidité
+                    hum_stats = stats.get("humidity", {})
+                    if not hum_stats.get("error"):
+                        row.update({
+                            "HR Min (%)": hum_stats.get("humidite_minimale", "N/A"),
+                            "HR Max (%)": hum_stats.get("humidite_maximale", "N/A"),
+                            "% > 65% HR": hum_stats.get("pourcentage_au_dessus_65", "N/A"),
+                            "% < 55% HR": hum_stats.get("pourcentage_au_dessous_55", "N/A"),
+                            "% Fluct > ±10%": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")
+                        })
+                    
+                    # Luminosité
+                    lum_stats = stats.get("luminosity", {})
+                    if not lum_stats.get("error"):
+                        row.update({
+                            "Lux Max": lum_stats.get("valeur_maximale_lux", "N/A"),
+                            "Expo >100 lux (min)": lum_stats.get("duree_exposition_100_lux_minutes", "N/A")
+                        })
+                    
+                    # Point de rosée
+                    dew_stats = stats.get("dew_point", {})
+                    if not dew_stats.get("error"):
+                        row.update({
+                            "Point Rosée Min (°C)": dew_stats.get("point_rosee_minimal", "N/A"),
+                            "Point Rosée Max (°C)": dew_stats.get("point_rosee_maximal", "N/A")
+                        })
+                    
+                    synthese_data.append(row)
             
-            # Statistiques d'humidité
-            if "humidity" in stats_result["statistiques"] and not stats_result["statistiques"]["humidity"].get("error"):
-                hum_stats = stats_result["statistiques"]["humidity"]
-                excel_data["Humidité"] = pd.DataFrame([
-                    {"Métrique": "Variation maximale quotidienne (%)", "Valeur": hum_stats.get("variation_maximale_quotidienne", "N/A")},
-                    {"Métrique": "Écart moyen journalier (%)", "Valeur": hum_stats.get("ecart_moyen_journalier", "N/A")},
-                    {"Métrique": "% au-dessus de 65% HR", "Valeur": hum_stats.get("pourcentage_au_dessus_65", "N/A")},
-                    {"Métrique": "% au-dessous de 55% HR", "Valeur": hum_stats.get("pourcentage_au_dessous_55", "N/A")},
-                    {"Métrique": "% fluctuations > ±10%", "Valeur": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")},
-                    {"Métrique": "Humidité minimale (%)", "Valeur": hum_stats.get("humidite_minimale", "N/A")},
-                    {"Métrique": "Humidité maximale (%)", "Valeur": hum_stats.get("humidite_maximale", "N/A")},
-                ])
+            if synthese_data:
+                excel_data["Synthèse"] = pd.DataFrame(synthese_data)
             
-            # Statistiques de luminosité
-            if "luminosity" in stats_result["statistiques"] and not stats_result["statistiques"]["luminosity"].get("error"):
-                lum_stats = stats_result["statistiques"]["luminosity"]
-                excel_data["Luminosité"] = pd.DataFrame([
-                    {"Métrique": "Valeur maximale (lux)", "Valeur": lum_stats.get("valeur_maximale_lux", "N/A")},
-                    {"Métrique": "Durée exposition > 100 lux (min)", "Valeur": lum_stats.get("duree_exposition_100_lux_minutes", "N/A")},
-                ])
+            # 2. Détails par capteur (feuilles séparées)
+            for result in stats_result["results"]:
+                if result["success"]:
+                    capteur_nom = result["capteur_info"]["nom"]
+                    stats = result["statistiques"]
+                    
+                    # Feuille de détail pour ce capteur
+                    detail_data = []
+                    
+                    # Température
+                    temp_stats = stats.get("temperature", {})
+                    if not temp_stats.get("error"):
+                        detail_data.extend([
+                            {"Catégorie": "Température", "Métrique": "Écart maximal journalier (°C)", "Valeur": temp_stats.get("ecart_maximal_journalier", "N/A")},
+                            {"Catégorie": "Température", "Métrique": "Écart moyen journalier (°C)", "Valeur": temp_stats.get("ecart_moyen_journalier", "N/A")},
+                            {"Catégorie": "Température", "Métrique": "Température minimale (°C)", "Valeur": temp_stats.get("temperature_minimale", "N/A")},
+                            {"Catégorie": "Température", "Métrique": "Température maximale (°C)", "Valeur": temp_stats.get("temperature_maximale", "N/A")},
+                        ])
+                    
+                    # Humidité
+                    hum_stats = stats.get("humidity", {})
+                    if not hum_stats.get("error"):
+                        detail_data.extend([
+                            {"Catégorie": "Humidité", "Métrique": "Variation maximale quotidienne (%)", "Valeur": hum_stats.get("variation_maximale_quotidienne", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "Écart moyen journalier (%)", "Valeur": hum_stats.get("ecart_moyen_journalier", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "% au-dessus de 65% HR", "Valeur": hum_stats.get("pourcentage_au_dessus_65", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "% au-dessous de 55% HR", "Valeur": hum_stats.get("pourcentage_au_dessous_55", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "% fluctuations > ±10%", "Valeur": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "Humidité minimale (%)", "Valeur": hum_stats.get("humidite_minimale", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "Humidité maximale (%)", "Valeur": hum_stats.get("humidite_maximale", "N/A")},
+                        ])
+                    
+                    # Luminosité
+                    lum_stats = stats.get("luminosity", {})
+                    if not lum_stats.get("error"):
+                        detail_data.extend([
+                            {"Catégorie": "Luminosité", "Métrique": "Valeur maximale (lux)", "Valeur": lum_stats.get("valeur_maximale_lux", "N/A")},
+                            {"Catégorie": "Luminosité", "Métrique": "Durée exposition > 100 lux (min)", "Valeur": lum_stats.get("duree_exposition_100_lux_minutes", "N/A")},
+                        ])
+                    
+                    if detail_data:
+                        # Nom de feuille Excel valide (max 31 caractères)
+                        sheet_name = capteur_nom[:31] if len(capteur_nom) <= 31 else capteur_nom[:28] + "..."
+                        excel_data[sheet_name] = pd.DataFrame(detail_data)
+            
+            # 3. Informations générales
+            info_data = [
+                {"Information": "Période d'analyse", "Valeur": f"Du {start_date or 'début'} au {end_date or 'fin'}"},
+                {"Information": "Nombre de capteurs analysés", "Valeur": len([r for r in stats_result["results"] if r["success"]])},
+                {"Information": "Date de génération", "Valeur": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
+                {"Information": "Fichier généré par", "Valeur": "ISCGraph - Analyse climatique"}
+            ]
+            excel_data["Informations"] = pd.DataFrame(info_data)
             
             # Écrire le fichier Excel
             with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
                 for sheet_name, df in excel_data.items():
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
+                    
+                    # Ajuster la largeur des colonnes
+                    worksheet = writer.sheets[sheet_name]
+                    for column in worksheet.columns:
+                        max_length = 0
+                        column_letter = column[0].column_letter
+                        for cell in column:
+                            try:
+                                if len(str(cell.value)) > max_length:
+                                    max_length = len(str(cell.value))
+                            except:
+                                pass
+                        adjusted_width = min(max_length + 2, 50)
+                        worksheet.column_dimensions[column_letter].width = adjusted_width
             
             # Ajouter à l'historique
+            capteur_names = [self.capteurs[cid].get("nom", cid) for cid in capteur_ids if cid in self.capteurs]
             add_history_entry(
                 self.history,
                 "Export statistiques",
-                f"Statistiques exportées pour le capteur '{capteur_nom}'",
+                f"Tableau de synthèse exporté pour {len(capteur_names)} capteur(s): {', '.join(capteur_names)}",
                 {
                     "fichier": filename,
-                    "capteur": capteur_nom,
-                    "periode": f"{start_date or 'début'} à {end_date or 'fin'}"
+                    "capteurs": capteur_names,
+                    "periode": f"{start_date or 'début'} à {end_date or 'fin'}",
+                    "nombre_capteurs": len(capteur_ids)
                 }
             )
             
@@ -1341,7 +1495,7 @@ class API:
                 "success": True,
                 "filepath": filepath,
                 "filename": filename,
-                "message": f"Statistiques exportées avec succès vers {filename}"
+                "message": f"Tableau de synthèse exporté avec succès vers {filename}"
             }
             
         except Exception as e:

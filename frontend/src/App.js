@@ -16,7 +16,7 @@ import HomePage from './pages/HomePage';
 import CapteursPage from './pages/CapteursPage';
 import MappingPage from './pages/MappingPage';
 import GraphsPage from './pages/GraphsPage';
-import StatisticsPage from './pages/StatisticsPage';
+import StatisticsPage from './pages/StatisticsPageMultiple';
 import HistoryPage from './pages/HistoryPage';
 import DocumentationPage from './pages/DocumentationPage';
 
@@ -81,7 +81,7 @@ function App() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <HomePage />;
+        return <HomePage navigateTo={navigateTo} />;
       case 'capteurs':
         return <CapteursPage />;
       case 'mapping':
@@ -95,7 +95,7 @@ function App() {
       case 'documentation':
         return <DocumentationPage />;
       default:
-        return <HomePage />;
+        return <HomePage navigateTo={navigateTo} />;
     }
   };
 

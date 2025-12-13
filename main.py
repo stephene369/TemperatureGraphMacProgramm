@@ -26,6 +26,7 @@ else:  # Linux
 
 # Set ISCGraph  images directory
 IMAGE_OUTPUT_DIR = os.path.join(pictures_dir, "ISCGraph ")
+FILE_OUTPUT_DIR = os.path.join(pictures_dir, "Excels ISCGraph")
 
 # Create directories if they don't exist
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -37,7 +38,7 @@ def main():
     Fonction principale qui initialise et démarre l'application
     """
     # Créer l'instance de l'API
-    api = API(BASE_DIR, DATA_DIR, OUTPUT_DIR, IMAGE_OUTPUT_DIR)
+    api = API(BASE_DIR, DATA_DIR, OUTPUT_DIR, IMAGE_OUTPUT_DIR, FILE_OUTPUT_DIR)
 
     # Créer la fenêtre principale
     webview.create_window(

@@ -152,7 +152,7 @@ export class ApiService {
 
   static async editCapteur(id, nom) {
     try {
-      return await window.pywebview.api.edit_capteur(id, nom);
+      return await window.pywebview.api.update_capteur(id, nom);
     } catch (error) {
       console.error('Error editing capteur:', error);
       return { success: false, message: 'Erreur lors de la modification du capteur' };
@@ -318,9 +318,9 @@ export class ApiService {
   }
 
   // Méthodes pour les statistiques
-  static async getDataStatistics(capteurId, startDate = null, endDate = null) {
+  static async getDataStatistics(capteurIds, startDate = null, endDate = null) {
     try {
-      return await window.pywebview.api.get_data_statistics(capteurId, startDate, endDate);
+      return await window.pywebview.api.get_data_statistics(capteurIds, startDate, endDate);
     } catch (error) {
       console.error('Error getting data statistics:', error);
       return { success: false, message: 'Erreur lors du calcul des statistiques' };
@@ -336,9 +336,9 @@ export class ApiService {
     }
   }
 
-  static async exportStatisticsToExcel(capteurId, startDate = null, endDate = null) {
+  static async exportStatisticsToExcel(capteurIds, startDate = null, endDate = null) {
     try {
-      return await window.pywebview.api.export_statistics_to_excel(capteurId, startDate, endDate);
+      return await window.pywebview.api.export_statistics_to_excel(capteurIds, startDate, endDate);
     } catch (error) {
       console.error('Error exporting statistics to Excel:', error);
       return { success: false, message: 'Erreur lors de l\'export des statistiques' };
