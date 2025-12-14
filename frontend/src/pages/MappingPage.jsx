@@ -10,7 +10,8 @@ const MappingPage = () => {
         date: '',
         temperature: '',
         humidity: '',
-        dew_point: ''
+        dew_point: '',
+        luminosity: ''
     });
     const [dataPreview, setDataPreview] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +68,8 @@ const MappingPage = () => {
                         date: capteur.columns.date || '',
                         temperature: capteur.columns.temperature || '',
                         humidity: capteur.columns.humidity || '',
-                        dew_point: capteur.columns.dew_point || ''
+                        dew_point: capteur.columns.dew_point || '',
+                        luminosity: capteur.columns.luminosity || ''
                     });
                 } else {
                     // Réinitialiser le mappage
@@ -75,7 +77,8 @@ const MappingPage = () => {
                         date: '',
                         temperature: '',
                         humidity: '',
-                        dew_point: ''
+                        dew_point: '',
+                        luminosity: ''
                     });
                 }
 
@@ -142,6 +145,10 @@ const MappingPage = () => {
 
         if (mapping.dew_point) {
             mappingData.dew_point = mapping.dew_point;
+        }
+
+        if (mapping.luminosity) {
+            mappingData.luminosity = mapping.luminosity;
         }
 
         setIsSaving(true);
@@ -248,7 +255,7 @@ const MappingPage = () => {
                     <i className='bx bx-brain' style={{ color: '#4a6cf7' }}></i> Mappage des Colonnes
                 </h3>
                 <p className="mb-6">
-                    Définissez quelles colonnes correspondent à la date, la température, l'humidité et le point de rosée.
+                    Définissez quelles colonnes correspondent à la date, la température, l'humidité, le point de rosée et la luminosité.
                 </p>
 
                 <div className="mb-6">
@@ -299,16 +306,23 @@ const MappingPage = () => {
 
                             {renderColumnSelect(
                                 'humidity',
-                                'Colonne d\'humidité (optionnelle)',
+                                'Colonne d\'humidité',
                                 false,
                                 'Colonne contenant les valeurs d\'humidité (si disponible).'
                             )}
 
                             {renderColumnSelect(
                                 'dew_point',
-                                'Colonne de point de rosée (optionnelle)',
+                                'Colonne de point de rosée',
                                 false,
                                 'Colonne contenant les valeurs de point de rosée (si disponible).'
+                            )}
+
+                            {renderColumnSelect(
+                                'luminosity',
+                                'Colonne de luminosité',
+                                false,
+                                'Colonne contenant les valeurs de luminosité en lux (si disponible).'
                             )}
                         </div>
 
@@ -338,7 +352,7 @@ const MappingPage = () => {
                 <ul className="list-disc list-inside space-y-2 ml-4 text-gray-700 dark:text-gray-300">
                     <li>L'application tente de détecter automatiquement les colonnes, mais vous pouvez les modifier ici.</li>
                     <li>Les colonnes de date et de température sont obligatoires.</li>
-                    <li>Les colonnes d'humidité et de point de rosée sont optionnelles, mais recommandées pour certains graphiques.</li>
+                    <li>Les colonnes d'humidité, point de rosée et luminosité sont optionnelles, mais recommandées pour certains graphiques.</li>
                     <li>Une fois le mappage enregistré, vous pourrez générer des graphiques à partir de ces données.</li>
                 </ul>
             </div>

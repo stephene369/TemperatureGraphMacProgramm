@@ -63,8 +63,8 @@ const HomePage = ({ navigateTo }) => {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 text-white">
-        <h2 className="text-3xl font-bold mb-2">Bienvenue dans ISCGraph</h2>
-        <p className="text-blue-100 text-lg">
+        <h2 className="text-2xl font-bold mb-2">Bienvenue dans ISCGraph</h2>
+        <p className="text-blue-100 text-sm">
           Votre outil d'analyse de données climatiques et de température
         </p>
       </div>
@@ -137,7 +137,7 @@ const HomePage = ({ navigateTo }) => {
             {
               step: 2,
               title: 'Associez vos fichiers',
-              desc: 'Importez vos fichiers Excel (.xlsx, .xls), CSV ou HOBO contenant les données'
+              desc: 'Importez vos fichiers Excel (.xlsx, .xls), CSV contenant les données'
             },
             {
               step: 3,
@@ -164,10 +164,10 @@ const HomePage = ({ navigateTo }) => {
       </div>
 
       {/* Test des notifications */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Test des notifications</h3>
         <TestNotifications />
-      </div>
+      </div> */}
     </div>
   );
 };

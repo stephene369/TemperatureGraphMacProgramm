@@ -65,7 +65,7 @@ const DocumentationPage = () => {
               <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
                 <h4 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">Associez des fichiers de données</h4>
                 <p className="mb-2">Associez des fichiers de données à vos capteurs en utilisant le bouton <strong>Associer un fichier</strong>.</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Formats supportés : Excel (.xlsx, .xls), CSV (.csv), HOBO (.hobo)</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Formats supportés : Excel (.xlsx, .xls), CSV (.csv)</p>
               </div>
             </div>
             
@@ -140,7 +140,6 @@ const DocumentationPage = () => {
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300">
                   <li><strong>Excel</strong> (.xlsx, .xls) - Feuilles de calcul Microsoft Excel</li>
                   <li><strong>CSV</strong> (.csv) - Fichiers de valeurs séparées par des virgules</li>
-                  <li><strong>HOBO</strong> (.hobo) - Fichiers exportés depuis les enregistreurs HOBO</li>
                 </ul>
               </div>
             </div>
@@ -338,7 +337,7 @@ const DocumentationPage = () => {
                     <i className='bx bx-bulb text-green-500 mr-2'></i> Solutions
                   </h6>
                   <ul className="list-disc list-inside space-y-1 text-sm ml-2">
-                    <li>Vérifiez que le format du fichier est supporté (.xlsx, .xls, .csv, .hobo)</li>
+                    <li>Vérifiez que le format du fichier est supporté (.xlsx, .xls, .csv)</li>
                     <li>Assurez-vous que le fichier n'est pas corrompu en l'ouvrant dans son application d'origine</li>
                     <li>Vérifiez que le fichier contient bien des colonnes de date et de température</li>
                     <li>Essayez d'exporter à nouveau le fichier depuis sa source originale</li>
@@ -365,7 +364,7 @@ const DocumentationPage = () => {
                 <tbody>
                   <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-2 px-4">"Format de fichier non supporté"</td>
-                    <td className="py-2 px-4">Le fichier n'est pas au format Excel, CSV ou HOBO</td>
+                    <td className="py-2 px-4">Le fichier n'est pas au format Excel, CSV </td>
                     <td className="py-2 px-4">Convertissez votre fichier dans un format supporté</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">

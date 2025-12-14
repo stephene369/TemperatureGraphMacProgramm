@@ -46,10 +46,11 @@ def main():
         # url=os.path.join(UI_DIR, "index.html"),
         url='http://localhost:3000/',
         js_api=api,
-        width=1500,
-        height=900,
         resizable=True,
-        min_size=(800, 600),
+        
+        # width=1500,
+        # height=900,
+        # min_size=(800, 600),
     )
 
     # Démarrer l'application

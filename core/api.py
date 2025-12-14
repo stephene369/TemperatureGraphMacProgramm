@@ -1282,86 +1282,95 @@ class API:
             }
 
 
-
-    def export_statistics_to_excel(self, capteur_ids, start_date=None, end_date=None):
+    def export_statistics_to_excel(self, capteur_ids, start_date=None, end_date=None, file_type='excel'):
         """
-        Exporte les statistiques vers un fichier Excel avec tableau de synthèse
-        
+        Exporte les statistiques vers un fichier Excel (multi-feuilles) ou CSV (Synthèse uniquement).
+
         Args:
             capteur_ids (str or list): ID du capteur ou liste d'IDs des capteurs
             start_date (str): Date de début (optionnelle)
             end_date (str): Date de fin (optionnelle)
-            
+            file_type (str): 'excel' (par défaut) ou 'csv'
+
         Returns:
             dict: Chemin du fichier exporté ou message d'erreur
         """
         try:
             # Obtenir les statistiques
             stats_result = self.get_data_statistics(capteur_ids, start_date, end_date)
-            
             if not stats_result.get("success"):
                 return stats_result
-            
+
+            import os
             import pandas as pd
             from datetime import datetime
-            
-            
-            
+
+            # Normaliser le type de fichier
+            file_type = (file_type or "excel").strip().lower()
+            if file_type not in {"excel", "csv"}:
+                file_type = "excel"
+
             # Convertir en liste si un seul ID est fourni
             if isinstance(capteur_ids, str):
                 capteur_ids = [capteur_ids]
-            
-            
-            
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            if isinstance(capteur_ids, str):
-                capteur_ids = [capteur_ids]
 
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            # Nom proposé par défaut
             if len(capteur_ids) == 1:
                 capteur_nom = self.capteurs[capteur_ids[0]].get("nom", capteur_ids[0])
-                default_filename = f"statistiques_{capteur_nom}_{timestamp}.xlsx"
+                base_name = f"statistiques_{capteur_nom}_{timestamp}"
             else:
-                default_filename = f"statistiques_{len(capteur_ids)}capteurs_{timestamp}.xlsx"    
-                # Ouvrir la boîte de dialogue de sauvegarde
+                base_name = f"statistiques_{len(capteur_ids)}capteurs_{timestamp}"
+
+            default_ext = ".xlsx" if file_type == "excel" else ".csv"
+            default_filename = f"{base_name}{default_ext}"
+
+            # Boîte de dialogue de sauvegarde selon type
+            file_types = (
+                ("Fichier Excel (*.xlsx)",) if file_type == "excel"
+                else ("Fichier CSV (*.csv)",)
+            )
 
             file_path = webview.windows[0].create_file_dialog(
                 webview.SAVE_DIALOG,
                 directory=self.file_outputdir,
                 save_filename=default_filename,
-                file_types=(
-                    "Fichier Excel (*.xlsx)",
-                ),
+                file_types=file_types,
             )
 
-            # Gérer l'annulation
+            # Gérer l'annulation et la liste Windows
             if not file_path:
-                return {
-                    "success": False,
-                    "message": "Export annulé par l'utilisateur."
-                }
-            # Pywebview peut retourner une liste (sur Windows)
+                return {"success": False, "message": "Export annulé par l'utilisateur."}
             if isinstance(file_path, list):
                 file_path = file_path[0]
+
+            # Forcer l'extension si oubliée
+            root, ext = os.path.splitext(file_path)
+            if file_type == "excel" and ext.lower() != ".xlsx":
+                file_path = root + ".xlsx"
+            elif file_type == "csv" and ext.lower() != ".csv":
+                file_path = root + ".csv"
+
             filename = os.path.basename(file_path)
             filepath = file_path
-            
-            
-            # Préparer les données pour Excel
+
+            # Préparer les données (mêmes calculs que ta version)
             excel_data = {}
-            
+
             # 1. Tableau de synthèse général
             synthese_data = []
             for result in stats_result["results"]:
                 if result["success"]:
                     capteur_info = result["capteur_info"]
                     stats = result["statistiques"]
-                    
+
                     row = {
                         "Capteur": capteur_info["nom"],
                         "ID": capteur_info["id"],
                         "Fichier": capteur_info["file_path"].split('\\')[-1] if capteur_info["file_path"] else "N/A"
                     }
-                    
+
                     # Température
                     temp_stats = stats.get("temperature", {})
                     if not temp_stats.get("error"):
@@ -1371,7 +1380,7 @@ class API:
                             "Écart Max Jour (°C)": temp_stats.get("ecart_maximal_journalier", "N/A"),
                             "Écart Moy Jour (°C)": temp_stats.get("ecart_moyen_journalier", "N/A")
                         })
-                    
+
                     # Humidité
                     hum_stats = stats.get("humidity", {})
                     if not hum_stats.get("error"):
@@ -1382,7 +1391,7 @@ class API:
                             "% < 55% HR": hum_stats.get("pourcentage_au_dessous_55", "N/A"),
                             "% Fluct > ±10%": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")
                         })
-                    
+
                     # Luminosité
                     lum_stats = stats.get("luminosity", {})
                     if not lum_stats.get("error"):
@@ -1390,7 +1399,7 @@ class API:
                             "Lux Max": lum_stats.get("valeur_maximale_lux", "N/A"),
                             "Expo >100 lux (min)": lum_stats.get("duree_exposition_100_lux_minutes", "N/A")
                         })
-                    
+
                     # Point de rosée
                     dew_stats = stats.get("dew_point", {})
                     if not dew_stats.get("error"):
@@ -1398,22 +1407,20 @@ class API:
                             "Point Rosée Min (°C)": dew_stats.get("point_rosee_minimal", "N/A"),
                             "Point Rosée Max (°C)": dew_stats.get("point_rosee_maximal", "N/A")
                         })
-                    
+
                     synthese_data.append(row)
-            
+
             if synthese_data:
                 excel_data["Synthèse"] = pd.DataFrame(synthese_data)
-            
+
             # 2. Détails par capteur (feuilles séparées)
             for result in stats_result["results"]:
                 if result["success"]:
                     capteur_nom = result["capteur_info"]["nom"]
                     stats = result["statistiques"]
-                    
-                    # Feuille de détail pour ce capteur
+
                     detail_data = []
-                    
-                    # Température
+
                     temp_stats = stats.get("temperature", {})
                     if not temp_stats.get("error"):
                         detail_data.extend([
@@ -1422,8 +1429,7 @@ class API:
                             {"Catégorie": "Température", "Métrique": "Température minimale (°C)", "Valeur": temp_stats.get("temperature_minimale", "N/A")},
                             {"Catégorie": "Température", "Métrique": "Température maximale (°C)", "Valeur": temp_stats.get("temperature_maximale", "N/A")},
                         ])
-                    
-                    # Humidité
+
                     hum_stats = stats.get("humidity", {})
                     if not hum_stats.get("error"):
                         detail_data.extend([
@@ -1435,20 +1441,18 @@ class API:
                             {"Catégorie": "Humidité", "Métrique": "Humidité minimale (%)", "Valeur": hum_stats.get("humidite_minimale", "N/A")},
                             {"Catégorie": "Humidité", "Métrique": "Humidité maximale (%)", "Valeur": hum_stats.get("humidite_maximale", "N/A")},
                         ])
-                    
-                    # Luminosité
+
                     lum_stats = stats.get("luminosity", {})
                     if not lum_stats.get("error"):
                         detail_data.extend([
                             {"Catégorie": "Luminosité", "Métrique": "Valeur maximale (lux)", "Valeur": lum_stats.get("valeur_maximale_lux", "N/A")},
                             {"Catégorie": "Luminosité", "Métrique": "Durée exposition > 100 lux (min)", "Valeur": lum_stats.get("duree_exposition_100_lux_minutes", "N/A")},
                         ])
-                    
+
                     if detail_data:
-                        # Nom de feuille Excel valide (max 31 caractères)
                         sheet_name = capteur_nom[:31] if len(capteur_nom) <= 31 else capteur_nom[:28] + "..."
                         excel_data[sheet_name] = pd.DataFrame(detail_data)
-            
+
             # 3. Informations générales
             info_data = [
                 {"Information": "Période d'analyse", "Valeur": f"Du {start_date or 'début'} au {end_date or 'fin'}"},
@@ -1457,51 +1461,62 @@ class API:
                 {"Information": "Fichier généré par", "Valeur": "ISCGraph - Analyse climatique"}
             ]
             excel_data["Informations"] = pd.DataFrame(info_data)
-            
-            # Écrire le fichier Excel
-            with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
-                for sheet_name, df in excel_data.items():
-                    df.to_excel(writer, sheet_name=sheet_name, index=False)
-                    
-                    # Ajuster la largeur des colonnes
-                    worksheet = writer.sheets[sheet_name]
-                    for column in worksheet.columns:
-                        max_length = 0
-                        column_letter = column[0].column_letter
-                        for cell in column:
-                            try:
-                                if len(str(cell.value)) > max_length:
-                                    max_length = len(str(cell.value))
-                            except:
-                                pass
-                        adjusted_width = min(max_length + 2, 50)
-                        worksheet.column_dimensions[column_letter].width = adjusted_width
-            
-            # Ajouter à l'historique
+
+            # Écriture selon le type
+            if file_type == "excel":
+                with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+                    for sheet_name, df in excel_data.items():
+                        df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+                        # Ajuster la largeur des colonnes
+                        worksheet = writer.sheets[sheet_name]
+                        for column in worksheet.columns:
+                            max_length = 0
+                            column_letter = column[0].column_letter
+                            for cell in column:
+                                try:
+                                    if len(str(cell.value)) > max_length:
+                                        max_length = len(str(cell.value))
+                                except Exception:
+                                    pass
+                            adjusted_width = min(max_length + 2, 50)
+                            worksheet.column_dimensions[column_letter].width = adjusted_width
+            else:
+                # CSV : on exporte la feuille "Synthèse" si elle existe, sinon la première disponible
+                if "Synthèse" in excel_data and not excel_data["Synthèse"].empty:
+                    df_to_save = excel_data["Synthèse"]
+                else:
+                    # Première feuille non vide
+                    non_empty = [df for df in excel_data.values() if not df.empty]
+                    if not non_empty:
+                        return {"success": False, "message": "Aucune donnée à exporter en CSV."}
+                    df_to_save = non_empty[0]
+
+                df_to_save.to_csv(filepath, index=False, encoding="utf-8-sig")
+
+            # Historique
             capteur_names = [self.capteurs[cid].get("nom", cid) for cid in capteur_ids if cid in self.capteurs]
             add_history_entry(
                 self.history,
                 "Export statistiques",
-                f"Tableau de synthèse exporté pour {len(capteur_names)} capteur(s): {', '.join(capteur_names)}",
+                f"Export {file_type.upper()} pour {len(capteur_names)} capteur(s): {', '.join(capteur_names)}",
                 {
                     "fichier": filename,
                     "capteurs": capteur_names,
                     "periode": f"{start_date or 'début'} à {end_date or 'fin'}",
-                    "nombre_capteurs": len(capteur_ids)
+                    "nombre_capteurs": len(capteur_ids),
+                    "type": file_type
                 }
             )
-            
+
             return {
                 "success": True,
                 "filepath": filepath,
                 "filename": filename,
-                "message": f"Tableau de synthèse exporté avec succès vers {filename}"
+                "message": f"Export {file_type.upper()} réalisé avec succès vers {filename}"
             }
-            
+
         except Exception as e:
             import traceback
             traceback.print_exc()
-            return {
-                "success": False,
-                "message": f"Erreur lors de l'export: {str(e)}"
-            }
+            return {"success": False, "message": f"Erreur lors de l'export: {str(e)}"}

@@ -6,7 +6,6 @@ const Sidebar = ({ currentPage, navigateTo, isMobileMenuOpen, toggleMobileMenu }
     { id: 'capteurs', label: 'Capteurs & Fichiers', icon: 'bxs-folder' },
     { id: 'mapping', label: 'Mappage des Colonnes', icon: 'bxs-grid-alt' },
     { id: 'graphs', label: 'Graphiques', icon: 'bxs-bar-chart-alt-2' },
-    // { id: 'statistics', label: 'Analyse Statistique', icon: 'bxs-calculator' },
     { id: 'history', label: 'Historique', icon: 'bxs-time' },
     { id: 'documentation', label: 'Documentation', icon: 'bxs-book' }
   ];
@@ -29,7 +28,7 @@ const Sidebar = ({ currentPage, navigateTo, isMobileMenuOpen, toggleMobileMenu }
         }`}
       >
         {/* Header */}
-        <div className="p-4 pt-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold">ISCGraph</h1>

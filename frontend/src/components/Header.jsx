@@ -31,9 +31,9 @@ const Header = ({ pageTitle, currentPage, isDarkMode, toggleTheme, toggleMobileM
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-1">
         {/* Left side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 py-1">
           {/* Mobile menu button */}
           <button
             id="mobile-menu-btn"

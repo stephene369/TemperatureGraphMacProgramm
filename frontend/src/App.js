@@ -16,7 +16,7 @@ import HomePage from './pages/HomePage';
 import CapteursPage from './pages/CapteursPage';
 import MappingPage from './pages/MappingPage';
 import GraphsPage from './pages/GraphsPage';
-import StatisticsPage from './pages/StatisticsPageMultiple';
+
 import HistoryPage from './pages/HistoryPage';
 import DocumentationPage from './pages/DocumentationPage';
 
@@ -88,8 +88,6 @@ function App() {
         return <MappingPage />;
       case 'graphs':
         return <GraphsPage />;
-      case 'statistics':
-        return <StatisticsPage />;
       case 'history':
         return <HistoryPage />;
       case 'documentation':
@@ -127,7 +125,7 @@ function App() {
             />
 
             {/* Content */}
-            <main className="flex-1 overflow-y-auto p-6">
+            <main className="flex-1 overflow-y-auto p-1">
               <div className="page active">
                 {renderCurrentPage()}
               </div>

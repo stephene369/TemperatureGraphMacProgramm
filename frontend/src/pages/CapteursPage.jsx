@@ -166,7 +166,7 @@ const CapteursPage = () => {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-        <h3 className="text-lg font-semibold mb-4">📁 Capteurs & Fichiers</h3>
+        <h3 className="text-lg font-semibold mb-4">Capteurs & Fichiers</h3>
         <p className="mb-6">Ajoutez vos capteurs et associez-leur des fichiers de données.</p>
         
         <button 
@@ -241,7 +241,7 @@ const CapteursPage = () => {
         <h3 className="text-lg font-semibold mb-4">💬 Remarques</h3>
         <ul className="list-disc list-inside space-y-2 ml-4 text-gray-700 dark:text-gray-300">
           <li>Un capteur correspond à un point de mesure.</li>
-          <li>Les fichiers peuvent être en .xlsx, .xls ou .hobo.</li>
+          <li>Les fichiers peuvent être en .xlsx, .xls</li>
           <li>L'application tentera de détecter automatiquement les colonnes de date, température et humidité.</li>
           <li>Si la détection automatique échoue, vous serez redirigé vers la page de mappage des colonnes.</li>
         </ul>

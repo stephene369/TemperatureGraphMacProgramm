@@ -336,9 +336,9 @@ export class ApiService {
     }
   }
 
-  static async exportStatisticsToExcel(capteurIds, startDate = null, endDate = null) {
+  static async exportStatisticsToExcel(capteurIds, startDate = null, endDate = null , filetype='excel') {
     try {
-      return await window.pywebview.api.export_statistics_to_excel(capteurIds, startDate, endDate);
+      return await window.pywebview.api.export_statistics_to_excel(capteurIds, startDate, endDate,filetype);
     } catch (error) {
       console.error('Error exporting statistics to Excel:', error);
       return { success: false, message: 'Erreur lors de l\'export des statistiques' };
