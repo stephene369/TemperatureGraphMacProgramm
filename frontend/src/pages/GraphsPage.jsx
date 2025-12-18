@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ApiService } from '../services/ApiService';
 import { showNotification } from '../hooks/useNotification';
 import { showLoading, hideLoading } from '../hooks/useLoading';
@@ -19,7 +19,7 @@ const GraphsPage = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Référence pour le téléchargement CSV
-  const csvLinkRef = useRef(null);
+  // const csvLinkRef = useRef(null);
 
   useEffect(() => {
     loadData();
@@ -415,7 +415,7 @@ const GraphsPage = () => {
                     % &gt; 55% HR
                   </th>
                   <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-green-50 dark:bg-green-900/30 min-w-[100px] border-r-2 border-gray-300 dark:border-gray-600">
-                    % Fluct &gt; ±10%
+                    % Fluct &gt; 10%
                   </th>
                   
                   {/* Luminosité */}
@@ -629,7 +629,7 @@ const GraphsPage = () => {
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">Fluct &gt; ±10%:</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Fluct &gt; 10%:</span>
                           <span className={`font-medium ${result.statistiques.humidity.pourcentage_fluctuations_elevees > 15 ? 'text-orange-600' : 'text-gray-700'}`}>
                             {result.statistiques.humidity.pourcentage_fluctuations_elevees} %
                           </span>

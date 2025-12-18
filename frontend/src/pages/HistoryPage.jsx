@@ -80,17 +80,8 @@ const HistoryPage = () => {
   return (
     <div>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-        <h3 className="text-lg font-semibold mb-4">🕓 Historique</h3>
+        <h3 className="text-lg font-semibold mb-4">Historique</h3>
         <p className="mb-6">Consultez l'historique des opérations effectuées dans l'application.</p>
-        
-        <div className="mb-6">
-          <button 
-            className="btn-secondary"
-            onClick={exportHistory}
-          >
-            <span className="icon">📤</span> Exporter l'historique
-          </button>
-        </div>
         
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">

@@ -33,7 +33,7 @@ class DataLoader:
             file_extension = os.path.splitext(file_path.lower())[1]
 
             if file_extension in (".xlsx", ".xls"):
-                logger.info(f"Chargement du fichier Excel: {file_path}")
+                # logger.info(f"Chargement du fichier Excel: {file_path}")
                 df = pd.read_excel(file_path)
                 if df.shape[1] < 2:
                     for header_row in range(10):
@@ -219,8 +219,7 @@ class DataLoader:
                 except:
                     continue
 
-        logger.info(f"Colonnes détectées: {mapping}")
-        print("Collones detectee : ", mapping)
+      
         return mapping
 
     def load_capteur_data(self, capteur_data):
@@ -309,9 +308,6 @@ class DataLoader:
                 # logger.warning(f"Doublons de dates détectés dans {capteur_data.get('nom', 'capteur')}. Suppression des doublons.")
                 mapped_df = mapped_df.drop_duplicates(subset=["date"], keep="first")
 
-            logger.info(
-                f"Données chargées pour {capteur_data.get('nom', 'capteur')}: {len(mapped_df)} lignes"
-            )
             return mapped_df
 
         except Exception as e:

@@ -756,7 +756,8 @@ class API:
                     
                     capteurs_data[capteur_id]["data"] = df_reindexed
             else:
-                logger.info("Normalisation ignorée - tous les capteurs ont le même intervalle de temps ou un seul capteur sélectionné")
+                pass
+                # logger.info("Normalisation ignorée - tous les capteurs ont le même intervalle de temps ou un seul capteur sélectionné")
             
             # Utiliser un dictionnaire pour mapper les types de graphiques aux méthodes
             graph_generators = {
@@ -1388,8 +1389,8 @@ class API:
                             "HR Min (%)": hum_stats.get("humidite_minimale", "N/A"),
                             "HR Max (%)": hum_stats.get("humidite_maximale", "N/A"),
                             "% > 65% HR": hum_stats.get("pourcentage_au_dessus_65", "N/A"),
-                            "% < 55% HR": hum_stats.get("pourcentage_au_dessous_55", "N/A"),
-                            "% Fluct > ±10%": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")
+                            "% > 55% HR": hum_stats.get("pourcentage_au_dessous_55", "N/A"),
+                            "% Fluct > 10%": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")
                         })
 
                     # Luminosité
@@ -1437,7 +1438,7 @@ class API:
                             {"Catégorie": "Humidité", "Métrique": "Écart moyen journalier (%)", "Valeur": hum_stats.get("ecart_moyen_journalier", "N/A")},
                             {"Catégorie": "Humidité", "Métrique": "% au-dessus de 65% HR", "Valeur": hum_stats.get("pourcentage_au_dessus_65", "N/A")},
                             {"Catégorie": "Humidité", "Métrique": "% au-dessous de 55% HR", "Valeur": hum_stats.get("pourcentage_au_dessous_55", "N/A")},
-                            {"Catégorie": "Humidité", "Métrique": "% fluctuations > ±10%", "Valeur": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")},
+                            {"Catégorie": "Humidité", "Métrique": "% fluctuations > 10%", "Valeur": hum_stats.get("pourcentage_fluctuations_elevees", "N/A")},
                             {"Catégorie": "Humidité", "Métrique": "Humidité minimale (%)", "Valeur": hum_stats.get("humidite_minimale", "N/A")},
                             {"Catégorie": "Humidité", "Métrique": "Humidité maximale (%)", "Valeur": hum_stats.get("humidite_maximale", "N/A")},
                         ])
