@@ -12,7 +12,6 @@ dist/
 output/
 data/
 tests/
-core/*
 latex/
 
 
