@@ -5,7 +5,6 @@
 # *.pyd
 # .Python
 env/
-core/
 build/
 livrable/
 dist/
