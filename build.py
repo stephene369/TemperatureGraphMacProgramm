@@ -8,9 +8,9 @@ ICON = "ui/assets/img/logo_ico.ico" if IS_WINDOWS else "ui/assets/img/logo.icns"
 PyInstaller.__main__.run([
     "--noconfirm",
     "--onefile",
-    "--console",
+    "--windowed",
     "--clean",
-    "--name=ISCGraph",
+    "--name=ISCGraph 2.0",
     f"--icon={ICON}",
     f"--add-data=ui{DATA_SEP}ui",
     "main.py",
