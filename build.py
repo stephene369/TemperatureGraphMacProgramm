@@ -18,6 +18,7 @@ PyInstaller.__main__.run([
 
 
 
+
 # pyinstaller --noconfirm --onefile --console ^
 # --icon "E:\projects\TemperatureGraphMacProgramm\ui\assets\img\logo_ico.ico" ^
 # --name "ISCGraph" --clean ^
